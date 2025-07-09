@@ -1,0 +1,26 @@
+<form onsubmit="signup(event)">
+  <input placeholder="Username" id="username" required>
+  <input placeholder="Email" id="email" required>
+  <input placeholder="Special Code" id="code" required>
+  <input type="password" placeholder="Password" id="password" required>
+  <button>Sign Up</button>
+</form>
+<script src="config.js"></script>
+<script>
+async function signup(event) {
+  event.preventDefault();
+  const res = await fetch(`${API_URL}/signup`, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: username.value,
+      email: email.value,
+      code: code.value,
+      password: password.value
+    })
+  });
+  const data = await res.json();
+  if (res.ok) location.href = "index.html";
+  else alert(data.error);
+}
+</script>

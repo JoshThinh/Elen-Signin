@@ -1,0 +1,23 @@
+<h2>Clocked In</h2>
+<ul id="clockedIn"></ul>
+
+<h2>On Break</h2>
+<ul id="onBreak"></ul>
+
+<script src="config.js"></script>
+<script>
+fetch(`${API_URL}/status`)
+  .then(res => res.json())
+  .then(data => {
+    data.clockedIn.forEach(user => {
+      const li = document.createElement("li");
+      li.textContent = user;
+      clockedIn.appendChild(li);
+    });
+    data.onBreak.forEach(user => {
+      const li = document.createElement("li");
+      li.textContent = user;
+      onBreak.appendChild(li);
+    });
+  });
+</script>
