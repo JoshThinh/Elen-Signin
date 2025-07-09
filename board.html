@@ -1,23 +1,44 @@
-<h2>Clocked In</h2>
-<ul id="clockedIn"></ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clocked In Status</title>
+  <base href="/" />
+  <script src="config.js" defer></script>
+</head>
+<body>
+  <h2>Clocked In</h2>
+  <ul id="clockedIn"></ul>
 
-<h2>On Break</h2>
-<ul id="onBreak"></ul>
+  <h2>On Break</h2>
+  <ul id="onBreak"></ul>
 
-<script src="config.js"></script>
-<script>
-fetch(`${API_URL}/status`)
-  .then(res => res.json())
-  .then(data => {
-    data.clockedIn.forEach(user => {
-      const li = document.createElement("li");
-      li.textContent = user;
-      clockedIn.appendChild(li);
+  <script>
+    // Wait until DOM is loaded before running script
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch(`${API_URL}/status`)
+        .then(res => res.json())
+        .then(data => {
+          const clockedInList = document.getElementById("clockedIn");
+          const onBreakList = document.getElementById("onBreak");
+
+          data.clockedIn.forEach(user => {
+            const li = document.createElement("li");
+            li.textContent = user;
+            clockedInList.appendChild(li);
+          });
+
+          data.onBreak.forEach(user => {
+            const li = document.createElement("li");
+            li.textContent = user;
+            onBreakList.appendChild(li);
+          });
+        })
+        .catch(err => {
+          console.error("Error fetching status:", err);
+        });
     });
-    data.onBreak.forEach(user => {
-      const li = document.createElement("li");
-      li.textContent = user;
-      onBreak.appendChild(li);
-    });
-  });
-</script>
+  </script>
+</body>
+</html>

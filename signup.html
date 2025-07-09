@@ -1,26 +1,61 @@
-<form onsubmit="signup(event)">
-  <input placeholder="Username" id="username" required>
-  <input placeholder="Email" id="email" required>
-  <input placeholder="Special Code" id="code" required>
-  <input type="password" placeholder="Password" id="password" required>
-  <button>Sign Up</button>
-</form>
-<script src="config.js"></script>
-<script>
-async function signup(event) {
-  event.preventDefault();
-  const res = await fetch(`${API_URL}/signup`, {
-    method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username: username.value,
-      email: email.value,
-      code: code.value,
-      password: password.value
-    })
-  });
-  const data = await res.json();
-  if (res.ok) location.href = "index.html";
-  else alert(data.error);
-}
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up</title>
+  <base href="/" />
+  <script src="config.js" defer></script>
+</head>
+<body>
+  <h2>Sign Up</h2>
+  <form id="signupForm" novalidate>
+    <input placeholder="Username" id="username" required />
+    <input placeholder="Email" id="email" type="email" required />
+    <input placeholder="Special Code" id="code" required />
+    <input type="password" placeholder="Password" id="password" required />
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <p>Already have an account? <a href="/index.html">Log in here</a></p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("signupForm");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const username = form.username.value.trim();
+        const email = form.email.value.trim();
+        const code = form.code.value.trim();
+        const password = form.password.value;
+
+        if (!username || !email || !code || !password) {
+          alert("Please fill out all fields.");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, email, code, password }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            alert("Signup successful! Please log in.");
+            window.location.href = "/index.html";
+          } else {
+            alert(data.error || "Signup failed");
+          }
+        } catch (error) {
+          alert("An error occurred: " + error.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

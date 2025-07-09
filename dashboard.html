@@ -1,19 +1,46 @@
-<h1>Welcome <span id="userDisplay"></span></h1>
-<button onclick="clockIn()">Clock In</button>
-<button onclick="takeBreak()">Break</button>
-<button onclick="clockOut()">Clock Out</button>
-<a href="board.html">View Board</a>
-<script src="config.js"></script>
-<script>
-const user = localStorage.getItem("user");
-if (!user) location.href = "index.html";
-userDisplay.innerText = user;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clock In Page</title>
+  <base href="/" />
+  <script src="config.js" defer></script>
+</head>
+<body>
+  <h1>Welcome <span id="userDisplay"></span></h1>
 
-async function updateStatus(action) {
-  await fetch(`${API_URL}/status/${user}/${action}`, { method: "POST" });
-}
+  <button onclick="clockIn()">Clock In</button>
+  <button onclick="takeBreak()">Break</button>
+  <button onclick="clockOut()">Clock Out</button>
+  <br /><br />
+  <a href="/board.html">View Board</a>
 
-function clockIn() { updateStatus("clocked-in"); }
-function takeBreak() { updateStatus("break"); }
-function clockOut() { updateStatus("none"); }
-</script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = localStorage.getItem("user");
+      if (!user) {
+        location.href = "/index.html";
+        return;
+      }
+      const userDisplay = document.getElementById("userDisplay");
+      userDisplay.innerText = user;
+
+      async function updateStatus(action) {
+        try {
+          const res = await fetch(`${API_URL}/status/${user}/${action}`, { method: "POST" });
+          if (!res.ok) {
+            console.error("Failed to update status");
+          }
+        } catch (error) {
+          console.error("Error updating status:", error);
+        }
+      }
+
+      window.clockIn = () => updateStatus("clocked-in");
+      window.takeBreak = () => updateStatus("break");
+      window.clockOut = () => updateStatus("none");
+    });
+  </script>
+</body>
+</html>
