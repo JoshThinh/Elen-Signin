@@ -4,43 +4,95 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clock In Page</title>
+  <link rel="stylesheet" href="style.css">
+
   <base href="/" />
   <script src="config.js" defer></script>
+  <style>
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .signout-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .signout-btn:hover {
+      background-color: #c82333;
+    }
+    .back-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .back-btn:hover {
+      background-color: #5a6268;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome <span id="userDisplay"></span></h1>
+  <div class="header">
+    <h1>Welcome <span id="userDisplay"></span></h1>
+    <button class="signout-btn" onclick="signOut()">Sign Out</button>
+  </div>
 
-  <button onclick="clockIn()">Clock In</button>
-  <button onclick="takeBreak()">Break</button>
-  <button onclick="clockOut()">Clock Out</button>
-  <br /><br />
-  <a href="/board.html">View Board</a>
+  <div style="padding: 20px;">
+    <button onclick="clockIn()">Clock In</button>
+    <button onclick="takeBreak()">Break</button>
+    <button onclick="clockOut()">Clock Out</button>
+    <br /><br />
+    <a href="/board.html">View Board</a>
+         
+    </script>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    <script>
+      // Check if user is logged in
       const user = localStorage.getItem("user");
       if (!user) {
-        location.href = "/index.html";
-        return;
+        window.location.href = "/index.html";
       }
-      const userDisplay = document.getElementById("userDisplay");
-      userDisplay.innerText = user;
 
-      async function updateStatus(action) {
-        try {
-          const res = await fetch(`${API_URL}/status/${user}/${action}`, { method: "POST" });
-          if (!res.ok) {
-            console.error("Failed to update status");
+      document.addEventListener("DOMContentLoaded", () => {
+        const userDisplay = document.getElementById("userDisplay");
+        userDisplay.innerText = user;
+
+        async function updateStatus(action) {
+          try {
+            const res = await fetch(`${API_URL}/status/${user}/${action}`, { method: "POST" });
+            if (!res.ok) {
+              console.error("Failed to update status");
+            }
+          } catch (error) {
+            console.error("Error updating status:", error);
           }
-        } catch (error) {
-          console.error("Error updating status:", error);
         }
+
+        window.clockIn = () => updateStatus("clocked-in");
+        window.takeBreak = () => updateStatus("break");
+        window.clockOut = () => updateStatus("none");
+      });
+
+      function signOut() {
+        localStorage.removeItem("user");
+        window.location.href = "/index.html";
       }
 
-      window.clockIn = () => updateStatus("clocked-in");
-      window.takeBreak = () => updateStatus("break");
-      window.clockOut = () => updateStatus("none");
-    });
-  </script>
+      function goToMain() {
+        window.location.href = "/dashboard.html";
+      }
+    </script>
+  </div>
 </body>
 </html>

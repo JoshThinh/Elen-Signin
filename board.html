@@ -1,44 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Clocked In Status</title>
-  <base href="/" />
-  <script src="config.js" defer></script>
+  <meta charset="UTF-8">
+  <title>Office Board</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .back-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .back-btn:hover {
+      background-color: #5a6268;
+    }
+  </style>
 </head>
 <body>
-  <h2>Clocked In</h2>
-  <ul id="clockedIn"></ul>
+  <div style="padding: 20px;">
+    <h1>Office Presence Board</h1>
+    <button class="back-btn" onclick="goToMenu()">Back to Menu</button>
+    
+    <div class="office-grid" id="officeGrid"></div>
+    <script>
+    // Check if user is logged in
+    const user = localStorage.getItem("user");
+    if (!user) {
+      window.location.href = "/index.html";
+    }
 
-  <h2>On Break</h2>
-  <ul id="onBreak"></ul>
+    const API_URL = "http://localhost:5000";
+    const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
 
-  <script>
-    // Wait until DOM is loaded before running script
-    document.addEventListener("DOMContentLoaded", () => {
-      fetch(`${API_URL}/status`)
-        .then(res => res.json())
-        .then(data => {
-          const clockedInList = document.getElementById("clockedIn");
-          const onBreakList = document.getElementById("onBreak");
+    fetch(`${API_URL}/status`)
+      .then(res => res.json())
+      .then(data => {
+        const officeGrid = document.getElementById('officeGrid');
+        officeGrid.innerHTML = '';
+        for (const deskId of DESK_IDS) {
+          // Find user assigned to this desk
+          const user = data.users.find(u => u.desk === deskId);
+          const deskDiv = document.createElement('div');
+          deskDiv.className = 'desk';
+          if (user && user.status !== 'none') {
+            // Show stickman: faded if on break, normal if clocked-in
+            let opacity = user.status === 'break' ? 0.3 : 1;
+            deskDiv.innerHTML = `
+              <svg width="40" height="60" style="opacity:${opacity}">
+                <circle cx="20" cy="10" r="8" stroke="black" stroke-width="2" fill="none"/>
+                <line x1="20" y1="18" x2="20" y2="40" stroke="black" stroke-width="2"/>
+                <line x1="20" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"/>
+                <line x1="20" y1="25" x2="30" y2="35" stroke="black" stroke-width="2"/>
+                <line x1="20" y1="40" x2="10" y2="55" stroke="black" stroke-width="2"/>
+                <line x1="20" y1="40" x2="30" y2="55" stroke="black" stroke-width="2"/>
+              </svg>
+              <span>${user.username}</span>
+            `;
+          } else {
+            // No user assigned or status is 'none': show only desk label
+            deskDiv.innerHTML = `<span>${deskId.replace('desk','Desk ')}</span>`;
+          }
+          officeGrid.appendChild(deskDiv);
+        }
+      });
+    </script>
 
-          data.clockedIn.forEach(user => {
-            const li = document.createElement("li");
-            li.textContent = user;
-            clockedInList.appendChild(li);
-          });
-
-          data.onBreak.forEach(user => {
-            const li = document.createElement("li");
-            li.textContent = user;
-            onBreakList.appendChild(li);
-          });
-        })
-        .catch(err => {
-          console.error("Error fetching status:", err);
-        });
-    });
-  </script>
+    <script>
+      function goToMenu() {
+        window.location.href = "/dashboard.html";
+      }
+    </script>
+  </div>
 </body>
 </html>
