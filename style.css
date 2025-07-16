@@ -17,11 +17,91 @@
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
-.body {
-  font-family: 'Crimson Text', sans-serif;
-  font-weight: 400;
-  color: #777;
-  font-size: 16px;
-  letter-spacing: 1px;
-  line-height: 1.6;
+body {
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: #fff;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+nav {
+  background: #1a2942;
+  color: #fff;
+  padding: 0 30px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav .nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1em;
+  padding: 20px 0;
+  transition: color 0.2s;
+}
+
+nav a:hover {
+  color: #4da3ff;
+}
+
+.header-section {
+  background: #f5f7fa;
+  padding: 40px 0 20px 0;
+  text-align: center;
+}
+
+.header-section h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  color: #1a2942;
+}
+
+.header-section h2, .header-section h3, .header-section h4 {
+  color: #4da3ff;
+  margin-bottom: 20px;
+}
+
+.section {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+
+.card {
+  background: #f5f7fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 24px 20px;
+  min-width: 220px;
+  max-width: 300px;
+  flex: 1 1 220px;
+  text-align: center;
+}
+
+footer {
+  background: #1a2942;
+  color: #fff;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 40px;
+  font-size: 0.95em;
 }

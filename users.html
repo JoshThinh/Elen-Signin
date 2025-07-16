@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Users</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding-top: 56px; /* Prevent content from being hidden under navbar */
+    }
+    .navbar {
+      width: 100%;
+      height: 56px;
+      background: #222;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1001;
+      box-sizing: border-box;
+      padding-right: 8px;
+    }
+    .navbar-hamburger {
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0 24px;
+      user-select: none;
+    }
+    .navbar-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-left: 12px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 220px;
+      height: 100%;
+      background: #333;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding-top: 56px;
+      transition: right 0.3s;
+      z-index: 1002;
+    }
+    .sidebar.open {
+      right: 0;
+    }
+    .sidebar a {
+      color: #fff;
+      padding: 18px 24px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #444;
+      transition: background 0.2s;
+    }
+    .sidebar a:hover {
+      background: #444;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    .sidebar-overlay.open {
+      display: block;
+    }
+    .users-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .users-title {
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .users-table {
+      width: 100%;
+      max-width: 800px;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .users-table th,
+    .users-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .users-table th {
+      background: #f8f9fa;
+      font-weight: bold;
+      color: #333;
+    }
+    .users-table tr:hover {
+      background: #f8f9fa;
+    }
+    .edit-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .edit-btn:hover {
+      background: #0056b3;
+    }
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 8px;
+    }
+    .delete-btn:hover {
+      background: #c82333;
+    }
+    .delete-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .delete-btn:disabled:hover {
+      background: #6c757d;
+    }
+    .access-denied {
+      text-align: center;
+      color: #dc3545;
+      font-size: 1.5rem;
+      margin-top: 100px;
+    }
+    .loading {
+      text-align: center;
+      color: #666;
+      font-size: 1.2rem;
+      margin-top: 100px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="navbar-title">Edit Users</span>
+    <span class="navbar-hamburger" onclick="toggleSidebar()">&#9776;</span>
+  </nav>
+  <div class="sidebar" id="sidebar">
+    <a href="#" id="dashboardLink">Dashboard</a>
+    <a href="#" id="boardLink">Board</a>
+    <a href="#" id="settingsLink">Settings</a>
+    <a href="#" style="display:none;">Edit Users</a>
+    <a href="#" onclick="signOut()">Sign Out</a>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  
+  <div class="users-container">
+    <h1 class="users-title">Edit Users</h1>
+    <div style="margin-bottom: 20px; text-align: right;">
+      <button onclick="loadUsers()" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Refresh</button>
+    </div>
+    <div id="content">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    // Define functions globally so they can be called from HTML attributes
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+    
+    function signOut() {
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+    
+    // Get username from URL query parameter
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+    
+    const username = getQueryParam('username');
+    if (!username) {
+      window.location.href = "index.html";
+    } else {
+      // Check if user is admin
+      fetch(`http://localhost:5000/user/${username}`)
+        .then(res => {
+          if (!res.ok) {
+            if (res.status === 404) {
+              // User not found (deleted)
+              alert('Your account has been deleted. You will be redirected to the login page.');
+              localStorage.removeItem('user');
+              window.location.href = "index.html";
+              return;
+            }
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(user => {
+          if (!user) return; // User was deleted, already redirected
+          
+          if (user.role !== "admin") {
+            document.getElementById('content').innerHTML = '<div class="access-denied">Access Denied. Admin privileges required.</div>';
+            return;
+          }
+          
+          // User is admin, load users data
+          loadUsers();
+        })
+        .catch((error) => {
+          console.error('Error validating user:', error);
+          alert('Error validating your account. Please log in again.');
+          localStorage.removeItem('user');
+          window.location.href = "index.html";
+        });
+    }
+    
+    // Update sidebar links to include username
+    document.addEventListener('DOMContentLoaded', function() {
+      if (username) {
+        document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+      }
+    });
+    
+    function loadUsers() {
+      fetch(`${API_URL}/users`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log('Users data:', data);
+          if (data.users && data.users.length > 0) {
+            displayUsers(data.users);
+          } else {
+            document.getElementById('content').innerHTML = '<div class="loading">No users found.</div>';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading users:', error);
+          document.getElementById('content').innerHTML = '<div class="loading">Error loading users. Please try again.</div>';
+        });
+    }
+    
+    function displayUsers(users) {
+      const content = document.getElementById('content');
+      let tableHTML = `
+        <div style="margin-bottom: 20px; text-align: right;">
+          <span style="color: #666;">Total Users: ${users.length}</span>
+        </div>
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Desk</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      users.forEach(user => {
+        // Don't allow admin to delete themselves
+        const isCurrentUser = user.username === username;
+        const deleteButton = isCurrentUser 
+          ? '<button class="delete-btn" disabled title="Cannot delete yourself">Delete</button>'
+          : `<button class="delete-btn" onclick="deleteUser('${user.username}')">Delete</button>`;
+        
+        tableHTML += `
+          <tr>
+            <td><strong>${user.username}</strong></td>
+            <td>${user.email || 'N/A'}</td>
+            <td><span style="color: ${user.role === 'admin' ? '#dc3545' : '#28a745'}; font-weight: bold;">${user.role || 'user'}</span></td>
+            <td>${user.desk || 'Unassigned'}</td>
+            <td>${user.status || 'Unknown'}</td>
+            <td>
+              <button class="edit-btn" onclick="editUser('${user.username}')">Edit</button>
+              ${deleteButton}
+            </td>
+          </tr>
+        `;
+      });
+      
+      tableHTML += `
+          </tbody>
+        </table>
+      `;
+      
+      content.innerHTML = tableHTML;
+    }
+    
+    function editUser(username) {
+      // TODO: Implement edit user functionality
+      alert(`Edit user: ${username} (functionality to be implemented)`);
+    }
+    
+    async function deleteUser(username) {
+      if (confirm(`Are you sure you want to delete user: ${username}?\n\nThis action cannot be undone.`)) {
+        try {
+          const response = await fetch(`${API_URL}/delete_user`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: username,
+              admin_username: getQueryParam('username') // Current admin user
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            alert(`User ${username} has been successfully deleted.`);
+            // Reload the users list
+            loadUsers();
+          } else {
+            alert(`Error deleting user: ${data.error || 'Unknown error'}`);
+          }
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            alert('Network error. Please check your connection and try again.');
+          } else {
+            alert('Error deleting user. Please try again.');
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

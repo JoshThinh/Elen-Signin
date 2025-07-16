@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weekly Hours</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    table { border-collapse: collapse; margin: 40px auto; }
+    th, td { border: 1px solid #aaa; padding: 8px 16px; text-align: center; }
+    th { background: #f0f0f0; }
+    .username { font-weight: bold; }
+    .refresh-indicator {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    .refreshing {
+      color: #007bff;
+      font-weight: bold;
+    }
+    .last-updated {
+      color: #28a745;
+    }
+    .navbar {
+      width: 100%;
+      height: 56px;
+      background: #222;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1001;
+      box-sizing: border-box;
+      padding-right: 8px;
+    }
+    .navbar-hamburger {
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0 24px;
+      user-select: none;
+    }
+    .navbar-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-left: 12px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 220px;
+      height: 100%;
+      background: #333;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding-top: 56px;
+      transition: right 0.3s;
+      z-index: 1002;
+    }
+    .sidebar.open {
+      right: 0;
+    }
+    .sidebar a {
+      color: #fff;
+      padding: 18px 24px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #444;
+      transition: background 0.2s;
+    }
+    .sidebar a:hover {
+      background: #444;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    .sidebar-overlay.open {
+      display: block;
+    }
+    body {
+      padding-top: 56px; /* Prevent content from being hidden under navbar */
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="navbar-title">Weekly Hours - <span id="userDisplay"></span></span>
+    <span class="navbar-hamburger" onclick="toggleSidebar()">&#9776;</span>
+  </nav>
+  <div class="sidebar" id="sidebar">
+    <a href="#" id="dashboardLink">Dashboard</a>
+    <a href="#" id="boardLink">Board</a>
+    <a href="#" id="settingsLink">Settings</a>
+    <a href="#" onclick="signOut()">Sign Out</a>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  
+  <h1 style="text-align:center;">Weekly Hours (Mon-Fri)</h1>
+  <div class="refresh-indicator" id="refreshIndicator">
+    Auto-refreshing every 30 seconds.
+  </div>
+  <table id="hoursTable">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <script src="config.js"></script>
+  <script>
+    // Function to convert decimal hours to HH:MM format
+    function formatHours(hours) {
+      const totalMinutes = Math.round(hours * 60);
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
+
+    // Function to update the refresh indicator
+    function updateRefreshIndicator(message, className = '') {
+      const indicator = document.getElementById('refreshIndicator');
+      indicator.textContent = message;
+      indicator.className = `refresh-indicator ${className}`;
+    }
+
+    // Function to load and display hours data
+    function loadHoursData() {
+      updateRefreshIndicator('Refreshing data...', 'refreshing');
+      
+      // Fetch both weekly timesheets and current hours
+      Promise.all([
+        fetch(`${API_URL}/weekly_timesheets`).then(res => res.json()),
+        fetch(`${API_URL}/current_hours`).then(res => res.json())
+      ]).then(([weekData, currentData]) => {
+        console.log('Weekly data:', weekData);
+        console.log('Current hours data:', currentData);
+        
+        const today = new Date().toISOString().slice(0, 10);
+        console.log('Today\'s date:', today);
+        
+        const currentMap = {};
+        currentData.forEach(u => currentMap[u.username] = u);
+        console.log('Current hours map:', currentMap);
+
+        const tbody = document.querySelector("#hoursTable tbody");
+        tbody.innerHTML = ''; // Clear existing data
+        
+        weekData.users.forEach(user => {
+          const tr = document.createElement("tr");
+          const tdUser = document.createElement("td");
+          tdUser.textContent = user.username;
+          tdUser.className = "username";
+          tr.appendChild(tdUser);
+
+          user.days.forEach((day, i) => {
+            const td = document.createElement("td");
+            const dayDate = weekData.week_dates[i];
+            const isToday = dayDate === today;
+            const hasCurrentData = currentMap[user.username];
+            const isActive = hasCurrentData && (currentMap[user.username].status === "clocked-in" || currentMap[user.username].status === "break");
+            
+            console.log(`User: ${user.username}, Day: ${dayDate}, IsToday: ${isToday}, HasCurrentData: ${hasCurrentData}, IsActive: ${isActive}`);
+            
+            // If this is today, and user is clocked in or on break, use real-time hours
+            if (isToday && hasCurrentData && isActive) {
+              const workHours = formatHours(Number(currentMap[user.username].work_hours));
+              const breakHours = formatHours(Number(currentMap[user.username].break_hours));
+              console.log(`Using real-time hours for ${user.username}: Work=${workHours}, Break=${breakHours}`);
+              td.innerHTML = `Work: ${workHours}<br>Break: ${breakHours}`;
+            } else {
+              const workHours = formatHours(Number(day.work_hours));
+              const breakHours = formatHours(Number(day.break_hours));
+              console.log(`Using saved hours for ${user.username}: Work=${workHours}, Break=${breakHours}`);
+              td.innerHTML = `Work: ${workHours}<br>Break: ${breakHours}`;
+            }
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        
+        // Update refresh indicator with last updated time
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        updateRefreshIndicator(`Last updated: ${timeString} | Auto-refreshing every 30 seconds...`, 'last-updated');
+        
+      }).catch(error => {
+        console.error('Error fetching hours data:', error);
+        document.querySelector("#hoursTable tbody").innerHTML = '<tr><td colspan="6">Error loading hours data</td></tr>';
+        updateRefreshIndicator('Error loading data. Retrying in 30 seconds...', '');
+      });
+    }
+
+    // Navbar and sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+    
+    function signOut() {
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+    
+    // Get username from URL query parameter
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+    
+    const username = getQueryParam('username');
+    if (!username) {
+      window.location.href = "index.html";
+    } else {
+      fetch(`http://localhost:5000/user/${username}`)
+        .then(res => {
+          if (!res.ok) {
+            if (res.status === 404) {
+              // User not found (deleted)
+              alert('Your account has been deleted. You will be redirected to the login page.');
+              localStorage.removeItem('user');
+              window.location.href = "index.html";
+              return;
+            }
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(user => {
+          if (!user) return; // User was deleted, already redirected
+          
+          document.getElementById('userDisplay').textContent = user.username;
+        })
+        .catch((error) => {
+          console.error('Error validating user:', error);
+          alert('Error validating your account. Please log in again.');
+          localStorage.removeItem('user');
+          window.location.href = "index.html";
+        });
+    }
+    
+    // Update sidebar links to include username
+    document.addEventListener('DOMContentLoaded', function() {
+      const username = getQueryParam('username');
+      if (username) {
+        document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+      }
+    });
+
+    // Initial load
+    loadHoursData();
+
+    // Set up auto-refresh every 30 seconds
+    const refreshInterval = setInterval(loadHoursData, 30000); // 30 seconds
+
+    // Clean up interval when page is unloaded
+    window.addEventListener('beforeunload', () => {
+      clearInterval(refreshInterval);
+    });
+  </script>
+</body>
+</html>

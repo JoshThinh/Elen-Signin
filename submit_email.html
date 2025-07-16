@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submit Email</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding-top: 56px; /* Prevent content from being hidden under navbar */
+    }
+    .navbar {
+      width: 100%;
+      height: 56px;
+      background: #222;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1001;
+      box-sizing: border-box;
+      padding-right: 8px;
+    }
+    .navbar-hamburger {
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0 24px;
+      user-select: none;
+    }
+    .navbar-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-left: 12px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 220px;
+      height: 100%;
+      background: #333;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding-top: 56px;
+      transition: right 0.3s;
+      z-index: 1002;
+    }
+    .sidebar.open {
+      right: 0;
+    }
+    .sidebar a {
+      color: #fff;
+      padding: 18px 24px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #444;
+      transition: background 0.2s;
+    }
+    .sidebar a:hover {
+      background: #444;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    .sidebar-overlay.open {
+      display: block;
+    }
+    .submit-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .submit-title {
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .submit-form {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    input[type="email"], textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 120px;
+      resize: vertical;
+    }
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="navbar-title">Submit Email</span>
+    <span class="navbar-hamburger" onclick="toggleSidebar()">&#9776;</span>
+  </nav>
+  <div class="sidebar" id="sidebar">
+    <a href="#" id="dashboardLink">Dashboard</a>
+    <a href="#" id="boardLink">Board</a>
+    <a href="#" id="settingsLink">Settings</a>
+    <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
+    <a href="#" onclick="signOut()">Sign Out</a>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  
+  <div class="submit-container">
+    <h1 class="submit-title">Submit Email</h1>
+    <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 12px; border-radius: 4px; margin-bottom: 20px; text-align: center;">
+      <strong>Note:</strong> This feature requires backend email configuration. If you see errors, the email service may not be set up.
+    </div>
+    <form class="submit-form" id="emailForm">
+      <div class="form-group">
+        <label for="to">To:</label>
+        <input type="email" id="to" name="to" required>
+      </div>
+      <div class="form-group">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required>
+      </div>
+      <div class="form-group">
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea>
+      </div>
+      <button type="submit">Send Email</button>
+    </form>
+    <div id="message" class="message" style="display:none;"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    // Define functions globally so they can be called from HTML attributes
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+    
+    function signOut() {
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+    
+    // Get username from URL query parameter
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+    
+    const username = getQueryParam('username');
+    if (!username) {
+      window.location.href = "index.html";
+    } else {
+      fetch(`http://localhost:5000/user/${username}`)
+        .then(res => {
+          if (!res.ok) {
+            if (res.status === 404) {
+              // User not found (deleted)
+              alert('Your account has been deleted. You will be redirected to the login page.');
+              localStorage.removeItem('user');
+              window.location.href = "index.html";
+              return;
+            }
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(user => {
+          if (!user) return; // User was deleted, already redirected
+          
+          // Check if user is admin and show/hide admin-only links
+          if (user.role === "admin") {
+            document.getElementById('editUsersLink').style.display = 'block';
+          } else {
+            document.getElementById('editUsersLink').style.display = 'none';
+          }
+        })
+        .catch((error) => {
+          console.error('Error validating user:', error);
+          alert('Error validating your account. Please log in again.');
+          localStorage.removeItem('user');
+          window.location.href = "index.html";
+        });
+    }
+    
+    // Update sidebar links to include username
+    document.addEventListener('DOMContentLoaded', function() {
+      if (username) {
+        document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+      }
+    });
+    
+    // Handle email form submission
+    document.getElementById('emailForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const to = document.getElementById('to').value.trim();
+      const subject = document.getElementById('subject').value.trim();
+      const message = document.getElementById('message').value.trim();
+      
+      if (!to || !subject || !message) {
+        showMessage('Please fill in all fields.', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_URL}/send_email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: to,
+            subject: subject,
+            message: message,
+            from: username
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          showMessage('Email sent successfully!', 'success');
+          document.getElementById('emailForm').reset();
+        } else {
+          showMessage(data.error || 'Failed to send email.', 'error');
+        }
+      } catch (error) {
+        console.error('Error sending email:', error);
+        
+        // Check if it's a CORS or endpoint not found error
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+          showMessage('Email service is not available. This feature requires backend configuration.', 'error');
+        } else {
+          showMessage('Error sending email. Please try again.', 'error');
+        }
+      }
+    });
+    
+    function showMessage(text, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = text;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

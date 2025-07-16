@@ -45,7 +45,7 @@
       border-radius: 4px;
       box-sizing: border-box;
     }
-    button[type="submit"] {
+    button[type="submit"], #continueBtn {
       width: 100%;
       padding: 12px;
       background-color: #28a745;
@@ -56,7 +56,7 @@
       margin-top: 20px;
       font-size: 16px;
     }
-    button[type="submit"]:hover {
+    button[type="submit"]:hover, #continueBtn:hover {
       background-color: #218838;
     }
     .desk-selectable { 
@@ -78,129 +78,145 @@
   <div class="signup-container">
     <h1>Sign Up</h1>
     <form id="signupForm">
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+      <div id="basicFields">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+          <label for="room_code">Room Code:</label>
+          <input type="text" id="room_code" name="room_code" required>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="adminSignup" />
+            Sign up as Admin
+          </label>
+        </div>
+        <div class="form-group" id="adminCodeGroup" style="display:none;">
+          <label for="admin_code">Admin Code:</label>
+          <input type="password" id="admin_code" name="admin_code">
+        </div>
+        <div id="adminError" style="color: #dc3545; margin-bottom: 10px; display: none;"></div>
+        <button type="button" id="continueBtn">Continue</button>
+        <button type="button" id="backToLoginBtn" style="width:100%;margin-top:10px;background:#6c757d;color:white;border:none;border-radius:4px;padding:12px;cursor:pointer;">Back to Login</button>
       </div>
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+      <div id="deskSection" style="display:none;">
+        <div class="form-group">
+          <label>Select your desk:</label>
+          <input type="hidden" id="deskSelection" name="deskSelection" required>
+          <div class="office-grid" id="deskGrid"></div>
+        </div>
+        <button type="submit" id="signupBtn" style="display:none;">Sign Up</button>
       </div>
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-      <div class="form-group">
-        <label for="code">Special Code:</label>
-        <input type="text" id="code" name="code" required>
-      </div>
-      <div class="form-group">
-        <label>Select your desk:</label>
-        <input type="hidden" id="deskSelection" name="deskSelection" required>
-        <div class="office-grid" id="deskGrid">
-      <div class="desk desk-selectable" data-desk="desk1">
-        <svg width="40" height="60">
-          <circle cx="20" cy="10" r="8" stroke="black" stroke-width="2" fill="none"/>
-          <line x1="20" y1="18" x2="20" y2="40" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="30" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="10" y2="55" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="30" y2="55" stroke="black" stroke-width="2"/>
-        </svg>
-        <span>Desk 1</span>
-      </div>
-      <div class="desk desk-selectable" data-desk="desk2">
-        <svg width="40" height="60">
-          <circle cx="20" cy="10" r="8" stroke="black" stroke-width="2" fill="none"/>
-          <line x1="20" y1="18" x2="20" y2="40" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="30" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="10" y2="55" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="30" y2="55" stroke="black" stroke-width="2"/>
-        </svg>
-        <span>Desk 2</span>
-      </div>
-      <div class="desk desk-selectable" data-desk="desk3">
-        <svg width="40" height="60">
-          <circle cx="20" cy="10" r="8" stroke="black" stroke-width="2" fill="none"/>
-          <line x1="20" y1="18" x2="20" y2="40" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="30" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="10" y2="55" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="30" y2="55" stroke="black" stroke-width="2"/>
-        </svg>
-        <span>Desk 3</span>
-      </div>
-      <div class="desk desk-selectable" data-desk="desk4">
-        <svg width="40" height="60">
-          <circle cx="20" cy="10" r="8" stroke="black" stroke-width="2" fill="none"/>
-          <line x1="20" y1="18" x2="20" y2="40" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="30" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="10" y2="55" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="30" y2="55" stroke="black" stroke-width="2"/>
-        </svg>
-        <span>Desk 4</span>
-      </div>
-      <div class="desk desk-selectable" data-desk="desk5">
-        <svg width="40" height="60">
-          <circle cx="20" cy="10" r="8" stroke="black" stroke-width="2" fill="none"/>
-          <line x1="20" y1="18" x2="20" y2="40" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="30" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="10" y2="55" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="30" y2="55" stroke="black" stroke-width="2"/>
-        </svg>
-        <span>Desk 5</span>
-      </div>
-      <div class="desk desk-selectable" data-desk="desk6">
-        <svg width="40" height="60">
-          <circle cx="20" cy="10" r="8" stroke="black" stroke-width="2" fill="none"/>
-          <line x1="20" y1="18" x2="20" y2="40" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="25" x2="30" y2="35" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="10" y2="55" stroke="black" stroke-width="2"/>
-          <line x1="20" y1="40" x2="30" y2="55" stroke="black" stroke-width="2"/>
-        </svg>
-        <span>Desk 6</span>
-      </div>
-    </div>
-    <br>
-    <button type="submit">Sign Up</button>
-  </form>
+    </form>
+  </div>
   <script>
-    // Desk selection logic
-    const deskGrid = document.getElementById('deskGrid');
-    const deskInput = document.getElementById('deskSelection');
-    let selectedDesk = null;
-    deskGrid.addEventListener('click', function(e) {
-      let deskDiv = e.target.closest('.desk-selectable');
-      if (!deskDiv) return;
-      // Remove previous selection
-      deskGrid.querySelectorAll('.desk-selectable').forEach(d => d.classList.remove('selected'));
-      // Mark new selection
-      deskDiv.classList.add('selected');
-      selectedDesk = deskDiv.getAttribute('data-desk');
-      deskInput.value = selectedDesk;
+    const API_URL = "http://localhost:5000";
+    const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
+
+    // Show/hide admin code input based on checkbox
+    document.getElementById('adminSignup').addEventListener('change', function() {
+      document.getElementById('adminCodeGroup').style.display = this.checked ? '' : 'none';
     });
-    // Prevent form submission if no desk is selected
+
+    document.getElementById('continueBtn').onclick = function() {
+      const room_code = document.getElementById('room_code').value.trim();
+      const isAdmin = document.getElementById('adminSignup').checked;
+      const admin_code = document.getElementById('admin_code').value.trim();
+      const adminErrorDiv = document.getElementById('adminError');
+      adminErrorDiv.style.display = 'none';
+      adminErrorDiv.textContent = '';
+      if (room_code === "54321") {
+        if (isAdmin && !admin_code) {
+          adminErrorDiv.textContent = 'Please enter the admin code.';
+          adminErrorDiv.style.display = 'block';
+          return;
+        }
+        // Show desk selection
+        document.getElementById('basicFields').style.display = 'none';
+        document.getElementById('deskSection').style.display = 'block';
+
+        // Fetch taken desks
+        fetch(`${API_URL}/status`)
+          .then(res => res.json())
+          .then(data => {
+            const takenDesks = data.users
+              .filter(u => u.desk && u.desk !== "" && u.desk !== null)
+              .map(u => u.desk);
+
+            const deskGrid = document.getElementById('deskGrid');
+            deskGrid.innerHTML = '';
+            DESK_IDS.forEach(deskId => {
+              const deskDiv = document.createElement('div');
+              deskDiv.className = 'desk desk-selectable';
+              deskDiv.textContent = deskId.replace('desk', 'Desk ');
+              if (takenDesks.includes(deskId)) {
+                deskDiv.classList.add('disabled');
+                deskDiv.style.opacity = 0.3;
+                deskDiv.style.pointerEvents = 'none';
+              }
+              deskDiv.onclick = function() {
+                document.querySelectorAll('.desk-selectable').forEach(d => d.classList.remove('selected'));
+                deskDiv.classList.add('selected');
+                document.getElementById('deskSelection').value = deskId;
+                document.getElementById('signupBtn').style.display = 'block';
+              };
+              deskGrid.appendChild(deskDiv);
+            });
+          });
+      } else {
+        // Submit the form immediately (no desk selection)
+        if (isAdmin && !admin_code) {
+          adminErrorDiv.textContent = 'Please enter the admin code.';
+          adminErrorDiv.style.display = 'block';
+          return;
+        }
+        document.getElementById('signupForm').requestSubmit();
+      }
+    };
+
+    document.getElementById('backToLoginBtn').onclick = function() {
+      window.location.href = 'index.html';
+    };
+
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      const code = document.getElementById('code').value.trim();
+      const room_code = document.getElementById('room_code').value.trim();
       const deskSelection = document.getElementById('deskSelection').value;
+      const isAdmin = document.getElementById('adminSignup') && document.getElementById('adminSignup').checked;
+      const admin_code = document.getElementById('admin_code').value.trim();
+      const role = isAdmin ? "admin" : "user";
 
-      if (!username || !email || !password || !code || !deskSelection) {
-        alert('Please fill out all fields and select a desk.');
+      // If code is 54321, require desk selection
+      if (room_code === "54321" && !deskSelection) {
+        alert('Please select a desk.');
+        return;
+      }
+      if (room_code !== "54321") {
+        alert("Invalid room code");
+        return;
+      }
+      if (isAdmin && !admin_code) {
+        alert('Please enter the admin code.');
         return;
       }
 
-      const res = await fetch('http://localhost:5000/signup', {
+      const res = await fetch(`${API_URL}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, code, deskSelection })
+        body: JSON.stringify({ username, email, password, room_code, deskSelection, role, admin_code: isAdmin ? admin_code : undefined })
       });
 
       const data = await res.json();
@@ -211,26 +227,6 @@
         alert(data.error || 'Signup failed');
       }
     });
-
-    const API_URL = "http://localhost:5000";
-    const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
-
-    fetch(`${API_URL}/status`)
-      .then(res => res.json())
-      .then(data => {
-        const takenDesks = data.users
-          .filter(u => u.desk && u.desk !== "" && u.desk !== null)
-          .map(u => u.desk);
-
-        DESK_IDS.forEach(deskId => {
-          const deskDiv = document.querySelector(`.desk-selectable[data-desk='${deskId}']`);
-          if (deskDiv && takenDesks.includes(deskId)) {
-            deskDiv.classList.add('disabled');
-            deskDiv.style.opacity = 0.3;
-            deskDiv.style.pointerEvents = 'none';
-          }
-        });
-      });
   </script>
 </body>
 </html>
