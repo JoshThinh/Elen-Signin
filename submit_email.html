@@ -10,8 +10,8 @@
       flex-direction: column;
       min-height: 100vh;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
     .navbar {
@@ -161,6 +161,8 @@
     <a href="#" id="dashboardLink">Dashboard</a>
     <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
+    <a href="#" style="display:none;">Submit Email</a>
+    <a href="#" id="hourLink">Hours</a>
     <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
   </div>
@@ -233,8 +235,10 @@
           
           // Check if user is admin and show/hide admin-only links
           if (user.role === "admin") {
+            document.getElementById('hourLink').style.display = 'block';
             document.getElementById('editUsersLink').style.display = 'block';
           } else {
+            document.getElementById('hourLink').style.display = 'none';
             document.getElementById('editUsersLink').style.display = 'none';
           }
         })
@@ -252,6 +256,7 @@
         document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
       }
     });

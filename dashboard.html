@@ -94,270 +94,537 @@
     }
     body {
       padding-top: 56px; /* To prevent content from being hidden under navbar */
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .action-btn {
-      position: relative;
-      overflow: hidden;
-      font-size: 2rem;
-      width: 340px;
-      height: 64px;
-      padding: 0;
-      border: none;
-      border-radius: 8px;
-      background: #94bae3;
-      color: #fff;
-      margin: 12px 0;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .action-btn.loading {
-      pointer-events: none;
-      color: #fff;
-    }
-
-    .action-btn .loading-bar {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 0%;
-      background: rgba(0,0,0,0.15); /* or a different shade, e.g. #0056b3 */
-      transition: width 1.2s linear;
-      z-index: 1;
-    }
-
-    .action-btn .btn-label {
-      position: relative;
-      z-index: 2;
-    }
+    
+    /* Professional Button Styling */
     .center-actions {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 60vh;
-      gap: 32px;
+      gap: 24px;
+      padding: 20px;
     }
-    .popup-message {
-      position: fixed;
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #222;
-      color: #fff;
-      padding: 72px 160px;
-      border-radius: 24px;
-      font-size: 2.5rem;
-      box-shadow: 0 4px 48px rgba(0,0,0,0.28);
-      z-index: 2000;
-      text-align: center;
-      min-width: 480px;
-      min-height: 180px;
+    
+    .action-btn {
+      position: relative;
+      width: 320px;
+      height: 80px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
     }
-
+    
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .action-btn:hover::before {
+      left: 100%;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .action-btn:active {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Specific button styles */
+    .action-btn.clock-in {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      border: 2px solid #28a745;
+    }
+    
+    .action-btn.clock-in:hover {
+      background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+      border-color: #218838;
+    }
+    
+    .action-btn.break {
+      background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+      border: 2px solid #ffc107;
+      color: #212529;
+    }
+    
+    .action-btn.break:hover {
+      background: linear-gradient(135deg, #e0a800 0%, #e8590c 100%);
+      border-color: #e0a800;
+    }
+    
+    .action-btn.clock-out {
+      background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+      border: 2px solid #dc3545;
+    }
+    
+    .action-btn.clock-out:hover {
+      background: linear-gradient(135deg, #c82333 0%, #d63384 100%);
+      border-color: #c82333;
+    }
+    
+    /* Button content */
+    .btn-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 2;
+      position: relative;
+    }
+    
+    .btn-icon {
+      font-size: 1.5rem;
+      opacity: 0.9;
+    }
+    
+    .btn-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    /* Loading state */
+    .action-btn.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    
+    .action-btn .loading-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: width 1.2s linear;
+      z-index: 1;
+      border-radius: 16px;
+    }
+    
+    /* Disabled state */
+    .action-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .action-btn:disabled:hover {
+      transform: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
+    
+    /* Status indicator */
+    .status-indicator {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #28a745;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 3;
+    }
+    
+    .status-indicator.active {
+      background: #28a745;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-indicator.break {
+      background: #ffc107;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+      }
+    }
+    
+    /* Enhanced popup */
+    .popup-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #2c3e50;
+      padding: 60px 80px;
+      border-radius: 24px;
+      font-size: 2.2rem;
+      font-weight: 700;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+      z-index: 2000;
+      text-align: center;
+      min-width: 400px;
+      min-height: 120px;
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Enhanced confetti */
     .confetti {
       position: fixed;
       left: 50%;
-      top: 40%;
+      top: 50%;
       pointer-events: none;
       z-index: 3000;
     }
-
+    
     .confetti-piece {
       position: absolute;
-      width: 12px;
-      height: 24px;
-      border-radius: 3px;
-      opacity: 0.8;
-      animation: confetti-fall 1.2s ease-out forwards;
+      opacity: 0.9;
+      animation: confetti-fall 2s ease-out forwards;
     }
-
+    
+    .confetti-piece.square {
+      width: 8px;
+      height: 8px;
+      border-radius: 1px;
+    }
+    
+    .confetti-piece.rectangle {
+      width: 6px;
+      height: 12px;
+      border-radius: 1px;
+    }
+    
+    .confetti-piece.circle {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    
+    .confetti-piece.triangle {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 8px solid;
+    }
+    
+    .confetti-piece.star {
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle at 50% 50%, currentColor 0%, transparent 60%);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+    
     @keyframes confetti-fall {
       0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 1;
+      }
+      10% {
         transform: translate(-50%, -50%) scale(1) rotate(0deg);
         opacity: 1;
       }
-      80% {
+      90% {
         opacity: 1;
       }
       100% {
-        transform: translate(var(--x), var(--y)) scale(1.2) rotate(360deg);
+        transform: translate(var(--x), var(--y)) scale(0.8) rotate(var(--rotation));
         opacity: 0;
       }
+    }
+    
+    @keyframes confetti-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Welcome message styling */
+    .welcome-container {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #2c3e50;
+    }
+    
+    .welcome-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .welcome-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      font-weight: 300;
+      color: #34495e;
     }
   </style>
 </head>
 <body>
   <div style="padding: 20px;">
+    <div class="welcome-container">
+      <h1 class="welcome-title">Welcome, <span id="userDisplay"></span></h1>
+      <p class="welcome-subtitle">Manage your work schedule</p>
+    </div>
+    
     <div class="center-actions">
-      <button class="action-btn" id="clockInBtn">
-        <span class="loading-bar"></span>
-        <span class="btn-label">Clock In</span>
+      <button class="action-btn clock-in" id="clockInBtn">
+        <div class="status-indicator"></div>
+        <div class="loading-bar"></div>
+        <div class="btn-content">
+          <span class="btn-icon">⏰</span>
+          <span class="btn-text">Clock In</span>
+        </div>
       </button>
-      <button class="action-btn" id="breakBtn">
-        <span class="loading-bar"></span>
-        <span class="btn-label">Break</span>
+      
+      <button class="action-btn break" id="breakBtn">
+        <div class="status-indicator"></div>
+        <div class="loading-bar"></div>
+        <div class="btn-content">
+          <span class="btn-icon">☕</span>
+          <span class="btn-text">Break</span>
+        </div>
       </button>
-      <button class="action-btn" id="clockOutBtn">
-        <span class="loading-bar"></span>
-        <span class="btn-label">Clock Out</span>
+      
+      <button class="action-btn clock-out" id="clockOutBtn">
+        <div class="status-indicator"></div>
+        <div class="loading-bar"></div>
+        <div class="btn-content">
+          <span class="btn-icon">🏠</span>
+          <span class="btn-text">Clock Out</span>
+        </div>
       </button>
     </div>
+    
     <div class="popup-message" id="popupMessage" style="display:none;"></div>
-    </script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        function getQueryParam(name) {
-          const urlParams = new URLSearchParams(window.location.search);
-          return urlParams.get(name);
-        }
-        const username = getQueryParam('username');
-
-        if (!username) {
-          window.location.href = "/index.html";
-        } else {
-          fetch(`http://localhost:5000/user/${username}`)
-            .then(res => {
-              if (!res.ok) {
-                if (res.status === 404) {
-                  // User not found (deleted)
-                  alert('Your account has been deleted. You will be redirected to the login page.');
-                  localStorage.removeItem('user');
-                  window.location.href = "/index.html";
-                  return;
-                }
-                throw new Error(`HTTP error! status: ${res.status}`);
-              }
-              return res.json();
-            })
-            .then(user => {
-              if (!user) return; // User was deleted, already redirected
-              
-              if (user.role === "admin") {
-                document.getElementById('hourLink').style.display = 'block';
-                document.getElementById('editUsersLink').style.display = 'block';
-              } else {
-                document.getElementById('hourLink').style.display = 'none';
-                document.getElementById('editUsersLink').style.display = 'none';
-              }
-              document.getElementById("userDisplay").innerText = user.username;
-            })
-            .catch((error) => {
-              console.error('Error validating user:', error);
-              alert('Error validating your account. Please log in again.');
-              localStorage.removeItem('user');
-              window.location.href = "/index.html";
-            });
-        }
-
-        function animateButtonLoading(btn) {
-          btn.classList.add('loading');
-          const bar = btn.querySelector('.loading-bar');
-          bar.style.width = '0%';
-          // Force reflow to restart animation
-          void bar.offsetWidth;
-          bar.style.transition = 'width 1.2s linear';
-          bar.style.width = '100%';
-        }
-
-        function resetButtonLoading(btn) {
-          btn.classList.remove('loading');
-          const bar = btn.querySelector('.loading-bar');
-          bar.style.transition = 'none';
-          bar.style.width = '0%';
-        }
-
-        async function updateStatus(action, successMsg, btn) {
-          animateButtonLoading(btn);
-          try {
-            const res = await fetch(`${API_URL}/status/${username}/${action}`, { method: "POST" });
-            setTimeout(() => { // Wait for animation to finish
-              resetButtonLoading(btn);
-              if (res.ok) {
-                showPopup(successMsg);
-              } else {
-                showPopup("Failed. Try again.");
-              }
-            }, 1200);
-          } catch (error) {
-            setTimeout(() => {
-              resetButtonLoading(btn);
-              showPopup("Error. Try again.");
-            }, 1200);
-          }
-        }
-
-        document.getElementById('clockInBtn').onclick = function() {
-          updateStatus("clocked-in", "Successfully clocked in!", this);
-        };
-        document.getElementById('breakBtn').onclick = function() {
-          updateStatus("break", "Successfully on break!", this);
-        };
-        document.getElementById('clockOutBtn').onclick = function() {
-          updateStatus("none", "Successfully clocked out!", this);
-        };
-      });
-
-      function goToMain() {
-        window.location.href = "/dashboard.html";
-      }
-
-      function showConfetti() {
-        const colors = ["#f7d51d", "#e94f37", "#6ab187", "#4f86e9", "#e94fd1", "#fff", "#ffb347", "#b19cd9"];
-        const confettiContainer = document.createElement('div');
-        confettiContainer.className = 'confetti';
-        for (let i = 0; i < 24; i++) {
-          const piece = document.createElement('div');
-          piece.className = 'confetti-piece';
-          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-          const angle = (Math.PI * 2 * i) / 24;
-          const radius = 180 + Math.random() * 60;
-          const x = Math.cos(angle) * radius;
-          const y = Math.sin(angle) * radius;
-          piece.style.setProperty('--x', `${x}px`);
-          piece.style.setProperty('--y', `${y}px`);
-          confettiContainer.appendChild(piece);
-        }
-        document.body.appendChild(confettiContainer);
-        setTimeout(() => {
-          confettiContainer.remove();
-        }, 1300);
-      }
-
-      function showPopup(message) {
-        const popup = document.getElementById('popupMessage');
-        popup.textContent = message;
-        popup.style.display = 'flex';
-        showConfetti();
-        setTimeout(() => {
-          popup.style.display = 'none';
-        }, 2000);
-      }
-    </script>
-    <div class="navbar">
-      <div class="header">
-        <h1>Welcome <span id="userDisplay"></span></h1>
-      </div>
-      <div class="navbar-title"></div>
-      <div class="navbar-hamburger" id="navbarHamburger">&#9776;</div>
-    </div>
-    <div class="sidebar" id="sidebar">
-      <a href="#" id="submitLink">Submit</a>
-      <a href="#" id="emailSettingsLink">Settings</a>
-      <a href="#" id="sidebarViewBoardLink">View Board</a>
-      <a href="#" id="hourLink">Hours</a>
-      <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
-      <a href="#" id="signOutLink">Sign Out</a>
-    </div>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+      const username = getQueryParam('username');
+
+      if (!username) {
+        window.location.href = "/index.html";
+      } else {
+        fetch(`http://localhost:5000/user/${username}`)
+          .then(res => {
+            if (!res.ok) {
+              if (res.status === 404) {
+                // User not found (deleted)
+                alert('Your account has been deleted. You will be redirected to the login page.');
+                localStorage.removeItem('user');
+                window.location.href = "/index.html";
+                return;
+              }
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(user => {
+            if (!user) return; // User was deleted, already redirected
+            
+            if (user.role === "admin") {
+              document.getElementById('hourLink').style.display = 'block';
+              document.getElementById('editUsersLink').style.display = 'block';
+            } else {
+              document.getElementById('hourLink').style.display = 'none';
+              document.getElementById('editUsersLink').style.display = 'none';
+            }
+            document.getElementById("userDisplay").innerText = user.username;
+          })
+          .catch((error) => {
+            console.error('Error validating user:', error);
+            alert('Error validating your account. Please log in again.');
+            localStorage.removeItem('user');
+            window.location.href = "/index.html";
+          });
+      }
+
+      function animateButtonLoading(btn) {
+        btn.classList.add('loading');
+        const bar = btn.querySelector('.loading-bar');
+        bar.style.width = '0%';
+        // Force reflow to restart animation
+        void bar.offsetWidth;
+        bar.style.transition = 'width 1.2s linear';
+        bar.style.width = '100%';
+      }
+
+      function resetButtonLoading(btn) {
+        btn.classList.remove('loading');
+        const bar = btn.querySelector('.loading-bar');
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
+      }
+
+      async function updateStatus(action, successMsg, btn) {
+        animateButtonLoading(btn);
+        try {
+          // Store current break hours before status change (as backup)
+          let currentBreakHours = 0;
+          if (action === "clocked-in") {
+            try {
+              const hoursRes = await fetch(`${API_URL}/current_hours`);
+              if (hoursRes.ok) {
+                const hoursData = await hoursRes.json();
+                const userHours = hoursData.find(u => u.username === username);
+                if (userHours && userHours.break_hours) {
+                  currentBreakHours = Number(userHours.break_hours);
+                  // Store as backup in localStorage
+                  localStorage.setItem(`${username}_break_hours_backup`, currentBreakHours.toString());
+                }
+              }
+            } catch (e) {
+              console.log('Could not fetch current hours for backup');
+            }
+          }
+          
+          const res = await fetch(`${API_URL}/status/${username}/${action}`, { method: "POST" });
+          setTimeout(() => { // Wait for animation to finish
+            resetButtonLoading(btn);
+            if (res.ok) {
+              showPopup(successMsg);
+            } else {
+              showPopup("Failed. Try again.");
+            }
+          }, 1200);
+        } catch (error) {
+          setTimeout(() => {
+            resetButtonLoading(btn);
+            showPopup("Error. Try again.");
+          }, 1200);
+        }
+      }
+
+      document.getElementById('clockInBtn').onclick = function() {
+        updateStatus("clocked-in", "Successfully clocked in!", this);
+      };
+      document.getElementById('breakBtn').onclick = function() {
+        updateStatus("break", "Successfully on break!", this);
+      };
+      document.getElementById('clockOutBtn').onclick = function() {
+        updateStatus("clocked-out", "Successfully clocked out!", this);
+      };
+    });
+
+    function goToMain() {
+      window.location.href = "/dashboard.html";
+    }
+
+    function showConfetti() {
+      const colors = [
+        "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", 
+        "#DDA0DD", "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E9",
+        "#F8C471", "#82E0AA", "#F1948A", "#85C1E9", "#D7BDE2"
+      ];
+      const shapes = ['square', 'rectangle', 'circle', 'triangle', 'star'];
+      const confettiContainer = document.createElement('div');
+      confettiContainer.className = 'confetti';
+      
+      for (let i = 0; i < 50; i++) {
+        const piece = document.createElement('div');
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        piece.className = `confetti-piece ${shape}`;
+        piece.style.color = color;
+        piece.style.background = color;
+        
+        // Random starting position in a circle
+        const angle = (Math.PI * 2 * i) / 50;
+        const radius = 150 + Math.random() * 100;
+        const startX = Math.cos(angle) * radius;
+        const startY = Math.sin(angle) * radius;
+        
+        // Random end position with more spread
+        const endAngle = Math.random() * Math.PI * 2;
+        const endRadius = 300 + Math.random() * 200;
+        const endX = Math.cos(endAngle) * endRadius;
+        const endY = Math.sin(endAngle) * endRadius + 100; // Fall downward
+        
+        // Random rotation
+        const rotation = Math.random() * 720 - 360;
+        
+        piece.style.setProperty('--x', `${endX}px`);
+        piece.style.setProperty('--y', `${endY}px`);
+        piece.style.setProperty('--rotation', `${rotation}deg`);
+        
+        // Random delay for more natural effect
+        piece.style.animationDelay = `${Math.random() * 0.3}s`;
+        
+        confettiContainer.appendChild(piece);
+      }
+      
+      document.body.appendChild(confettiContainer);
+      setTimeout(() => {
+        confettiContainer.remove();
+      }, 2500);
+    }
+
+    function showPopup(message) {
+      const popup = document.getElementById('popupMessage');
+      popup.textContent = message;
+      popup.style.display = 'flex';
+      showConfetti();
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 2000);
+    }
+  </script>
+  
+  <div class="navbar">
+    <div class="header">
+      <h1>Welcome <span id="userDisplay"></span></h1>
+    </div>
+    <div class="navbar-title"></div>
+    <div class="navbar-hamburger" id="navbarHamburger">&#9776;</div>
+  </div>
+  <div class="sidebar" id="sidebar">
+    <a href="#" id="dashboardLink" style="display:none;">Dashboard</a>
+    <a href="#" id="boardLink">Board</a>
+    <a href="#" id="settingsLink">Settings</a>
+    <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="hourLink">Hours</a>
+    <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
+    <a href="#" id="signOutLink">Sign Out</a>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
   <script>
     document.getElementById('navbarHamburger').onclick = function() {
       document.getElementById('sidebar').classList.add('open');
@@ -380,84 +647,16 @@
       }
       const username = getQueryParam('username');
 
-      const hourLink = document.getElementById('hourLink');
-      if (hourLink) {
-        hourLink.onclick = function(e) {
-          e.preventDefault();
-          if (username) {
-            window.location.href = `/hours.html?username=${encodeURIComponent(username)}`;
-          } else {
-            window.location.href = "/index.html";
-          }
-        };
-      }
-
-      const submitLink = document.getElementById('submitLink');
-      if (submitLink) {
-        submitLink.onclick = function(e) {
-          e.preventDefault();
-          window.location.href = `/submit_email.html?username=${encodeURIComponent(username)}`;
-        };
-      }
-
-      const emailSettingsLink = document.getElementById('emailSettingsLink');
-      if (emailSettingsLink) {
-        emailSettingsLink.onclick = function(e) {
-          e.preventDefault();
-          window.location.href = `/settings.html?username=${encodeURIComponent(username)}`;
-        };
-      }
-      const viewBoardLink = document.getElementById('viewBoardLink');
-      if (viewBoardLink) {
-        viewBoardLink.onclick = function(e) {
-          e.preventDefault();
-          if (username) {
-            window.location.href = `board.html?username=${encodeURIComponent(username)}`;
-          } else {
-            window.location.href = "/index.html";
-          }
-        };
-      }
-      
-      // Add handler for main content View Board link
-      const mainViewBoardLink = document.getElementById('mainViewBoardLink');
-      if (mainViewBoardLink) {
-        mainViewBoardLink.onclick = function(e) {
-          e.preventDefault();
-          if (username) {
-            window.location.href = `board.html?username=${encodeURIComponent(username)}`;
-          } else {
-            window.location.href = "/index.html";
-          }
-        };
-      }
-      
-      // Add handler for sidebar View Board link
-      const sidebarViewBoardLink = document.getElementById('sidebarViewBoardLink');
-      if (sidebarViewBoardLink) {
-        sidebarViewBoardLink.onclick = function(e) {
-          e.preventDefault();
-          if (username) {
-            window.location.href = `board.html?username=${encodeURIComponent(username)}`;
-          } else {
-            window.location.href = "/index.html";
-          }
-        };
-      }
-      
-      const editUsersLink = document.getElementById('editUsersLink');
-      if (editUsersLink) {
-        editUsersLink.onclick = function(e) {
-          e.preventDefault();
-          if (username) {
-            window.location.href = `users.html?username=${encodeURIComponent(username)}`;
-          } else {
-            window.location.href = "/index.html";
-          }
-        };
+      // Update all sidebar links to include username
+      if (username) {
+        document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
       }
       // Add other sidebar links here as needed
     });
-    </script>
+  </script>
 </body>
 </html>

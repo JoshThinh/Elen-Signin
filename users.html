@@ -10,8 +10,8 @@
       flex-direction: column;
       min-height: 100vh;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
     .navbar {
@@ -170,6 +170,8 @@
     <a href="#" id="dashboardLink">Dashboard</a>
     <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
+    <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="hourLink">Hours</a>
     <a href="#" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
   </div>
@@ -184,6 +186,8 @@
       <div class="loading">Loading...</div>
     </div>
   </div>
+
+  <div id="errorBox" style="display:none; color:red;"></div>
 
   <script src="config.js"></script>
   <script>
@@ -206,41 +210,31 @@
       return urlParams.get(name);
     }
     
-    const username = getQueryParam('username');
+    // Parse username from URL
+    function getUsernameFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('username');
+    }
+
+    const username = getUsernameFromURL();
+
     if (!username) {
-      window.location.href = "index.html";
+      // No username in URL, redirect to login
+      window.location.href = 'login.html';
     } else {
-      // Check if user is admin
-      fetch(`http://localhost:5000/user/${username}`)
-        .then(res => {
-          if (!res.ok) {
-            if (res.status === 404) {
-              // User not found (deleted)
-              alert('Your account has been deleted. You will be redirected to the login page.');
-              localStorage.removeItem('user');
-              window.location.href = "index.html";
-              return;
-            }
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          return res.json();
-        })
+      // Validate user with backend
+      fetch(`http://localhost:5000/user/${encodeURIComponent(username)}`)
+        .then(res => res.json())
         .then(user => {
-          if (!user) return; // User was deleted, already redirected
-          
-          if (user.role !== "admin") {
-            document.getElementById('content').innerHTML = '<div class="access-denied">Access Denied. Admin privileges required.</div>';
-            return;
+          if (!user || user.role !== 'admin') {
+            // Not admin, redirect to login
+            window.location.href = 'login.html';
           }
-          
-          // User is admin, load users data
-          loadUsers();
+          // else: user is admin, continue loading page
         })
-        .catch((error) => {
-          console.error('Error validating user:', error);
-          alert('Error validating your account. Please log in again.');
-          localStorage.removeItem('user');
-          window.location.href = "index.html";
+        .catch(err => {
+          // Error fetching user, redirect to login
+          window.location.href = 'login.html';
         });
     }
     
@@ -250,6 +244,8 @@
         document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
       }
     });
     

@@ -12,8 +12,8 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
     .settings-container {
@@ -124,6 +124,23 @@
     button[type="submit"]:hover {
       background-color: #0056b3;
     }
+    .desk-selectable { 
+      cursor: pointer; 
+      border: 2px solid transparent; 
+      transition: border 0.2s; 
+    }
+    .desk-selectable.selected { 
+      border: 2px solid #007bff; 
+      background: #e6f0ff; 
+    }
+    .desk-selectable.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    .desk-selectable.current {
+      border: 2px solid #28a745;
+      background: #d4edda;
+    }
   </style>
 </head>
 <body>
@@ -135,25 +152,67 @@
     <a href="#" id="dashboardLink">Dashboard</a>
     <a href="#" id="boardLink">Board</a>
     <a href="#" style="display:none;">Settings</a>
+    <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="hourLink">Hours</a>
     <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
   </div>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-  <div class="settings-container">
-    <h1>Account Settings</h1>
-    <form id="settingsForm">
-      <div class="form-group">
-        <label for="email">New Email:</label>
-        <input type="email" id="email" name="email" required>
+      <div class="settings-container">
+      <h1>Account Settings</h1>
+      
+      <!-- Account Settings Form -->
+      <form id="settingsForm">
+        <div class="form-group">
+          <label for="email">New Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">New Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Update Account</button>
+      </form>
+      <div id="message" style="margin-top:20px;"></div>
+      
+      <!-- Personal Hours Section -->
+      <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee;">
+        <h2 style="margin-bottom: 20px; color: #333;">My Hours</h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: #333; font-size: 1.1rem;">Today's Hours</h3>
+            <button onclick="refreshPersonalHours()" style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">Refresh</button>
+          </div>
+          <div id="personalHours" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #007bff;">
+              <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Work Hours</div>
+              <div id="workHours" style="font-size: 1.5rem; font-weight: bold; color: #007bff;">--:--</div>
+            </div>
+            <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #ffc107;">
+              <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Break Hours</div>
+              <div id="breakHours" style="font-size: 1.5rem; font-weight: bold; color: #ffc107;">--:--</div>
+            </div>
+          </div>
+          <div id="personalHoursMessage" style="margin-top: 15px; text-align: center; font-size: 0.9rem; color: #666;"></div>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="password">New Password:</label>
-        <input type="password" id="password" name="password" required>
+      
+      <!-- Desk Selection Section -->
+      <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee;">
+        <h2 style="margin-bottom: 20px; color: #333;">Desk Assignment</h2>
+        <div class="form-group">
+          <label>Current Desk: <span id="currentDesk" style="font-weight: normal; color: #666;">Loading...</span></label>
+        </div>
+        <div class="form-group">
+          <label>Select a new desk:</label>
+          <input type="hidden" id="deskSelection" name="deskSelection">
+          <div id="deskLegend"></div>
+          <div class="office-grid" id="deskGrid"></div>
+        </div>
+        <button type="button" id="updateDeskBtn" style="background-color: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px;">Update Desk</button>
+        <div id="deskMessage" style="margin-top:20px;"></div>
       </div>
-      <button type="submit">Update</button>
-    </form>
-    <div id="message" style="margin-top:20px;"></div>
-  </div>
+    </div>
   <script src="config.js"></script>
   <script>
     // Define functions globally so they can be called from HTML attributes
@@ -180,8 +239,10 @@
     if (!username) {
       window.location.href = "index.html";
     } else {
-      fetch(`http://localhost:5000/user/${username}`)
+      fetch(`${API_URL}/user/${username}`)
         .then(res => {
+          console.log('User fetch status:', res.status);
+          res.clone().text().then(txt => console.log('User fetch body:', txt));
           if (!res.ok) {
             if (res.status === 404) {
               // User not found (deleted)
@@ -195,17 +256,24 @@
           return res.json();
         })
         .then(user => {
+          console.log('User object:', user);
+          console.log('User role:', user.role);
           if (!user) return; // User was deleted, already redirected
           
           // Check if user is admin and show/hide admin-only links
           if (user.role === "admin") {
+            document.getElementById('hourLink').style.display = 'block';
             document.getElementById('editUsersLink').style.display = 'block';
           } else {
+            document.getElementById('hourLink').style.display = 'none';
             document.getElementById('editUsersLink').style.display = 'none';
           }
         })
         .catch((error) => {
           console.error('Error validating user:', error);
+          if (error && error.stack) {
+            console.error('Stack:', error.stack);
+          }
           alert('Error validating your account. Please log in again.');
           localStorage.removeItem('user');
           window.location.href = "index.html";
@@ -217,9 +285,222 @@
       if (username) {
         document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
       }
     });
+    
+    // Desk selection constants and variables
+    const gridCols = 6;
+    const gridRows = 18;
+    const deskPositions = [
+      {x:2, y:0}, {x:5, y:0},
+      {x:1, y:2}, {x:3, y:2}, {x:5, y:2},
+      {x:3, y:3}, {x:5, y:3},
+      {x:1, y:4},
+      {x:3, y:5}, {x:5, y:5},
+      {x:1, y:6}, {x:3, y:6}, {x:5, y:6},
+      {x:3, y:8}, {x:5, y:8},
+      {x:3, y:9}, {x:5, y:9},
+      {x:3, y:11}, {x:5, y:11},
+      {x:3, y:12}, {x:5, y:12},
+      {x:3, y:14}, {x:5, y:14},
+      {x:3, y:15}, {x:5, y:15},
+      {x:5, y:16},
+      {x:4, y:17}
+    ];
+
+    function renderDeskLegend() {
+      const legend = document.getElementById('deskLegend');
+      legend.innerHTML = '';
+      legend.style.display = 'flex';
+      legend.style.justifyContent = 'center';
+      legend.style.gap = '16px';
+      legend.style.marginBottom = '8px';
+      legend.innerHTML = `
+        <span style="display:inline-block;width:18px;height:18px;background:#e0f7fa;border:1px solid #bbb;vertical-align:middle;margin-right:4px;"></span> Available
+        <span style="display:inline-block;width:18px;height:18px;background:#ccc;border:1px solid #bbb;vertical-align:middle;margin:0 8px 0 16px;"></span> Taken
+        <span style="display:inline-block;width:18px;height:18px;background:#d4edda;border:2px solid #28a745;vertical-align:middle;margin:0 8px 0 16px;"></span> Your Desk
+      `;
+    }
+
+    function loadDeskSelection() {
+      fetch(`${API_URL}/users`)
+        .then(res => res.json())
+        .then(data => {
+          const takenDesks = new Set(data.users.map(u => u.desk));
+          const currentUser = data.users.find(u => u.username === username);
+          const currentUserDesk = currentUser ? currentUser.desk : null;
+          document.getElementById('currentDesk').textContent = currentUserDesk || 'Unassigned';
+
+          // Create desk grid
+          const deskGrid = document.getElementById('deskGrid');
+          deskGrid.innerHTML = '';
+          deskGrid.style.overflowX = 'auto';
+          deskGrid.style.padding = '8px 0';
+          deskGrid.style.background = '#f8f9fa';
+          deskGrid.style.borderRadius = '8px';
+          deskGrid.style.maxWidth = '100%';
+          deskGrid.style.margin = '0 auto';
+
+          renderDeskLegend();
+
+          const table = document.createElement('table');
+          table.style.borderCollapse = 'collapse';
+          table.style.margin = '0 auto';
+          for (let y = 0; y < gridRows; y++) {
+            const tr = document.createElement('tr');
+            for (let x = 0; x < gridCols; x++) {
+              const td = document.createElement('td');
+              td.style.width = '28px';
+              td.style.height = '28px';
+              td.style.border = '1px solid #bbb';
+              td.style.textAlign = 'center';
+              td.style.padding = '0';
+              td.style.fontSize = '18px';
+              td.style.transition = 'outline 0.2s';
+              const isDesk = deskPositions.some(d => d.x === x && d.y === y);
+              if (isDesk) {
+                const deskKey = `${x},${y}`;
+                td.style.background = takenDesks.has(deskKey) && deskKey !== currentUserDesk ? '#ccc' : '#e0f7fa';
+                td.style.cursor = (takenDesks.has(deskKey) && deskKey !== currentUserDesk) ? 'not-allowed' : 'pointer';
+                td.textContent = '🪑';
+                if (deskKey === currentUserDesk) {
+                  td.style.background = '#d4edda';
+                  td.style.border = '2px solid #28a745';
+                }
+                if (!takenDesks.has(deskKey) || deskKey === currentUserDesk) {
+                  td.onclick = () => {
+                    document.getElementById('deskSelection').value = deskKey;
+                    Array.from(deskGrid.getElementsByTagName('td')).forEach(cell => cell.style.outline = '');
+                    td.style.outline = '2px solid #007bff';
+                  };
+                }
+              } else {
+                td.style.background = '#f8f9fa';
+                td.textContent = '';
+              }
+              tr.appendChild(td);
+            }
+            table.appendChild(tr);
+          }
+          deskGrid.appendChild(table);
+        })
+        .catch(error => {
+          console.error('Error loading desk data:', error);
+          document.getElementById('currentDesk').textContent = 'Error loading';
+        });
+    }
+    
+    // Update desk functionality
+    document.getElementById('updateDeskBtn').addEventListener('click', async function() {
+      const newDesk = document.getElementById('deskSelection').value;
+      if (!newDesk) {
+        showDeskMessage('Please select a desk first.', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_URL}/update_desk`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            desk: newDesk
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          showDeskMessage('Desk updated successfully!', 'success');
+          // Reload desk selection to reflect changes
+          loadDeskSelection();
+          // Clear selection
+          document.getElementById('deskSelection').value = '';
+          Array.from(document.getElementById('deskGrid').getElementsByTagName('td')).forEach(cell => cell.style.outline = '');
+        } else {
+          showDeskMessage(data.error || 'Failed to update desk.', 'error');
+        }
+      } catch (error) {
+        console.error('Error updating desk:', error);
+        showDeskMessage('Error updating desk. Please try again.', 'error');
+      }
+    });
+    
+    function showDeskMessage(text, type) {
+      const messageDiv = document.getElementById('deskMessage');
+      messageDiv.textContent = text;
+      messageDiv.style.color = type === 'success' ? '#28a745' : '#dc3545';
+      messageDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+    
+    // Load desk selection when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDeskSelection();
+      loadPersonalHours(); // Load personal hours when page loads
+    });
+    
+    // Personal hours functions
+    function loadPersonalHours() {
+      // Fetch current hours data
+      fetch(`${API_URL}/current_hours`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          // Find current user's hours
+          const userHours = data.find(u => u.username === username);
+          if (userHours) {
+            displayPersonalHours(userHours);
+          } else {
+            displayPersonalHours({ work_hours: 0, break_hours: 0 });
+          }
+        })
+        .catch(error => {
+          console.error('Error loading personal hours:', error);
+          document.getElementById('personalHoursMessage').textContent = 'Error loading hours data.';
+          document.getElementById('personalHoursMessage').style.color = '#dc3545';
+        });
+    }
+    
+    function refreshPersonalHours() {
+      document.getElementById('personalHoursMessage').textContent = 'Refreshing...';
+      document.getElementById('personalHoursMessage').style.color = '#007bff';
+      loadPersonalHours();
+    }
+    
+    function displayPersonalHours(userHours) {
+      // Format hours to HH:MM
+      const workHoursFormatted = formatHours(Number(userHours.work_hours || 0));
+      const breakHoursFormatted = formatHours(Number(userHours.break_hours || 0));
+      
+      document.getElementById('workHours').textContent = workHoursFormatted;
+      document.getElementById('breakHours').textContent = breakHoursFormatted;
+      
+      // Update message
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      document.getElementById('personalHoursMessage').textContent = `Last updated: ${timeString}`;
+      document.getElementById('personalHoursMessage').style.color = '#28a745';
+    }
+    
+    function formatHours(hours) {
+      const totalMinutes = Math.round(hours * 60);
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
     
     // Use API_URL from config.js, don't redeclare it
     document.getElementById('settingsForm').addEventListener('submit', async function(e) {

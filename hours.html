@@ -5,22 +5,11 @@
   <title>Weekly Hours</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    table { border-collapse: collapse; margin: 40px auto; }
-    th, td { border: 1px solid #aaa; padding: 8px 16px; text-align: center; }
-    th { background: #f0f0f0; }
-    .username { font-weight: bold; }
-    .refresh-indicator {
-      text-align: center;
-      color: #666;
-      font-size: 14px;
-      margin: 10px 0;
-    }
-    .refreshing {
-      color: #007bff;
-      font-weight: bold;
-    }
-    .last-updated {
-      color: #28a745;
+    body {
+      padding-top: 56px; /* Prevent content from being hidden under navbar */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      margin: 0;
     }
     .navbar {
       width: 100%;
@@ -86,8 +75,133 @@
     .sidebar-overlay.open {
       display: block;
     }
-    body {
-      padding-top: 56px; /* Prevent content from being hidden under navbar */
+    .refresh-indicator {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    .refreshing {
+      color: #007bff;
+      font-weight: bold;
+    }
+    .last-updated {
+      color: #28a745;
+    }
+    .hours-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .user-hours-section {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .user-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+    }
+    .user-status {
+      font-size: 0.9rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: white;
+    }
+    .status-active {
+      background: #28a745;
+    }
+    .status-inactive {
+      background: #6c757d;
+    }
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+    }
+    .day-card {
+      background: #f8f9fa;
+      border-radius: 6px;
+      padding: 15px;
+      text-align: center;
+      border: 1px solid #e9ecef;
+    }
+    .day-header {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .hours-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .hour-card {
+      text-align: center;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid;
+    }
+    .work-hours {
+      border-left-color: #007bff;
+    }
+    .break-hours {
+      border-left-color: #ffc107;
+    }
+    .hour-label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 3px;
+    }
+    .hour-value {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    .work-hours .hour-value {
+      color: #007bff;
+    }
+    .break-hours .hour-value {
+      color: #ffc107;
+    }
+    .today-indicator {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+    }
+    .real-time-indicator {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff5722;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+    .day-card {
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -100,27 +214,21 @@
     <a href="#" id="dashboardLink">Dashboard</a>
     <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
+    <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" style="display:none;">Hours</a>
+    <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
   </div>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   
-  <h1 style="text-align:center;">Weekly Hours (Mon-Fri)</h1>
-  <div class="refresh-indicator" id="refreshIndicator">
-    Auto-refreshing every 30 seconds.
+  <div class="hours-container">
+    <h1>Weekly Hours (Mon-Fri)</h1>
+    <div class="refresh-indicator" id="refreshIndicator">
+      Auto-refreshing every 30 seconds.
+    </div>
+    <div id="hoursContainer"></div>
   </div>
-  <table id="hoursTable">
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>Monday</th>
-        <th>Tuesday</th>
-        <th>Wednesday</th>
-        <th>Thursday</th>
-        <th>Friday</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  
   <script src="config.js"></script>
   <script>
     // Function to convert decimal hours to HH:MM format
@@ -136,6 +244,13 @@
       const indicator = document.getElementById('refreshIndicator');
       indicator.textContent = message;
       indicator.className = `refresh-indicator ${className}`;
+    }
+
+    // Function to get day name from date
+    function getDayName(dateString) {
+      const date = new Date(dateString);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return days[date.getDay()];
     }
 
     // Function to load and display hours data
@@ -157,40 +272,109 @@
         currentData.forEach(u => currentMap[u.username] = u);
         console.log('Current hours map:', currentMap);
 
-        const tbody = document.querySelector("#hoursTable tbody");
-        tbody.innerHTML = ''; // Clear existing data
+        const container = document.getElementById('hoursContainer');
+        container.innerHTML = ''; // Clear existing data
         
         weekData.users.forEach(user => {
-          const tr = document.createElement("tr");
-          const tdUser = document.createElement("td");
-          tdUser.textContent = user.username;
-          tdUser.className = "username";
-          tr.appendChild(tdUser);
-
+          const userSection = document.createElement('div');
+          userSection.className = 'user-hours-section';
+          
+          // User header with status
+          const userHeader = document.createElement('div');
+          userHeader.className = 'user-header';
+          
+          const userName = document.createElement('div');
+          userName.className = 'user-name';
+          userName.textContent = user.username;
+          
+          const userStatus = document.createElement('div');
+          const hasCurrentData = currentMap[user.username];
+          const isActive = hasCurrentData && (currentMap[user.username].status === "clocked-in" || currentMap[user.username].status === "break");
+          userStatus.className = `user-status ${isActive ? 'status-active' : 'status-inactive'}`;
+          userStatus.textContent = isActive ? 'Active' : 'Inactive';
+          
+          userHeader.appendChild(userName);
+          userHeader.appendChild(userStatus);
+          userSection.appendChild(userHeader);
+          
+          // Days grid
+          const daysGrid = document.createElement('div');
+          daysGrid.className = 'days-grid';
+          
           user.days.forEach((day, i) => {
-            const td = document.createElement("td");
+            const dayCard = document.createElement('div');
             const dayDate = weekData.week_dates[i];
             const isToday = dayDate === today;
-            const hasCurrentData = currentMap[user.username];
             const isActive = hasCurrentData && (currentMap[user.username].status === "clocked-in" || currentMap[user.username].status === "break");
             
-            console.log(`User: ${user.username}, Day: ${dayDate}, IsToday: ${isToday}, HasCurrentData: ${hasCurrentData}, IsActive: ${isActive}`);
+            dayCard.className = `day-card ${isToday ? 'today-indicator' : ''}`;
+            
+            // Day header
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            dayHeader.textContent = getDayName(dayDate);
+            dayCard.appendChild(dayHeader);
+            
+            // Hours display
+            const hoursDisplay = document.createElement('div');
+            hoursDisplay.className = 'hours-display';
+            
+            // Work hours
+            const workHoursCard = document.createElement('div');
+            workHoursCard.className = 'hour-card work-hours';
+            
+            const workLabel = document.createElement('div');
+            workLabel.className = 'hour-label';
+            workLabel.textContent = 'Work';
+            
+            const workValue = document.createElement('div');
+            workValue.className = 'hour-value';
+            
+            // Break hours
+            const breakHoursCard = document.createElement('div');
+            breakHoursCard.className = 'hour-card break-hours';
+            
+            const breakLabel = document.createElement('div');
+            breakLabel.className = 'hour-label';
+            breakLabel.textContent = 'Break';
+            
+            const breakValue = document.createElement('div');
+            breakValue.className = 'hour-value';
             
             // If this is today, and user is clocked in or on break, use real-time hours
             if (isToday && hasCurrentData && isActive) {
               const workHours = formatHours(Number(currentMap[user.username].work_hours));
               const breakHours = formatHours(Number(currentMap[user.username].break_hours));
               console.log(`Using real-time hours for ${user.username}: Work=${workHours}, Break=${breakHours}`);
-              td.innerHTML = `Work: ${workHours}<br>Break: ${breakHours}`;
+              workValue.textContent = workHours;
+              breakValue.textContent = breakHours;
+              
+              // Add real-time indicator
+              const realTimeIndicator = document.createElement('div');
+              realTimeIndicator.className = 'real-time-indicator';
+              realTimeIndicator.textContent = 'L';
+              dayCard.appendChild(realTimeIndicator);
             } else {
               const workHours = formatHours(Number(day.work_hours));
               const breakHours = formatHours(Number(day.break_hours));
               console.log(`Using saved hours for ${user.username}: Work=${workHours}, Break=${breakHours}`);
-              td.innerHTML = `Work: ${workHours}<br>Break: ${breakHours}`;
+              workValue.textContent = workHours;
+              breakValue.textContent = breakHours;
             }
-            tr.appendChild(td);
+            
+            workHoursCard.appendChild(workLabel);
+            workHoursCard.appendChild(workValue);
+            breakHoursCard.appendChild(breakLabel);
+            breakHoursCard.appendChild(breakValue);
+            
+            hoursDisplay.appendChild(workHoursCard);
+            hoursDisplay.appendChild(breakHoursCard);
+            dayCard.appendChild(hoursDisplay);
+            daysGrid.appendChild(dayCard);
           });
-          tbody.appendChild(tr);
+          
+          userSection.appendChild(daysGrid);
+          container.appendChild(userSection);
         });
         
         // Update refresh indicator with last updated time
@@ -200,7 +384,7 @@
         
       }).catch(error => {
         console.error('Error fetching hours data:', error);
-        document.querySelector("#hoursTable tbody").innerHTML = '<tr><td colspan="6">Error loading hours data</td></tr>';
+        document.getElementById('hoursContainer').innerHTML = '<div style="text-align: center; color: #dc3545; padding: 20px;">Error loading hours data</div>';
         updateRefreshIndicator('Error loading data. Retrying in 30 seconds...', '');
       });
     }
@@ -245,6 +429,13 @@
         .then(user => {
           if (!user) return; // User was deleted, already redirected
           
+          // Check if user is admin
+          if (user.role !== "admin") {
+            alert('Access Denied. Admin privileges required to view hours.');
+            window.location.href = `dashboard.html?username=${encodeURIComponent(username)}`;
+            return;
+          }
+          
           document.getElementById('userDisplay').textContent = user.username;
         })
         .catch((error) => {
@@ -262,6 +453,8 @@
         document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
       }
     });
 

@@ -12,7 +12,8 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding: 20px;
     }
     .signup-container {
@@ -72,153 +73,105 @@
       opacity: 0.3;
       pointer-events: none;
     }
+    .desk-selectable.current {
+      border: 2px solid #28a745;
+      background: #d4edda;
+    }
   </style>
 </head>
 <body>
   <div class="signup-container">
     <h1>Sign Up</h1>
+    
+    <!-- Step 1: Basic Information -->
     <form id="signupForm">
-      <div id="basicFields">
-        <div class="form-group">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required>
-        </div>
-        <div class="form-group">
-          <label for="room_code">Room Code:</label>
-          <input type="text" id="room_code" name="room_code" required>
-        </div>
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="adminSignup" />
-            Sign up as Admin
-          </label>
-        </div>
-        <div class="form-group" id="adminCodeGroup" style="display:none;">
-          <label for="admin_code">Admin Code:</label>
-          <input type="password" id="admin_code" name="admin_code">
-        </div>
-        <div id="adminError" style="color: #dc3545; margin-bottom: 10px; display: none;"></div>
-        <button type="button" id="continueBtn">Continue</button>
-        <button type="button" id="backToLoginBtn" style="width:100%;margin-top:10px;background:#6c757d;color:white;border:none;border-radius:4px;padding:12px;cursor:pointer;">Back to Login</button>
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
       </div>
-      <div id="deskSection" style="display:none;">
-        <div class="form-group">
-          <label>Select your desk:</label>
-          <input type="hidden" id="deskSelection" name="deskSelection" required>
-          <div class="office-grid" id="deskGrid"></div>
-        </div>
-        <button type="submit" id="signupBtn" style="display:none;">Sign Up</button>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
       </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="form-group">
+        <label for="roomCode">Room Code:</label>
+        <input type="text" id="roomCode" name="roomCode" required>
+      </div>
+      <div class="form-group">
+        <label for="role">Role:</label>
+        <select id="role" name="role" required>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group" id="adminCodeGroup" style="display: none;">
+        <label for="adminCode">Admin Code:</label>
+        <input type="password" id="adminCode" name="adminCode">
+      </div>
+      <div id="deskGrid" style="margin: 20px 0;"></div>
+      <input type="hidden" name="deskSelection" id="deskSelection">
+      <button type="submit">Sign Up</button>
     </form>
+    
+    <div id="message" style="margin-top:20px;"></div>
   </div>
+  
+  <script src="config.js"></script>
   <script>
-    const API_URL = "http://localhost:5000";
     const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
 
-    // Show/hide admin code input based on checkbox
-    document.getElementById('adminSignup').addEventListener('change', function() {
-      document.getElementById('adminCodeGroup').style.display = this.checked ? '' : 'none';
+    // Show/hide admin code field based on role selection
+    document.getElementById('role').addEventListener('change', function() {
+      const adminCodeGroup = document.getElementById('adminCodeGroup');
+      if (this.value === 'admin') {
+        adminCodeGroup.style.display = 'block';
+      } else {
+        adminCodeGroup.style.display = 'none';
+      }
     });
 
-    document.getElementById('continueBtn').onclick = function() {
-      const room_code = document.getElementById('room_code').value.trim();
-      const isAdmin = document.getElementById('adminSignup').checked;
-      const admin_code = document.getElementById('admin_code').value.trim();
-      const adminErrorDiv = document.getElementById('adminError');
-      adminErrorDiv.style.display = 'none';
-      adminErrorDiv.textContent = '';
-      if (room_code === "54321") {
-        if (isAdmin && !admin_code) {
-          adminErrorDiv.textContent = 'Please enter the admin code.';
-          adminErrorDiv.style.display = 'block';
-          return;
-        }
-        // Show desk selection
-        document.getElementById('basicFields').style.display = 'none';
-        document.getElementById('deskSection').style.display = 'block';
-
-        // Fetch taken desks
-        fetch(`${API_URL}/status`)
-          .then(res => res.json())
-          .then(data => {
-            const takenDesks = data.users
-              .filter(u => u.desk && u.desk !== "" && u.desk !== null)
-              .map(u => u.desk);
-
-            const deskGrid = document.getElementById('deskGrid');
-            deskGrid.innerHTML = '';
-            DESK_IDS.forEach(deskId => {
-              const deskDiv = document.createElement('div');
-              deskDiv.className = 'desk desk-selectable';
-              deskDiv.textContent = deskId.replace('desk', 'Desk ');
-              if (takenDesks.includes(deskId)) {
-                deskDiv.classList.add('disabled');
-                deskDiv.style.opacity = 0.3;
-                deskDiv.style.pointerEvents = 'none';
-              }
-              deskDiv.onclick = function() {
-                document.querySelectorAll('.desk-selectable').forEach(d => d.classList.remove('selected'));
-                deskDiv.classList.add('selected');
-                document.getElementById('deskSelection').value = deskId;
-                document.getElementById('signupBtn').style.display = 'block';
-              };
-              deskGrid.appendChild(deskDiv);
-            });
-          });
-      } else {
-        // Submit the form immediately (no desk selection)
-        if (isAdmin && !admin_code) {
-          adminErrorDiv.textContent = 'Please enter the admin code.';
-          adminErrorDiv.style.display = 'block';
-          return;
-        }
-        document.getElementById('signupForm').requestSubmit();
-      }
-    };
-
-    document.getElementById('backToLoginBtn').onclick = function() {
-      window.location.href = 'index.html';
-    };
-
+    // Replace the form submission handler with this:
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      const room_code = document.getElementById('room_code').value.trim();
+      const room_code = document.getElementById('roomCode').value.trim();
+      const role = document.getElementById('role').value;
+      const admin_code = document.getElementById('adminCode').value;
       const deskSelection = document.getElementById('deskSelection').value;
-      const isAdmin = document.getElementById('adminSignup') && document.getElementById('adminSignup').checked;
-      const admin_code = document.getElementById('admin_code').value.trim();
-      const role = isAdmin ? "admin" : "user";
-
-      // If code is 54321, require desk selection
-      if (room_code === "54321" && !deskSelection) {
-        alert('Please select a desk.');
-        return;
-      }
       if (room_code !== "54321") {
         alert("Invalid room code");
         return;
       }
-      if (isAdmin && !admin_code) {
+      if (role === 'admin' && !admin_code) {
         alert('Please enter the admin code.');
         return;
       }
-
+      if (!deskSelection) {
+        alert('Please select a desk.');
+        return;
+      }
+      const payload = {
+        username,
+        email,
+        password,
+        room_code,
+        role,
+        deskSelection
+      };
+      if (role === 'admin') {
+        payload.admin_code = admin_code;
+      }
       const res = await fetch(`${API_URL}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, room_code, deskSelection, role, admin_code: isAdmin ? admin_code : undefined })
+        body: JSON.stringify(payload)
       });
-
       const data = await res.json();
       if (res.ok) {
         alert('Signup successful! Please log in.');
@@ -227,6 +180,74 @@
         alert(data.error || 'Signup failed');
       }
     });
+
+    const gridCols = 6;
+    const gridRows = 18;
+    const deskPositions = [
+      {x:2, y:0}, {x:5, y:0},
+      {x:1, y:2}, {x:3, y:2}, {x:5, y:2},
+      {x:3, y:3}, {x:5, y:3},
+      {x:1, y:4},
+      {x:3, y:5}, {x:5, y:5},
+      {x:1, y:6}, {x:3, y:6}, {x:5, y:6},
+      {x:3, y:8}, {x:5, y:8},
+      {x:3, y:9}, {x:5, y:9},
+      {x:3, y:11}, {x:5, y:11},
+      {x:3, y:12}, {x:5, y:12},
+      {x:3, y:14}, {x:5, y:14},
+      {x:3, y:15}, {x:5, y:15},
+      {x:5, y:16},
+      {x:4, y:17}
+    ];
+
+    // Fetch taken desks from backend and render the grid
+    fetch('http://localhost:5000/users')
+      .then(res => res.json())
+      .then(data => {
+        const takenDesks = new Set(data.users.map(u => u.desk));
+        renderDeskGrid(takenDesks);
+      });
+
+    function renderDeskGrid(takenDesks) {
+      const grid = document.getElementById('deskGrid');
+      grid.innerHTML = '';
+      // Create a table for the grid
+      const table = document.createElement('table');
+      table.style.borderCollapse = 'collapse';
+      for (let y = 0; y < gridRows; y++) {
+        const tr = document.createElement('tr');
+        for (let x = 0; x < gridCols; x++) {
+          const td = document.createElement('td');
+          td.style.width = '36px';
+          td.style.height = '36px';
+          td.style.border = '1px solid #bbb';
+          td.style.textAlign = 'center';
+          td.style.padding = '0';
+          // Is this a desk position?
+          const isDesk = deskPositions.some(d => d.x === x && d.y === y);
+          if (isDesk) {
+            const deskKey = `${x},${y}`;
+            td.style.background = takenDesks.has(deskKey) ? '#ccc' : '#e0f7fa';
+            td.style.cursor = takenDesks.has(deskKey) ? 'not-allowed' : 'pointer';
+            td.textContent = '🪑';
+            if (!takenDesks.has(deskKey)) {
+              td.onclick = () => {
+                document.getElementById('deskSelection').value = deskKey;
+                // Highlight selected
+                Array.from(grid.getElementsByTagName('td')).forEach(cell => cell.style.outline = '');
+                td.style.outline = '2px solid #007bff';
+              };
+            }
+          } else {
+            td.style.background = '#f8f9fa';
+            td.textContent = '';
+          }
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+      grid.appendChild(table);
+    }
   </script>
 </body>
 </html>

@@ -10,8 +10,8 @@
       flex-direction: column;
       min-height: 100vh;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
     .navbar {
@@ -95,197 +95,217 @@
 </head>
 <body>
   <nav class="navbar">
-    <span class="navbar-title">Office Board</span>
-    <span class="navbar-hamburger" onclick="toggleSidebar()">&#9776;</span>
+    <div class="header">
+      <h1>Office Board</h1>
+    </div>
+    <div class="navbar-title"></div>
+    <div class="navbar-hamburger" id="navbarHamburger">&#9776;</div>
   </nav>
   <div class="sidebar" id="sidebar">
     <a href="#" id="dashboardLink">Dashboard</a>
-    <a href="#" style="display:none;">Board</a>
+    <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
+    <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="hourLink">Hours</a>
     <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
-    <a href="#" onclick="signOut()">Sign Out</a>
+    <a href="#" id="signOutLink">Sign Out</a>
   </div>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
   
   <div class="board-container">
     <h1 class="board-title">Office Presence Board</h1>
-    <canvas id="officeCanvas" width="900" height="500" style="display:block; margin: 40px auto; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"></canvas>
+    <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"></canvas>
   </div>
 
   <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
+// --- Navbar/Sidebar logic (dashboard style) ---
+document.getElementById('navbarHamburger').onclick = function() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+};
+document.getElementById('sidebarOverlay').onclick = function() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+};
+document.getElementById('signOutLink').onclick = function(e) {
+  e.preventDefault();
+  localStorage.removeItem("user");
+  window.location.href = "/index.html";
+};
+document.addEventListener("DOMContentLoaded", () => {
+  function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  }
+  const username = getQueryParam('username');
+  // Update all sidebar links to include username
+  if (username) {
+    document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+    document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+    document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+    document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+    document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+    document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+    // Fetch user info to determine admin status
+    fetch(`http://localhost:5000/user/${username}`)
+      .then(res => res.json())
+      .then(user => {
+        if (user && user.role === 'admin') {
+          document.getElementById('hourLink').style.display = 'block';
+          document.getElementById('editUsersLink').style.display = 'block';
+        } else {
+          document.getElementById('hourLink').style.display = 'none';
+          document.getElementById('editUsersLink').style.display = 'none';
+        }
+      });
+  }
+});
+// --- End Navbar/Sidebar logic ---
+
+const canvas = document.getElementById('boardCanvas');
+const ctx = canvas.getContext('2d');
+
+let frameIndex = 0;
+let lastFrameTime = 0;
+
+// Desk and character sprite config
+const deskImg = new Image();
+deskImg.src = 'static/Images/Desks/desk.png';
+const spriteSheet = new Image();
+spriteSheet.src = 'static/Images/Characters/Boy_idle.png';
+
+const frameWidth = 48;
+const frameHeight = 48;
+const totalFrames = 4;
+const frameDuration = 200; // ms per frame
+
+// --- Office Layout Config ---
+const gridCols = 6; // number of columns in your grid
+const gridRows = 18; // number of rows in your grid
+const cellSize = 64; // pixels per grid cell
+canvas.width = gridCols * cellSize;
+canvas.height = gridRows * cellSize;
+
+// Desk positions from the provided text grid (x = column, y = row, 0-indexed)
+const deskPositions = [
+  // Row 0
+  {x:2, y:0}, {x:5, y:0},
+  // Row 2
+  {x:1, y:2}, {x:3, y:2}, {x:5, y:2},
+  // Row 3
+  {x:3, y:3}, {x:5, y:3},
+  // Row 4
+  {x:1, y:4},
+  // Row 5
+  {x:3, y:5}, {x:5, y:5},
+  // Row 6
+  {x:1, y:6}, {x:3, y:6}, {x:5, y:6},
+  // Row 8
+  {x:3, y:8}, {x:5, y:8},
+  // Row 9
+  {x:3, y:9}, {x:5, y:9},
+  // Row 11
+  {x:3, y:11}, {x:5, y:11},
+  // Row 12
+  {x:3, y:12}, {x:5, y:12},
+  // Row 14
+  {x:3, y:14}, {x:5, y:14},
+  // Row 15
+  {x:3, y:15}, {x:5, y:15},
+  // Row 16
+  {x:5, y:16},
+  // Row 17
+  {x:4, y:17}
+];
+// --- Drawing Logic ---
+// Global users array for animation
+let boardUsers = [];
+
+// Fetch users and update boardUsers, then start animation
+fetch('http://localhost:5000/users')
+  .then(res => res.json())
+  .then(data => {
+    boardUsers = data.users;
+    requestAnimationFrame(animateSprite);
+  });
+
+function drawOfficeWithUsers(users) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Draw grid (optional, for visual reference)
+  ctx.save();
+  ctx.strokeStyle = '#e0e0e0';
+  for (let r = 0; r <= gridRows; r++) {
+    ctx.beginPath();
+    ctx.moveTo(0, r * cellSize);
+    ctx.lineTo(canvas.width, r * cellSize);
+    ctx.stroke();
+  }
+  for (let c = 0; c <= gridCols; c++) {
+    ctx.beginPath();
+    ctx.moveTo(c * cellSize, 0);
+    ctx.lineTo(c * cellSize, canvas.height);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Draw desks
+  deskPositions.forEach(desk => {
+    const px = desk.x * cellSize;
+    const py = desk.y * cellSize;
+    ctx.drawImage(deskImg, px + 4, py + 16, cellSize - 8, cellSize - 24);
+  });
+
+  // Draw users at their desks
+  users.forEach(user => {
+    if (user.desk && (user.status === "clocked-in" || user.status === "break")) {
+      let deskCoord = user.desk;
+      if (typeof deskCoord === "string") {
+        const [x, y] = deskCoord.split(',').map(Number);
+        deskCoord = {x, y};
+      }
+      const px = deskCoord.x * cellSize;
+      const py = deskCoord.y * cellSize;
+      ctx.save();
+      if (user.status === "break") {
+        ctx.globalAlpha = 0.3; // faded
+      }
+      ctx.drawImage(
+        spriteSheet,
+        frameIndex * frameWidth, 0, frameWidth, frameHeight,
+        px + cellSize/2 - frameWidth/2 +25, py + cellSize/2 - frameHeight/2 + 3, frameWidth, frameHeight
+      );
+      ctx.globalAlpha = 1.0;
+      // Draw username
+      ctx.font = '12px Arial';
+      ctx.fillStyle = '#222';
+      ctx.textAlign = 'center';
+      ctx.fillText(user.username, px + cellSize/2, py + cellSize -50);
+      ctx.restore();
     }
-    
-    function signOut() {
-      localStorage.removeItem('user');
-      window.location.href = 'index.html';
-    }
-    
-    // Get username from URL query parameter
-    function getQueryParam(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
-    
-    document.addEventListener("DOMContentLoaded", function() {
-      const username = getQueryParam('username');
-            if (!username) {
-        window.location.href = "/index.html";
-      } else {
-        fetch(`http://localhost:5000/user/${username}`)
-          .then(res => {
-            if (!res.ok) {
-              if (res.status === 404) {
-                // User not found (deleted)
-                alert('Your account has been deleted. You will be redirected to the login page.');
-                localStorage.removeItem('user');
-                window.location.href = "/index.html";
-                return;
-              }
-              throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            return res.json();
-          })
-          .then(user => {
-            if (!user) return; // User was deleted, already redirected
-            
-            // Check if user is admin and show/hide admin-only links
-            if (user.role === "admin") {
-              document.getElementById('editUsersLink').style.display = 'block';
-            } else {
-              document.getElementById('editUsersLink').style.display = 'none';
-            }
-          })
-          .catch((error) => {
-            console.error('Error validating user:', error);
-            alert('Error validating your account. Please log in again.');
-            localStorage.removeItem('user');
-            window.location.href = "/index.html";
-          });
-      }
+  });
+}
 
-      // Update sidebar links to include username
-      if (username) {
-        document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
-      }
+function animateSprite(timestamp) {
+  if (!lastFrameTime) lastFrameTime = timestamp;
+  const elapsed = timestamp - lastFrameTime;
+  if (elapsed > frameDuration) {
+    frameIndex = (frameIndex + 1) % totalFrames;
+    lastFrameTime = timestamp;
+  }
+  drawOfficeWithUsers(boardUsers);
+  requestAnimationFrame(animateSprite);
+}
 
-      const API_URL = "http://localhost:5000";
-      const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
-      const canvas = document.getElementById('officeCanvas');
-      const ctx = canvas.getContext('2d');
-
-      const deskWidth = 180, deskHeight = 100, gapX = 60, gapY = 60;
-      const startX = 60, startY = 60;
-
-      // Remove all avatar and sprite sheet logic. Only draw stickman for occupied desks.
-      function drawDesk(x, y, label, occupied, faded, username, isCurrentUser) {
-        // Desk
-        ctx.save();
-        ctx.beginPath();
-        ctx.strokeStyle = "#94bae3";
-        ctx.lineWidth = 4;
-        ctx.fillStyle = occupied ? "#e3f0fa" : "#fff";
-        ctx.shadowColor = "#b0c4de";
-        ctx.shadowBlur = 8;
-        ctx.moveTo(x + 16, y);
-        ctx.lineTo(x + deskWidth - 16, y);
-        ctx.quadraticCurveTo(x + deskWidth, y, x + deskWidth, y + 16);
-        ctx.lineTo(x + deskWidth, y + deskHeight - 16);
-        ctx.quadraticCurveTo(x + deskWidth, y + deskHeight, x + deskWidth - 16, y + deskHeight);
-        ctx.lineTo(x + 16, y + deskHeight);
-        ctx.quadraticCurveTo(x, y + deskHeight, x, y + deskHeight - 16);
-        ctx.lineTo(x, y + 16);
-        ctx.quadraticCurveTo(x, y, x + 16, y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-
-        // Only draw stickman for occupied desks
-        if (occupied) {
-          ctx.save();
-          ctx.globalAlpha = faded ? 0.3 : 1;
-          ctx.strokeStyle = "#222";
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.arc(x + deskWidth/2, y + 38, 16, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(x + deskWidth/2, y + 54);
-          ctx.lineTo(x + deskWidth/2, y + 80);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(x + deskWidth/2, y + 60);
-          ctx.lineTo(x + deskWidth/2 - 18, y + 70);
-          ctx.moveTo(x + deskWidth/2, y + 60);
-          ctx.lineTo(x + deskWidth/2 + 18, y + 70);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(x + deskWidth/2, y + 80);
-          ctx.lineTo(x + deskWidth/2 - 14, y + 100);
-          ctx.moveTo(x + deskWidth/2, y + 80);
-          ctx.lineTo(x + deskWidth/2 + 14, y + 100);
-          ctx.stroke();
-          ctx.restore();
-        }
-
-        // Desk label
-        ctx.save();
-        ctx.font = "bold 18px Arial";
-        ctx.fillStyle = "#333";
-        ctx.textAlign = "center";
-        ctx.fillText(label, x + deskWidth/2, y + deskHeight + 28);
-        ctx.restore();
-
-        // Username
-        if (occupied && username) {
-          ctx.save();
-          ctx.font = "16px Arial";
-          ctx.fillStyle = faded ? "#888" : "#007bff";
-          ctx.textAlign = "center";
-          ctx.fillText(username, x + deskWidth/2, y + deskHeight + 50);
-          ctx.restore();
-        }
-      }
-
-      function drawOffice(users) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        window.lastUsers = users; // for animation
-        let currentUserRaw = localStorage.getItem('user');
-        let currentUser = {};
-        try {
-          currentUser = JSON.parse(currentUserRaw);
-        } catch (e) {
-          currentUser = { username: currentUserRaw };
-        }
-        console.log("Drawing office with users:", users);
-        for (let i = 0; i < DESK_IDS.length; i++) {
-          const col = i % 3, row = Math.floor(i / 3);
-          const x = startX + col * (deskWidth + gapX);
-          const y = startY + row * (deskHeight + gapY);
-          const deskId = DESK_IDS[i];
-          const user = users.find(u => u && u.desk === deskId);
-          if (user && user.status !== 'none') {
-            const isCurrentUser = currentUser && user.username === currentUser.username;
-            drawDesk(x, y, `Desk ${col + 1 + row * 3}`, true, user.status === 'break', user.username, isCurrentUser);
-          } else {
-            drawDesk(x, y, `Desk ${col + 1 + row * 3}`, false, false, "", false);
-          }
-        }
-      }
-
-      fetch(`${API_URL}/status`)
-        .then(res => res.json())
-        .then(data => {
-          drawOffice(data.users);
-        });
-    });
+// Wait for both images to load before animating
+let imagesLoaded = 0;
+function checkLoaded() {
+  imagesLoaded++;
+  if (imagesLoaded === 2) {
+    requestAnimationFrame(animateSprite);
+  }
+}
+deskImg.onload = checkLoaded;
+spriteSheet.onload = checkLoaded;
   </script>
 </body>
 </html>
