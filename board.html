@@ -229,8 +229,55 @@ fetch('http://localhost:5000/users')
     requestAnimationFrame(animateSprite);
   });
 
+// Avatar animation configs
+const avatarConfigs = {
+  "City_men_idle.png": {
+    frameWidth: 128,
+    frameHeight: 128,
+    totalFrames: 6,
+    frameDuration: 250, // slower
+    frameSequence: [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5] // loop
+  },
+  "Boy_idle.png": {
+    frameWidth: 48,
+    frameHeight: 48,
+    totalFrames: 4,
+    frameDuration: 200
+  }
+};
+const AVATAR_BOX_SIZE = 64;
+
+// Avatar sprite cache
+const avatarSpriteSheets = {};
+
+function getAvatarSpriteSheet(file) {
+  if (!avatarSpriteSheets[file]) {
+    const img = new window.Image();
+    img.src = `static/Images/Characters/${file}`;
+    avatarSpriteSheets[file] = img;
+  }
+  return avatarSpriteSheets[file];
+}
+
+// Per-user animation state
+const userAnimStates = {};
+
+// Load background carpet image
+const carpetImg = new window.Image();
+carpetImg.src = 'static/Images/Background/carpet.png';
+
 function drawOfficeWithUsers(users) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Draw carpet background
+  if (carpetImg.complete) {
+    const pattern = ctx.createPattern(carpetImg, 'repeat');
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // reset any transforms
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+  } else {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
   // Draw grid (optional, for visual reference)
   ctx.save();
   ctx.strokeStyle = '#e0e0e0';
@@ -252,11 +299,30 @@ function drawOfficeWithUsers(users) {
   deskPositions.forEach(desk => {
     const px = desk.x * cellSize;
     const py = desk.y * cellSize;
-    ctx.drawImage(deskImg, px + 4, py + 16, cellSize - 8, cellSize - 24);
+    ctx.save();
+    if (desk.rotation) {
+      const deskCenterX = px + cellSize / 2;
+      const deskCenterY = py + cellSize / 2;
+      ctx.translate(deskCenterX, deskCenterY);
+      ctx.rotate(desk.rotation);
+      ctx.drawImage(
+        deskImg,
+        -cellSize / 2, -cellSize / 2,
+        cellSize, cellSize
+      );
+    } else {
+      ctx.drawImage(
+        deskImg,
+        px, py,
+        cellSize, cellSize
+      );
+    }
+    ctx.restore();
   });
 
   // Draw users at their desks
   users.forEach(user => {
+    if (!user.avatar) return;
     if (user.desk && (user.status === "clocked-in" || user.status === "break")) {
       let deskCoord = user.desk;
       if (typeof deskCoord === "string") {
@@ -265,21 +331,49 @@ function drawOfficeWithUsers(users) {
       }
       const px = deskCoord.x * cellSize;
       const py = deskCoord.y * cellSize;
+      const config = avatarConfigs[user.avatar] || avatarConfigs[Object.keys(avatarConfigs)[0]];
+      const sequence = config.frameSequence || [...Array(config.totalFrames).keys()];
+      const seqLen = sequence.length;
+      const spriteSheet = getAvatarSpriteSheet(user.avatar);
+      // Per-user animation state
+      if (!userAnimStates[user.username]) {
+        userAnimStates[user.username] = { frameIndex: 0, lastFrameTime: 0, seqIndex: 0 };
+      }
+      const state = userAnimStates[user.username];
+      const now = performance.now();
+      if (!state.lastFrameTime) state.lastFrameTime = now;
+      const elapsed = now - state.lastFrameTime;
+      if (elapsed > config.frameDuration) {
+        state.seqIndex = (state.seqIndex + 1) % seqLen;
+        state.lastFrameTime = now;
+      }
+      const frameToDraw = sequence[state.seqIndex];
+      // Scale and center in 64x64 box
+      const scale = Math.min(
+        AVATAR_BOX_SIZE / config.frameWidth,
+        AVATAR_BOX_SIZE / config.frameHeight
+      );
+      const drawWidth = config.frameWidth * scale;
+      const drawHeight = config.frameHeight * scale;
+      const offsetX = px + (cellSize - AVATAR_BOX_SIZE) / 2 + (AVATAR_BOX_SIZE - drawWidth) / 2;
+      const offsetY = py + (cellSize - AVATAR_BOX_SIZE) / 2 + (AVATAR_BOX_SIZE - drawHeight) / 2;
+      // Move avatar a bit to the right and up
+      const avatarOffsetX = 8; // pixels right
+      const avatarOffsetY = -8; // pixels up
       ctx.save();
       if (user.status === "break") {
         ctx.globalAlpha = 0.3; // faded
       }
       ctx.drawImage(
         spriteSheet,
-        frameIndex * frameWidth, 0, frameWidth, frameHeight,
-        px + cellSize/2 - frameWidth/2 +25, py + cellSize/2 - frameHeight/2 + 3, frameWidth, frameHeight
+        frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+        offsetX + avatarOffsetX, offsetY + avatarOffsetY, drawWidth, drawHeight
       );
       ctx.globalAlpha = 1.0;
-      // Draw username
       ctx.font = '12px Arial';
       ctx.fillStyle = '#222';
       ctx.textAlign = 'center';
-      ctx.fillText(user.username, px + cellSize/2, py + cellSize -50);
+      ctx.fillText(user.username, px + cellSize/2, py + cellSize - 50);
       ctx.restore();
     }
   });

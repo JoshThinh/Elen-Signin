@@ -112,6 +112,11 @@
         <label for="adminCode">Admin Code:</label>
         <input type="password" id="adminCode" name="adminCode">
       </div>
+      <div class="form-group">
+        <label>Select Your Avatar:</label>
+        <div id="avatarGrid" style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px;"></div>
+        <input type="hidden" name="avatar" id="avatarSelection" required>
+      </div>
       <div id="deskGrid" style="margin: 20px 0;"></div>
       <input type="hidden" name="deskSelection" id="deskSelection">
       <button type="submit">Sign Up</button>
@@ -144,6 +149,7 @@
       const role = document.getElementById('role').value;
       const admin_code = document.getElementById('adminCode').value;
       const deskSelection = document.getElementById('deskSelection').value;
+      const avatar = document.getElementById('avatarSelection').value;
       if (room_code !== "54321") {
         alert("Invalid room code");
         return;
@@ -156,13 +162,18 @@
         alert('Please select a desk.');
         return;
       }
+      if (!avatar) {
+        alert('Please select an avatar.');
+        return;
+      }
       const payload = {
         username,
         email,
         password,
         room_code,
         role,
-        deskSelection
+        deskSelection,
+        avatar
       };
       if (role === 'admin') {
         payload.admin_code = admin_code;
@@ -248,6 +259,89 @@
       }
       grid.appendChild(table);
     }
+
+    const avatarConfigs = {
+      "City_men_idle.png": {
+        frameWidth: 128,
+        frameHeight: 128,
+        totalFrames: 6,
+        frameDuration: 200
+      },
+      "Boy_idle.png": {
+        frameWidth: 48,
+        frameHeight: 48,
+        totalFrames: 4,
+        frameDuration: 200
+      }
+    };
+
+    const avatars = [
+      { name: "City Men", file: "City_men_idle.png" },
+      { name: "Boy", file: "Boy_idle.png" }
+    ];
+
+    const AVATAR_BOX_SIZE = 64; // The size of the selection box
+
+    function renderAvatarGrid() {
+      const grid = document.getElementById('avatarGrid');
+      grid.innerHTML = '';
+      avatars.forEach((avatar, idx) => {
+        const config = avatarConfigs[avatar.file];
+        const canvas = document.createElement('canvas');
+        canvas.width = AVATAR_BOX_SIZE;
+        canvas.height = AVATAR_BOX_SIZE;
+        canvas.style.borderRadius = '8px';
+        canvas.style.border = '2px solid transparent';
+        canvas.style.cursor = 'pointer';
+        canvas.style.background = '#f8f9fa';
+        canvas.title = avatar.name;
+        canvas.dataset.avatarFile = avatar.file;
+        canvas.style.margin = '4px';
+
+        // Animation state for each avatar
+        let frameIndex = 0;
+        let lastFrameTime = 0;
+        const spriteSheet = new window.Image();
+        spriteSheet.src = `static/Images/Characters/${avatar.file}`;
+
+        // Calculate scale to fit the frame in the box
+        const scale = Math.min(
+          AVATAR_BOX_SIZE / config.frameWidth,
+          AVATAR_BOX_SIZE / config.frameHeight
+        );
+        const drawWidth = config.frameWidth * scale;
+        const drawHeight = config.frameHeight * scale;
+        const offsetX = (AVATAR_BOX_SIZE - drawWidth) / 2;
+        const offsetY = (AVATAR_BOX_SIZE - drawHeight) / 2;
+
+        function animateAvatar(ts) {
+          if (!lastFrameTime) lastFrameTime = ts;
+          const elapsed = ts - lastFrameTime;
+          if (elapsed > config.frameDuration) {
+            frameIndex = (frameIndex + 1) % config.totalFrames;
+            lastFrameTime = ts;
+          }
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(
+            spriteSheet,
+            frameIndex * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+            offsetX, offsetY, drawWidth, drawHeight
+          );
+          requestAnimationFrame(animateAvatar);
+        }
+        spriteSheet.onload = () => requestAnimationFrame(animateAvatar);
+
+        canvas.onclick = () => {
+          document.getElementById('avatarSelection').value = avatar.file;
+          Array.from(grid.children).forEach(child => child.style.border = '2px solid transparent');
+          canvas.style.border = '2px solid #007bff';
+        };
+
+        grid.appendChild(canvas);
+      });
+    }
+    renderAvatarGrid();
   </script>
 </body>
 </html>

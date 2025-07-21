@@ -450,25 +450,20 @@
     
     // Personal hours functions
     function loadPersonalHours() {
-      // Fetch current hours data
-      fetch(`${API_URL}/current_hours`)
-        .then(res => {
-          if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          return res.json();
-        })
+      fetch(`${API_URL}/timesheets/week`)
+        .then(res => res.json())
         .then(data => {
-          // Find current user's hours
-          const userHours = data.find(u => u.username === username);
-          if (userHours) {
-            displayPersonalHours(userHours);
+          // Find the current user's entry for today
+          const today = new Date().toISOString().slice(0, 10);
+          const userEntries = data[username] || [];
+          const todayEntry = userEntries.find(entry => entry.date === today);
+          if (todayEntry) {
+            displayPersonalHours(todayEntry);
           } else {
             displayPersonalHours({ work_hours: 0, break_hours: 0 });
           }
         })
         .catch(error => {
-          console.error('Error loading personal hours:', error);
           document.getElementById('personalHoursMessage').textContent = 'Error loading hours data.';
           document.getElementById('personalHoursMessage').style.color = '#dc3545';
         });
