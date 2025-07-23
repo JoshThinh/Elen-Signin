@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clock In Page</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <base href="/" />
   <script src="config.js" defer></script>
   <style>
@@ -619,6 +620,7 @@
     <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
     <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" id="hourLink">Hours</a>
     <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
     <a href="#" id="signOutLink">Sign Out</a>
@@ -654,6 +656,7 @@
         document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
       }
       // Add other sidebar links here as needed
     });

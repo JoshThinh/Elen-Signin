@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Submit Email</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <style>
     body {
       display: flex;
@@ -162,33 +163,33 @@
     <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
     <a href="#" style="display:none;">Submit Email</a>
+    <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" id="hourLink">Hours</a>
     <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
   </div>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   
-  <div class="submit-container">
-    <h1 class="submit-title">Submit Email</h1>
-    <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 12px; border-radius: 4px; margin-bottom: 20px; text-align: center;">
-      <strong>Note:</strong> This feature requires backend email configuration. If you see errors, the email service may not be set up.
-    </div>
-    <form class="submit-form" id="emailForm">
-      <div class="form-group">
-        <label for="to">To:</label>
-        <input type="email" id="to" name="to" required>
+  <div class="settings-container">
+    <h1 class="submit-title">Compose Email</h1>
+    <form id="emailForm" style="background: white; padding: 40px 32px 32px 32px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; width: 100%; margin: 0 auto;">
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label style="font-weight: 500; color: #333;">To (Username):</label>
+        <input type="text" id="receiver" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-top: 6px;">
       </div>
-      <div class="form-group">
-        <label for="subject">Subject:</label>
-        <input type="text" id="subject" name="subject" required>
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label style="font-weight: 500; color: #333;">Subject:</label>
+        <input type="text" id="subject" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-top: 6px;">
       </div>
-      <div class="form-group">
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" required></textarea>
+      <div class="form-group" style="margin-bottom: 32px;">
+        <label style="font-weight: 500; color: #333;">Message:</label>
+        <textarea id="message" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-top: 6px; min-height: 120px; resize: vertical;"></textarea>
       </div>
-      <button type="submit">Send Email</button>
+      <div style="display: flex; justify-content: flex-end;">
+        <button type="submit" style="background-color: #007bff; color: white; border: none; border-radius: 4px; padding: 12px 32px; font-size: 1.1em; font-weight: 500; cursor: pointer;">Send</button>
+      </div>
     </form>
-    <div id="message" class="message" style="display:none;"></div>
+    <div id="emailStatus" style="margin-top: 24px;"></div>
   </div>
 
   <script src="config.js"></script>
@@ -256,6 +257,7 @@
         document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
       }
@@ -264,47 +266,29 @@
     // Handle email form submission
     document.getElementById('emailForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      
-      const to = document.getElementById('to').value.trim();
+      const receiver = document.getElementById('receiver').value.trim();
       const subject = document.getElementById('subject').value.trim();
       const message = document.getElementById('message').value.trim();
-      
-      if (!to || !subject || !message) {
+      const sender = getQueryParam('username'); // or however you get the current user
+
+      if (!receiver || !subject || !message) {
         showMessage('Please fill in all fields.', 'error');
         return;
       }
-      
+
       try {
-        const response = await fetch(`${API_URL}/send_email`, {
+        const response = await fetch('http://localhost:5000/inbox', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            to: to,
-            subject: subject,
-            message: message,
-            from: username
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sender, receiver, subject, message })
         });
-        
         const data = await response.json();
-        
+        document.getElementById('emailStatus').textContent = data.message || data.error;
         if (response.ok) {
-          showMessage('Email sent successfully!', 'success');
           document.getElementById('emailForm').reset();
-        } else {
-          showMessage(data.error || 'Failed to send email.', 'error');
         }
       } catch (error) {
-        console.error('Error sending email:', error);
-        
-        // Check if it's a CORS or endpoint not found error
-        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-          showMessage('Email service is not available. This feature requires backend configuration.', 'error');
-        } else {
-          showMessage('Error sending email. Please try again.', 'error');
-        }
+        document.getElementById('emailStatus').textContent = 'Error sending email.';
       }
     });
     

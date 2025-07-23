@@ -17,23 +17,41 @@
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
+:root {
+  --color-bg-dark: #003135;
+  --color-bg-medium: #024950;
+  --color-accent: #964734;
+  --color-primary: #0fa4af;
+  --color-bg-light: #afdde5;
+  --color-white: #fff;
+  --color-navbar: #412653;
+  --color-navbar-strong: rgba(65, 38, 83, 0.95);
+  --color-navbar-blur: rgba(65, 38, 83, 0.3);
+  --color-pink: #de638a;
+  --color-purple: #c6bade;
+  --color-pink-light: #f3d9e5;
+  --color-pink-bright: #f7b9c4;
+}
+
 body {
-  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  color: #222;
+  font-family: 'Quicksand', 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-dark) 100%);
+  color: var(--color-bg-dark);
   margin: 0;
   padding: 0;
   min-height: 100vh;
 }
 
-nav {
-  background: #1a2942;
-  color: #fff;
+nav, .navbar {
+  background: var(--color-navbar-strong);
+  color: var(--color-white);
   padding: 0 30px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 nav .nav-links {
@@ -41,21 +59,30 @@ nav .nav-links {
   gap: 30px;
 }
 
-nav a {
-  color: #fff;
+nav a, .navbar a, .sidebar a {
+  color: var(--color-white);
   text-decoration: none;
   font-weight: 500;
   font-size: 1.1em;
   padding: 20px 0;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s;
+  border-bottom: 1px solid #4a324a;
 }
 
-nav a:hover {
-  color: #4da3ff;
+nav a:hover, .navbar a:hover, .sidebar a:hover {
+  background: rgba(198, 186, 222, 0.5);
+  color: #4a324a;
+}
+
+.sidebar {
+  background: var(--color-navbar-blur);
+  color: var(--color-white);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .header-section {
-  background: #f5f7fa;
+  background: var(--color-bg-light);
   padding: 40px 0 20px 0;
   text-align: center;
 }
@@ -63,19 +90,16 @@ nav a:hover {
 .header-section h1 {
   font-size: 2.5em;
   margin-bottom: 10px;
-  color: #1a2942;
+  color: var(--color-navbar);
 }
 
 .header-section h2, .header-section h3, .header-section h4 {
-  color: #4da3ff;
+  color: var(--color-primary);
   margin-bottom: 20px;
 }
 
-.section {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 30px;
-  background: #fff;
+.section, .card, .users-table, .user-hours-section, .settings-container, .submit-form {
+  background: rgba(198, 186, 222, 0.7);
   border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
@@ -88,7 +112,7 @@ nav a:hover {
 }
 
 .card {
-  background: #f5f7fa;
+  background: var(--color-purple);
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   padding: 24px 20px;
@@ -99,10 +123,51 @@ nav a:hover {
 }
 
 footer {
-  background: #1a2942;
-  color: #fff;
+  background: var(--color-navbar);
+  color: var(--color-white);
   text-align: center;
   padding: 20px 0;
   margin-top: 40px;
   font-size: 0.95em;
+}
+
+/* Accent and status colors */
+.status-active {
+  background: var(--color-pink);
+}
+.status-inactive {
+  background: var(--color-bg-medium);
+}
+.user-name {
+  color: var(--color-pink);
+}
+.day-card {
+  background: var(--color-purple);
+  border: 2px solid var(--color-pink-light);
+}
+.day-header {
+  color: var(--color-pink);
+}
+.work-hours {
+  border-left-color: var(--color-pink-bright);
+}
+.break-hours {
+  border-left-color: var(--color-pink-light);
+}
+.hour-label {
+  color: var(--color-pink);
+}
+.work-hours .hour-value {
+  color: var(--color-pink-bright);
+}
+.break-hours .hour-value {
+  color: var(--color-pink-light);
+}
+.today-indicator {
+  background: var(--color-pink-light);
+  border: 2px solid var(--color-pink-bright);
+}
+.real-time-indicator {
+  background: var(--color-pink);
+  color: var(--color-pink-light);
 }

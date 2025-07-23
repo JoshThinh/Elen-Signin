@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Account Settings</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <style>
     body {
       display: flex;
@@ -153,6 +154,7 @@
     <a href="#" id="boardLink">Board</a>
     <a href="#" style="display:none;">Settings</a>
     <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" id="hourLink">Hours</a>
     <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
@@ -286,6 +288,7 @@
         document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
         document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
       }

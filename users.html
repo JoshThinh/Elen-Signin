@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Edit Users</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <style>
     body {
       display: flex;
@@ -171,6 +172,7 @@
     <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
     <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" id="hourLink">Hours</a>
     <a href="#" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
@@ -217,23 +219,23 @@
     }
 
     const username = getUsernameFromURL();
+    let isAdmin = false;
 
     if (!username) {
-      // No username in URL, redirect to login
       window.location.href = 'login.html';
     } else {
-      // Validate user with backend
+      // Validate user with backend, but don't restrict access
       fetch(`http://localhost:5000/user/${encodeURIComponent(username)}`)
         .then(res => res.json())
         .then(user => {
-          if (!user || user.role !== 'admin') {
-            // Not admin, redirect to login
+          if (!user) {
             window.location.href = 'login.html';
+          } else {
+            isAdmin = user.role === 'admin';
+            loadUsers();
           }
-          // else: user is admin, continue loading page
         })
         .catch(err => {
-          // Error fetching user, redirect to login
           window.location.href = 'login.html';
         });
     }
@@ -246,6 +248,7 @@
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
         document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
       }
     });
     
@@ -292,22 +295,43 @@
       `;
       
       users.forEach(user => {
-        // Don't allow admin to delete themselves
         const isCurrentUser = user.username === username;
-        const deleteButton = isCurrentUser 
-          ? '<button class="delete-btn" disabled title="Cannot delete yourself">Delete</button>'
-          : `<button class="delete-btn" onclick="deleteUser('${user.username}')">Delete</button>`;
-        
+        let deleteButton = '';
+        if (isAdmin) {
+          deleteButton = isCurrentUser 
+            ? '<button class="delete-btn" disabled title="Cannot delete yourself">Delete</button>'
+            : `<button class="delete-btn" onclick="deleteUser('${user.username}')">Delete</button>`;
+        }
+        // Inline edit form (hidden by default)
+        const editRowId = `edit-row-${user.username}`;
         tableHTML += `
-          <tr>
+          <tr id="row-${user.username}">
             <td><strong>${user.username}</strong></td>
             <td>${user.email || 'N/A'}</td>
             <td><span style="color: ${user.role === 'admin' ? '#dc3545' : '#28a745'}; font-weight: bold;">${user.role || 'user'}</span></td>
-            <td>${user.desk || 'Unassigned'}</td>
-            <td>${user.status || 'Unknown'}</td>
+            <td id="desk-cell-${user.username}">${user.desk || 'Unassigned'}</td>
+            <td id="status-cell-${user.username}">${user.status || 'Unknown'}</td>
             <td>
-              <button class="edit-btn" onclick="editUser('${user.username}')">Edit</button>
+              <button class="edit-btn" onclick="showEditForm('${user.username}')">Edit</button>
               ${deleteButton}
+            </td>
+          </tr>
+          <tr id="${editRowId}" style="display:none; background: #f8f9fa;">
+            <td colspan="6">
+              <form onsubmit="return saveEditUser(event, '${user.username}')" style="display: flex; gap: 16px; align-items: center; justify-content: flex-start;">
+                <label>Status:
+                  <select id="edit-status-${user.username}">
+                    <option value="clocked-in" ${user.status === 'clocked-in' ? 'selected' : ''}>Clocked In</option>
+                    <option value="break" ${user.status === 'break' ? 'selected' : ''}>Break</option>
+                    <option value="clocked-out" ${user.status === 'clocked-out' ? 'selected' : ''}>Clocked Out</option>
+                  </select>
+                </label>
+                <label>Desk:
+                  <input type="text" id="edit-desk-${user.username}" value="${user.desk || ''}" placeholder="e.g. 3,2">
+                </label>
+                <button type="submit" class="edit-btn">Save</button>
+                <button type="button" class="delete-btn" onclick="hideEditForm('${user.username}')">Cancel</button>
+              </form>
             </td>
           </tr>
         `;
@@ -358,6 +382,32 @@
           }
         }
       }
+    }
+
+    // Show the inline edit form for a user
+    function showEditForm(username) {
+      document.getElementById(`edit-row-${username}`).style.display = '';
+    }
+    function hideEditForm(username) {
+      document.getElementById(`edit-row-${username}`).style.display = 'none';
+    }
+    // Save the edited user status and desk
+    async function saveEditUser(event, username) {
+      event.preventDefault();
+      const status = document.getElementById(`edit-status-${username}`).value;
+      const desk = document.getElementById(`edit-desk-${username}`).value.trim();
+      // Update status
+      await fetch(`${API_URL}/status/${username}/${status}`, { method: 'POST' });
+      // Update desk
+      await fetch(`${API_URL}/update_desk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, desk })
+      });
+      // Hide form and refresh table
+      hideEditForm(username);
+      loadUsers();
+      return false;
     }
   </script>
 </body>

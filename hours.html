@@ -4,18 +4,30 @@
   <meta charset="UTF-8">
   <title>Weekly Hours</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --color-bg-dark: #003135;
+      --color-bg-medium: #024950;
+      --color-accent: #964734;
+      --color-primary: #0fa4af;
+      --color-bg-light: #afdde5;
+      --color-white: #fff;
+    }
     body {
       padding-top: 56px; /* Prevent content from being hidden under navbar */
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('static/Images/Background/work.gif') center center fixed, linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-dark) 100%);
+      background-size: cover, cover;
+      background-attachment: fixed, fixed;
+      color: var(--color-bg-dark);
       margin: 0;
     }
     .navbar {
       width: 100%;
       height: 56px;
-      background: #222;
-      color: #fff;
+      background: rgba(65, 38, 83, 0.3); /* #412653 with 95% opacity */
+      color: var(--color-white);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -25,6 +37,8 @@
       z-index: 1001;
       box-sizing: border-box;
       padding-right: 8px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
     .navbar-hamburger {
       font-size: 2rem;
@@ -43,11 +57,12 @@
       right: -220px;
       width: 220px;
       height: 100%;
-      background: #333;
-      color: #fff;
+      background: rgba(65, 38, 83, 0.3); /* #412653 with 95% opacity */
+      color: var(--color-white);
       display: flex;
       flex-direction: column;
       padding-top: 56px;
+      backdrop-filter: blur(6px);
       transition: right 0.3s;
       z-index: 1002;
     }
@@ -55,15 +70,16 @@
       right: 0;
     }
     .sidebar a {
-      color: #fff;
+      color: var(--color-white);
       padding: 18px 24px;
       text-decoration: none;
       font-size: 1.1rem;
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid #4a324a;
       transition: background 0.2s;
     }
     .sidebar a:hover {
-      background: #444;
+      background: rgba(198, 186, 222, 0.5);
+      color: #4a324a;
     }
     .sidebar-overlay {
       display: none;
@@ -86,7 +102,7 @@
       font-weight: bold;
     }
     .last-updated {
-      color: #28a745;
+      color: #2e151b;
     }
     .hours-container {
       max-width: 1200px;
@@ -94,11 +110,12 @@
       padding: 20px;
     }
     .user-hours-section {
-      background: white;
+      background: rgba(198, 186, 222, 0.7); /* #c6bade with 70% opacity */
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.08);
       margin-bottom: 20px;
       padding: 20px;
+      border: 2.5px solid rgba(175, 221, 229, 0.2); /* keep the border as before */
     }
     .user-header {
       display: flex;
@@ -111,7 +128,7 @@
     .user-name {
       font-size: 1.2rem;
       font-weight: bold;
-      color: #333;
+      color: #de638a;
     }
     .user-status {
       font-size: 0.9rem;
@@ -120,7 +137,7 @@
       color: white;
     }
     .status-active {
-      background: #28a745;
+      background: #de638a;
     }
     .status-inactive {
       background: #6c757d;
@@ -131,16 +148,16 @@
       gap: 15px;
     }
     .day-card {
-      background: #f8f9fa;
+      background: #c6bade;
       border-radius: 6px;
       padding: 15px;
       text-align: center;
-      border: 1px solid #e9ecef;
+      border: 2px solid #f3d9e5;
     }
     .day-header {
       font-size: 0.9rem;
       font-weight: bold;
-      color: #333;
+      color: #de638a;
       margin-bottom: 10px;
     }
     .hours-display {
@@ -156,14 +173,14 @@
       border-left: 3px solid;
     }
     .work-hours {
-      border-left-color: #007bff;
+      border-left-color: #f7b9c4;
     }
     .break-hours {
-      border-left-color: #ffc107;
+      border-left-color: #f3d9e5;
     }
     .hour-label {
       font-size: 0.8rem;
-      color: #666;
+      color: #de638a;
       margin-bottom: 3px;
     }
     .hour-value {
@@ -171,21 +188,21 @@
       font-weight: bold;
     }
     .work-hours .hour-value {
-      color: #007bff;
+      color: #f7b9c4;
     }
     .break-hours .hour-value {
-      color: #ffc107;
+      color: #f3d9e5;
     }
     .today-indicator {
-      background: #e3f2fd;
-      border: 2px solid #2196f3;
+      background: #f3d9e5;
+      border: 2px solid #f7b9c4;
     }
     .real-time-indicator {
       position: absolute;
       top: -5px;
       right: -5px;
-      background: #ff5722;
-      color: white;
+      background: #de638a;
+      color: #f3d9e5;
       border-radius: 50%;
       width: 20px;
       height: 20px;
@@ -215,6 +232,7 @@
     <a href="#" id="boardLink">Board</a>
     <a href="#" id="settingsLink">Settings</a>
     <a href="#" id="submitLink">Submit Email</a>
+    <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" style="display:none;">Hours</a>
     <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
@@ -248,7 +266,8 @@
 
     // Function to get day name from date
     function getDayName(dateString) {
-      const date = new Date(dateString);
+      // Always parse as local midnight to avoid timezone issues
+      const date = new Date(dateString + 'T00:00:00');
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       return days[date.getDay()];
     }
@@ -437,6 +456,8 @@
           }
           
           document.getElementById('userDisplay').textContent = user.username;
+          // Show Edit Users link for admin
+          document.getElementById('editUsersLink').style.display = 'block';
         })
         .catch((error) => {
           console.error('Error validating user:', error);
@@ -454,6 +475,7 @@
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
         document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
       }
     });
