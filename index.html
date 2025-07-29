@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>Login</title>
   <link rel="stylesheet" href="style.css">
+  <base href="/https://joshthinh.github.io/Elen-Signin/">
+
   <style>
     body {
       display: flex;
@@ -79,7 +81,7 @@
       const password = document.getElementById('password').value;
       
       try {
-        const response = await fetch(`${API_URL}/login`, {
+        const response = await fetch(`${API_URL}/login, ${API_URL_DEPLOYED}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
