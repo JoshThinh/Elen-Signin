@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Page</title>
+    <link rel="stylesheet" href="style.css?v=test">
+    <script src="config.js?v=test"></script>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <p>If you can see this styled text, the CSS is loading correctly.</p>
+    <p>Check the console (F12) for config.js loading message.</p>
+    <script>
+        console.log('Test page loaded');
+        if (typeof API_URL !== 'undefined') {
+            console.log('API_URL is defined:', API_URL);
+        } else {
+            console.error('API_URL is NOT defined - config.js failed to load');
+        }
+    </script>
+</body>
+</html> 

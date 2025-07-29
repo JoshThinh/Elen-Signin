@@ -11,14 +11,16 @@
       flex-direction: column;
       min-height: 100vh;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Crimson Text', serif;
+      font-size: 16px;
+      color: #777777;
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
     .navbar {
       width: 100%;
-      height: 56px;
-      background: #222;
+      height: 60px;
+      background: #2d2e4bf2;
       color: #fff;
       display: flex;
       align-items: center;
@@ -29,6 +31,7 @@
       z-index: 1001;
       box-sizing: border-box;
       padding-right: 8px;
+      transition: background 0.4s;
     }
     .navbar-hamburger {
       font-size: 2rem;
@@ -47,8 +50,8 @@
       right: -220px;
       width: 220px;
       height: 100%;
-      background: #333;
-      color: #fff;
+      background: #2d2e4bf2;
+      color: rgba(45, 46, 75, 0.95);
       display: flex;
       flex-direction: column;
       padding-top: 56px;
@@ -59,7 +62,7 @@
       right: 0;
     }
     .sidebar a {
-      color: #fff;
+      color: #DDDDDD;
       padding: 18px 24px;
       text-decoration: none;
       font-size: 1.1rem;
@@ -67,7 +70,9 @@
       transition: background 0.2s;
     }
     .sidebar a:hover {
-      background: #444;
+      background: rgba(45, 46, 75, 0.8);
+      color: #fff;
+      ;
     }
     .sidebar-overlay {
       display: none;
@@ -105,6 +110,7 @@
   <div class="sidebar" id="sidebar">
     <a href="#" id="dashboardLink">Dashboard</a>
     <!--<a href="#" id="boardLink">Board</a>-->
+    <a href="#" id="floorPlanLink">Floor Plan</a>
     <a href="#" id="settingsLink">Settings</a>
     <a href="#" id="submitLink">Submit Email</a>
     <a href="#" id="viewEmailLink">View Email</a>
@@ -132,7 +138,7 @@ document.getElementById('sidebarOverlay').onclick = function() {
 document.getElementById('signOutLink').onclick = function(e) {
   e.preventDefault();
   localStorage.removeItem("user");
-  window.location.href = "/index.html";
+          window.location.href = "index.html";
 };
 document.addEventListener("DOMContentLoaded", () => {
   function getQueryParam(name) {
@@ -144,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (username) {
     document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
     // document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+    document.getElementById('floorPlanLink').href = `floorplan.html?username=${encodeURIComponent(username)}`;
     document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
     document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
     document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
@@ -163,6 +170,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
+    fetch ('web-production-6b1da.up.railway.app${username}')
+      .then(res => res.json())
+      .then(user=> {
+       if(user && user.role === 'admin') {
+        document.getElementById('hourLink').style.display = 'block';
+        document.getElementById('editUsersLink').style.display = 'block';
+      } else {
+        document.getElementById('hourLink').style.display = 'none';
+        document.getElementById('editUsersLink').style.display = 'none';
+      }
+    });
+
+
 // --- End Navbar/Sidebar logic ---
 
 const canvas = document.getElementById('boardCanvas');
