@@ -224,13 +224,20 @@
     fetch(`${ApiUrlLink}/users`)
       .then(res => res.json())
       .then(data => {
+        console.log("Fetched users:", data);  // Check what comes back
+        if (!data.users) {
+          console.warn("No users returned from backend");
+          return;
+        }
         const takenDesks = new Set(data.users.map(u => u.desk));
         renderDeskGrid(takenDesks);
       })
       .catch(err => {
-    console.error('Error fetching desks:', err);
-    document.getElementById('deskGrid').innerText = 'Failed to load desk map.';
-  });
+        console.error('Error fetching desks:', err);
+        document.getElementById('deskGrid').innerText = 'Unable to load desk layout.';
+      });
+
+
     
     function renderDeskGrid(takenDesks) {
       const grid = document.getElementById('deskGrid');
@@ -315,7 +322,7 @@
         let frameIndex = 0;
         let lastFrameTime = 0;
         const spriteSheet = new window.Image();
-        spriteSheet.src = `./static/Images/Characters/${avatar.file}`;
+        spriteSheet.src = `${base.href}static/Images/Characters/${avatar.file}`;
 
         // Calculate scale to fit the frame in the box
         const scale = Math.min(
