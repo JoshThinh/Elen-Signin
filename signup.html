@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Sign Up</title>
   <link rel="stylesheet" href="style.css">
-  <base href="/https://joshthinh.github.io/Elen-Signin/">
   <style>
     body {
       display: flex;
@@ -128,6 +127,11 @@
   
   <script src="config.js"></script>
   <script>
+    const base = document.createElement('base');
+    base.href = location.hostname === 'localhost' ? '/' : "/https://joshthinh.github.io/Elen-Signin/";
+    document.head.appendChild(base);
+
+
     const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
 
     // Show/hide admin code field based on role selection
@@ -179,7 +183,7 @@
       if (role === 'admin') {
         payload.admin_code = admin_code;
       }
-      const res = await fetch(`${API_URL}/signup`, {
+      const res = await fetch(`${API_URL}/signup, ${API_URL_DEPLOYED}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -213,7 +217,7 @@
     ];
 
     // Fetch taken desks from backend and render the grid
-    fetch('{API_URL}/users, ${API_URL_DEPLOYED}/users')
+    fetch('${API_URL}/users, ${API_URL_DEPLOYED}/users')
       .then(res => res.json())
       .then(data => {
         const takenDesks = new Set(data.users.map(u => u.desk));
@@ -303,7 +307,7 @@
         let frameIndex = 0;
         let lastFrameTime = 0;
         const spriteSheet = new window.Image();
-        spriteSheet.src = `static/Images/Characters/${avatar.file}`;
+        spriteSheet.src = `./static/Images/Characters/${avatar.file}`;
 
         // Calculate scale to fit the frame in the box
         const scale = Math.min(

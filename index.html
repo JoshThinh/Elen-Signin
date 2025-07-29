@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <title>Login</title>
   <link rel="stylesheet" href="style.css">
-  <base href="/https://joshthinh.github.io/Elen-Signin/">
-
   <style>
     body {
       display: flex;
@@ -70,11 +68,16 @@
       <button type="submit">Login</button>
     </form>
     <div class="signup-link">
-      <a href="signup.html">Don't have an account? Sign up</a>
+      <a href="./signup.html">Don't have an account? Sign up</a>
     </div>
   </div>
   <script src="config.js"></script>
   <script>
+    const base = document.createElement('base');
+    base.href = location.hostname === 'localhost' ? '/' : '/https://joshthinh.github.io/Elen-Signin/';
+    document.head.appendChild(base);
+
+    
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const username = document.getElementById('username').value;
