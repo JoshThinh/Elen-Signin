@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Sign Up</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css">
   <style>
     body {
       display: flex;
@@ -127,11 +127,12 @@
   
   <script src="config.js"></script>
   <script>
+    // Provides the base href for the page
     const base = document.createElement('base');
     base.href = location.hostname === 'localhost' ? '/' : "/https://joshthinh.github.io/Elen-Signin/";
     document.head.appendChild(base);
 
-
+    const ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
     const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
 
     // Show/hide admin code field based on role selection
@@ -183,7 +184,7 @@
       if (role === 'admin') {
         payload.admin_code = admin_code;
       }
-      const res = await fetch(`${API_URL}/signup, ${API_URL_DEPLOYED}/signup`, {
+      const res = await fetch(`${ApiUrlLink}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -217,12 +218,16 @@
     ];
 
     // Fetch taken desks from backend and render the grid
-    fetch('${API_URL}/users, ${API_URL_DEPLOYED}/users')
+    fetch(`${ApiUrlLink}/users`)
       .then(res => res.json())
       .then(data => {
         const takenDesks = new Set(data.users.map(u => u.desk));
         renderDeskGrid(takenDesks);
-      });
+      })
+      .catch(err => {
+    console.error('Error fetching desks:', err);
+    document.getElementById('deskGrid').innerText = 'Failed to load desk map.';
+  });
     
     function renderDeskGrid(takenDesks) {
       const grid = document.getElementById('deskGrid');
