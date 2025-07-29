@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <title>Login</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    const base = document.createElement('base');
+    base.href = location.hostname === 'localhost' ? '/' : '/https://joshthinh.github.io/Elen-Signin/';
+    document.head.appendChild(base);
+
+    const ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
+    
+  </script>
   <style>
     body {
       display: flex;
@@ -73,12 +81,6 @@
   </div>
   <script src="config.js"></script>
   <script>
-    const base = document.createElement('base');
-    base.href = location.hostname === 'localhost' ? '/' : '/https://joshthinh.github.io/Elen-Signin/';
-    document.head.appendChild(base);
-
-    const ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
-    
     // Login form submission
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
