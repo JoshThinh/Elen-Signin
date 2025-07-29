@@ -7,6 +7,15 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
+  <script>
+    const base = document.createElement('base');
+    base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
+    document.head.appendChild(base);
+
+    const ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
+    
+  </script>
+
   <style>
     .header {
       align-items: left;
@@ -434,7 +443,7 @@
       if (!username) {
         window.location.href = "index.html";
       } else {
-        fetch(`http://localhost:5000/user/${username}`)
+        fetch(`${ApiUrlLink}/username`)
           .then(res => {
             if (!res.ok) {
               if (res.status === 404) {
@@ -493,7 +502,7 @@
           let currentBreakHours = 0;
           if (action === "clocked-in") {
             try {
-              const hoursRes = await fetch(`${API_URL}/current_hours`);
+              const hoursRes = await fetch(`${ApiUrlLink}/current_hours`);
               if (hoursRes.ok) {
                 const hoursData = await hoursRes.json();
                 const userHours = hoursData.find(u => u.username === username);
@@ -508,7 +517,7 @@
             }
           }
           
-          const res = await fetch(`${API_URL}/status/${username}/${action}`, { method: "POST" });
+          const res = await fetch(`${ApiUrlLink}/status/${username}/${action}`, { method: "POST" });
           setTimeout(() => { // Wait for animation to finish
             resetButtonLoading(btn);
             if (res.ok) {
