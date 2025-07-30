@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
     document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
     // Fetch user info to determine admin status
-    fetch(`http://localhost:5000/user/${username}`)
+    fetch(`${ApiUrlLink}/user/${username}`)
       .then(res => res.json())
       .then(user => {
         if (user && user.role === 'admin') {
@@ -188,19 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
-    fetch ('web-production-6b1da.up.railway.app${username}')
-      .then(res => res.json())
-      .then(user=> {
-       if(user && user.role === 'admin') {
-        document.getElementById('hourLink').style.display = 'block';
-        document.getElementById('editUsersLink').style.display = 'block';
-      } else {
-        document.getElementById('hourLink').style.display = 'none';
-        document.getElementById('editUsersLink').style.display = 'none';
-      }
-    });
-
-
 // --- End Navbar/Sidebar logic ---
 
 const canvas = document.getElementById('boardCanvas');
@@ -210,6 +197,7 @@ let frameIndex = 0;
 let lastFrameTime = 0;
 
 // Desk and character sprite config
+
 const deskImg = new Image();
 deskImg.src = `${base.href}Static/Images/Desks/desk.png`;
 const spriteSheet = new Image();
