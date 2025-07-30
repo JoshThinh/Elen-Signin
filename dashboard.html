@@ -429,7 +429,7 @@
     <div class="popup-message" id="popupMessage" style="display:none;"></div>
   </div>
 
-  <script>
+  <script defer>
     document.addEventListener("DOMContentLoaded", () => {
       function getQueryParam(name) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -641,7 +641,7 @@
   </div>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
   
-  <script>
+  <script defer>
     document.getElementById('navbarHamburger').onclick = function() {
       document.getElementById('sidebar').classList.add('open');
       document.getElementById('sidebarOverlay').classList.add('open');
