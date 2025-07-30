@@ -203,7 +203,7 @@ let lastFrameTime = 0;
 const deskImg = new Image();
 deskImg.src = `${baseHref}Static/Images/Desks/desk.png`;
 const spriteSheet = new Image();
-spriteSheet.src = `${base.href}Static/Images/Characters/Boy_idle.png`;
+spriteSheet.src = `${baseHref}Static/Images/Characters/Boy_idle.png`;
 
 const frameWidth = 48;
 const frameHeight = 48;
@@ -284,7 +284,7 @@ const avatarSpriteSheets = {};
 function getAvatarSpriteSheet(file) {
   if (!avatarSpriteSheets[file]) {
     const img = new window.Image();
-    img.src = `${base.href}Static/Images/Characters/${file}`;
+    img.src = `${baseHref}Static/Images/Characters/${file}`;
     avatarSpriteSheets[file] = img;
   }
   return avatarSpriteSheets[file];
@@ -295,7 +295,7 @@ const userAnimStates = {};
 
 // Load background carpet image
 const carpetImg = new window.Image();
-carpetImg.src = `${base.href}Static/Images/Background/carpet.png`;
+carpetImg.src = `${baseHref}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
   // Draw carpet background
