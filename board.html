@@ -211,9 +211,9 @@ let lastFrameTime = 0;
 
 // Desk and character sprite config
 const deskImg = new Image();
-deskImg.src = 'static/Images/Desks/desk.png';
+deskImg.src = `${base.href}Static/Images/Desks/desk.png`;
 const spriteSheet = new Image();
-spriteSheet.src = 'static/Images/Characters/Boy_idle.png';
+spriteSheet.src = `${base.href}Static/Images/Characters/Boy_idle.png`;
 
 const frameWidth = 48;
 const frameHeight = 48;
@@ -263,7 +263,7 @@ const deskPositions = [
 let boardUsers = [];
 
 // Fetch users and update boardUsers, then start animation
-fetch('http://localhost:5000/users')
+fetch(`${ApiUrlLink}/users`)
   .then(res => res.json())
   .then(data => {
     boardUsers = data.users;
@@ -294,7 +294,7 @@ const avatarSpriteSheets = {};
 function getAvatarSpriteSheet(file) {
   if (!avatarSpriteSheets[file]) {
     const img = new window.Image();
-    img.src = `static/Images/Characters/${file}`;
+    img.src = `${base.href}Static/Images/Characters/${file}`;
     avatarSpriteSheets[file] = img;
   }
   return avatarSpriteSheets[file];
@@ -305,7 +305,7 @@ const userAnimStates = {};
 
 // Load background carpet image
 const carpetImg = new window.Image();
-carpetImg.src = 'static/Images/Background/carpet.png';
+carpetImg.src = `${base.href}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
   // Draw carpet background
