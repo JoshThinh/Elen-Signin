@@ -6,22 +6,6 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
-  <script defer>
-    document.addEventListener("DOMContentLoaded", () => {
-      const base = document.createElement('base');
-      base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
-      document.head.appendChild(base);
-  
-      // Ensure config.js is loaded before accessing API_URL / API_URL_DEPLOYED
-      if (typeof API_URL === 'undefined' || typeof API_URL_DEPLOYED === 'undefined') {
-        console.error('API_URL or API_URL_DEPLOYED is not defined. Check config.js loading.');
-        return;
-      }
-  
-      window.ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
-  
-      // Continue rest of logic here if needed
-    });
     </script>
   <style>
     body {
@@ -261,7 +245,7 @@
     if (!username) {
       window.location.href = "index.html";
     } else {
-      fetch(`${ApiUrlLink}/user/${username}`)
+      fetch(`${window.ApiUrlLink}/user/${username}`)
         .then(res => {
           console.log('User fetch status:', res.status);
           res.clone().text().then(txt => console.log('User fetch body:', txt));
@@ -349,7 +333,7 @@
     }
 
     function loadDeskSelection() {
-      fetch(`${ApiUrlLink}/users`)
+      fetch(`${window.ApiUrlLink}/users`)
         .then(res => res.json())
         .then(data => {
           const takenDesks = new Set(data.users.map(u => u.desk));
@@ -425,7 +409,7 @@
       }
       
       try {
-        const response = await fetch(`${ApiUrlLink}/update_desk`, {
+        const response = await fetch(`${window.ApiUrlLink}/update_desk`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -473,7 +457,7 @@
     
     // Personal hours functions
     function loadPersonalHours() {
-      fetch(`${ApiUrlLink}/timesheets/week`)
+      fetch(`${window.ApiUrlLink}/timesheets/week`)
         .then(res => res.json())
         .then(data => {
           // Find the current user's entry for today
@@ -529,7 +513,7 @@
         document.getElementById('message').textContent = 'User not found.';
         return;
       }
-      const res = await fetch(`${ApiUrlLink}/update_user`, {
+      const res = await fetch(`${window.ApiUrlLink}/update_user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username, email, password })
