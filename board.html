@@ -7,9 +7,6 @@
   <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
   <script defer>
-    let baseHref; 
-    let ApiUrlLink;
-
     document.addEventListener("DOMContentLoaded", () => {
       const base = document.createElement('base');
       base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
@@ -147,22 +144,6 @@
   </div>
 
   <script>
-
-document.addEventListener("DOMContentLoaded", () => {
-      const base = document.createElement('base');
-      base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
-      document.head.appendChild(base);
-  
-      // Ensure config.js is loaded before accessing API_URL / API_URL_DEPLOYED
-      if (typeof API_URL === 'undefined' || typeof API_URL_DEPLOYED === 'undefined') {
-        console.error('API_URL or API_URL_DEPLOYED is not defined. Check config.js loading.');
-        return;
-      }
-  
-      window.ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
-  
-      // Continue rest of logic here if needed
-    });
 // --- Navbar/Sidebar logic (dashboard style) ---
 document.getElementById('navbarHamburger').onclick = function() {
   document.getElementById('sidebar').classList.add('open');
@@ -208,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 // --- End Navbar/Sidebar logic ---
-
+document.addEventListener('DOMContentLoaded', () => {
 const canvas = document.getElementById('boardCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -312,7 +293,7 @@ const userAnimStates = {};
 
 // Load background carpet image
 const carpetImg = new window.Image();
-carpetImg.src = `${base.href}Static/Images/Background/carpet.png`;
+carpetImg.src = `${baseHref}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
   // Draw carpet background
@@ -448,6 +429,7 @@ function checkLoaded() {
 }
 deskImg.onload = checkLoaded;
 spriteSheet.onload = checkLoaded;
+});
   </script>
 </body>
 </html>
