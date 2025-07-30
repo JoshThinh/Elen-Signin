@@ -453,7 +453,7 @@
       if (!username) {
         window.location.href = "index.html";
       } else {
-        fetch(`${ApiUrlLink}/user`)
+        fetch(`${ApiUrlLink}/users`)
           .then(res => {
             if (!res.ok) {
               if (res.status === 404) {
