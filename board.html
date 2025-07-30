@@ -7,6 +7,8 @@
   <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
   <script defer>
+    let baseHref; 
+
     document.addEventListener("DOMContentLoaded", () => {
       const base = document.createElement('base');
       base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
@@ -199,7 +201,7 @@ let lastFrameTime = 0;
 // Desk and character sprite config
 
 const deskImg = new Image();
-deskImg.src = `${base.href}Static/Images/Desks/desk.png`;
+deskImg.src = `${baseHref}Static/Images/Desks/desk.png`;
 const spriteSheet = new Image();
 spriteSheet.src = `${base.href}Static/Images/Characters/Boy_idle.png`;
 
