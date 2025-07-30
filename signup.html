@@ -6,12 +6,21 @@
   <link rel="stylesheet" href="./style.css">
   <script src="config.js"></script>
   <script defer>
-    const base = document.createElement('base');
-    base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
-    document.head.appendChild(base);
-
-    const ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
-    
+    document.addEventListener("DOMContentLoaded", () => {
+      const base = document.createElement('base');
+      base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
+      document.head.appendChild(base);
+  
+      // Ensure config.js is loaded before accessing API_URL / API_URL_DEPLOYED
+      if (typeof API_URL === 'undefined' || typeof API_URL_DEPLOYED === 'undefined') {
+        console.error('API_URL or API_URL_DEPLOYED is not defined. Check config.js loading.');
+        return;
+      }
+  
+      window.ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
+  
+      // Continue rest of logic here if needed
+    });
   </script>
   <style>
     body {
