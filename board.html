@@ -6,25 +6,6 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
-  <script defer>
-    let baseHref; 
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const base = document.createElement('base');
-      base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
-      document.head.appendChild(base);
-  
-      // Ensure config.js is loaded before accessing API_URL / API_URL_DEPLOYED
-      if (typeof API_URL === 'undefined' || typeof API_URL_DEPLOYED === 'undefined') {
-        console.error('API_URL or API_URL_DEPLOYED is not defined. Check config.js loading.');
-        return;
-      }
-  
-      window.ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
-  
-      // Continue rest of logic here if needed
-    });
-  </script>
   <style>
     body {
       display: flex;
@@ -146,6 +127,22 @@
   </div>
 
   <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+      const base = document.createElement('base');
+      base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
+      document.head.appendChild(base);
+  
+      // Ensure config.js is loaded before accessing API_URL / API_URL_DEPLOYED
+      if (typeof API_URL === 'undefined' || typeof API_URL_DEPLOYED === 'undefined') {
+        console.error('API_URL or API_URL_DEPLOYED is not defined. Check config.js loading.');
+        return;
+      }
+  
+      window.ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
+  
+      // Continue rest of logic here if needed
+    });
 // --- Navbar/Sidebar logic (dashboard style) ---
 document.getElementById('navbarHamburger').onclick = function() {
   document.getElementById('sidebar').classList.add('open');
@@ -201,9 +198,9 @@ let lastFrameTime = 0;
 // Desk and character sprite config
 
 const deskImg = new Image();
-deskImg.src = `${baseHref}Static/Images/Desks/desk.png`;
+deskImg.src = `${base.href}Static/Images/Desks/desk.png`;
 const spriteSheet = new Image();
-spriteSheet.src = `${baseHref}Static/Images/Characters/Boy_idle.png`;
+spriteSheet.src = `${base.href}Static/Images/Characters/Boy_idle.png`;
 
 const frameWidth = 48;
 const frameHeight = 48;
@@ -284,7 +281,7 @@ const avatarSpriteSheets = {};
 function getAvatarSpriteSheet(file) {
   if (!avatarSpriteSheets[file]) {
     const img = new window.Image();
-    img.src = `${baseHref}Static/Images/Characters/${file}`;
+    img.src = `${base.href}Static/Images/Characters/${file}`;
     avatarSpriteSheets[file] = img;
   }
   return avatarSpriteSheets[file];
@@ -295,7 +292,7 @@ const userAnimStates = {};
 
 // Load background carpet image
 const carpetImg = new window.Image();
-carpetImg.src = `${baseHref}Static/Images/Background/carpet.png`;
+carpetImg.src = `${base.href}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
   // Draw carpet background
