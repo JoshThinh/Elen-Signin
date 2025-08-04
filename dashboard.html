@@ -630,7 +630,6 @@
   <div class="sidebar" id="sidebar">
     <a href="#" id="dashboardLink" style="display:none;">Dashboard</a>
     <a href="#" id="boardLink">Board</a>
-    <a href="#" id="floorPlanLink">Floor Plan</a>
     <a href="#" id="settingsLink">Settings</a>
     <a href="#" id="submitLink">Submit Email</a>
     <a href="#" id="viewEmailLink">View Email</a>
@@ -665,7 +664,6 @@
       // Update all sidebar links to include username
       if (username) {
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('floorPlanLink').href = `floorplan.html?username=${encodeURIComponent(username)}`;
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
         document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;

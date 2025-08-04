@@ -227,7 +227,6 @@
   <div class="sidebar" id="sidebar">
     <a href="#" id="dashboardLink">Dashboard</a>
     <!--<a href="#" id="boardLink">Board</a>-->
-    <a href="#" id="floorPlanLink">Floor Plan</a>
     <a href="#" id="settingsLink">Settings</a>
     <a href="#" id="submitLink">Submit Email</a>
     <a href="#" id="viewEmailLink">View Email</a>
@@ -298,7 +297,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (username) {
     document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
     // document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
-    document.getElementById('floorPlanLink').href = `floorplan.html?username=${encodeURIComponent(username)}`;
     document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
     document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
     document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
@@ -415,50 +413,6 @@ refreshData();
 
 // Auto-refresh every 30 seconds
 setInterval(refreshData, 30000);
-
-// Zoom and Pan Functions (moved outside event listeners for global access)
-function applyZoomAndPan() {
-  ctx.save();
-  ctx.translate(panX, panY);
-  ctx.scale(zoomLevel, zoomLevel);
-}
-
-function resetZoomAndPan() {
-  ctx.restore();
-}
-
-// Zoom controls
-function zoomIn() {
-  console.log('zoomIn called, current zoomLevel:', zoomLevel);
-  zoomLevel = Math.min(zoomLevel * 1.2, 3);
-  console.log('new zoomLevel:', zoomLevel);
-}
-
-function zoomOut() {
-  console.log('zoomOut called, current zoomLevel:', zoomLevel);
-  zoomLevel = Math.max(zoomLevel / 1.2, 0.5);
-  console.log('new zoomLevel:', zoomLevel);
-}
-
-function resetZoom() {
-  console.log('resetZoom called');
-  zoomLevel = 1;
-  panX = 0;
-  panY = 0;
-  console.log('reset complete - zoomLevel:', zoomLevel, 'panX:', panX, 'panY:', panY);
-}
-
-// Fullscreen function
-function toggleFullscreen() {
-  const canvas = document.getElementById('boardCanvas');
-  if (!document.fullscreenElement) {
-    canvas.requestFullscreen().catch(err => {
-      console.log('Error attempting to enable fullscreen:', err);
-    });
-  } else {
-    document.exitFullscreen();
-  }
-}
 
 // Avatar animation configs
 const avatarConfigs = {
@@ -679,23 +633,51 @@ function animateSprite(timestamp) {
   requestAnimationFrame(animateSprite);
 }
 
+// Zoom and Pan Functions
+function applyZoomAndPan() {
+  ctx.save();
+  ctx.translate(panX, panY);
+  ctx.scale(zoomLevel, zoomLevel);
+}
+
+function resetZoomAndPan() {
+  ctx.restore();
+}
+
+// Zoom controls
+function zoomIn() {
+  zoomLevel = Math.min(zoomLevel * 1.2, 3);
+}
+
+function zoomOut() {
+  zoomLevel = Math.max(zoomLevel / 1.2, 0.5);
+}
+
+function resetZoom() {
+  zoomLevel = 1;
+  panX = 0;
+  panY = 0;
+}
+
+// Fullscreen function
+function toggleFullscreen() {
+  const canvas = document.getElementById('boardCanvas');
+  if (!document.fullscreenElement) {
+    canvas.requestFullscreen().catch(err => {
+      console.log('Error attempting to enable fullscreen:', err);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
 // Event listeners for controls
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Setting up control event listeners...');
-  
-  const refreshBtn = document.getElementById('refreshBtn');
-  const zoomInBtn = document.getElementById('zoomInBtn');
-  const zoomOutBtn = document.getElementById('zoomOutBtn');
-  const resetZoomBtn = document.getElementById('resetZoomBtn');
-  const fullscreenBtn = document.getElementById('fullscreenBtn');
-  
-  console.log('Buttons found:', { refreshBtn, zoomInBtn, zoomOutBtn, resetZoomBtn, fullscreenBtn });
-  
-  if (refreshBtn) refreshBtn.addEventListener('click', function() { console.log('Refresh clicked'); refreshData(); });
-  if (zoomInBtn) zoomInBtn.addEventListener('click', function() { console.log('Zoom in clicked'); zoomIn(); });
-  if (zoomOutBtn) zoomOutBtn.addEventListener('click', function() { console.log('Zoom out clicked'); zoomOut(); });
-  if (resetZoomBtn) resetZoomBtn.addEventListener('click', function() { console.log('Reset zoom clicked'); resetZoom(); });
-  if (fullscreenBtn) fullscreenBtn.addEventListener('click', function() { console.log('Fullscreen clicked'); toggleFullscreen(); });
+  document.getElementById('refreshBtn').addEventListener('click', refreshData);
+  document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
+  document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
+  document.getElementById('resetZoomBtn').addEventListener('click', resetZoom);
+  document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
   
   // Mouse controls for panning
   const canvas = document.getElementById('boardCanvas');
