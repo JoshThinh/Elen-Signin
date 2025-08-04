@@ -27,6 +27,103 @@
   
 
   <style>
+    /* Responsive scaling variables */
+    :root {
+      --scale-phone: 0.8;
+      --scale-tablet: 0.9;
+      --scale-desktop: 1;
+      --scale-tv: 1.2;
+    }
+    
+    /* Phone scaling */
+    @media screen and (max-width: 768px) {
+      :root {
+        --scale-phone: 0.7;
+        --scale-tablet: 0.8;
+        --scale-desktop: 0.9;
+        --scale-tv: 1;
+      }
+      
+      body {
+        font-size: calc(16px * var(--scale-phone));
+      }
+      
+      .navbar {
+        height: calc(60px * var(--scale-phone));
+        padding: 0 calc(8px * var(--scale-phone));
+      }
+      
+      .navbar-hamburger {
+        font-size: calc(2rem * var(--scale-phone));
+        padding: 0 calc(24px * var(--scale-phone));
+      }
+      
+      .sidebar {
+        width: calc(220px * var(--scale-phone));
+        padding-top: calc(56px * var(--scale-phone));
+      }
+      
+      .sidebar a {
+        padding: calc(18px * var(--scale-phone)) calc(24px * var(--scale-phone));
+        font-size: calc(1.1rem * var(--scale-phone));
+      }
+      
+      .clock-in-btn, .clock-out-btn, .break-btn, .work-from-home-btn {
+        padding: calc(12px * var(--scale-phone)) calc(24px * var(--scale-phone));
+        font-size: calc(16px * var(--scale-phone));
+        margin: calc(10px * var(--scale-phone));
+      }
+      
+      .status-indicator {
+        font-size: calc(14px * var(--scale-phone));
+        padding: calc(8px * var(--scale-phone)) calc(16px * var(--scale-phone));
+      }
+    }
+    
+    /* TV scaling */
+    @media screen and (min-width: 1920px) {
+      :root {
+        --scale-phone: 1;
+        --scale-tablet: 1.1;
+        --scale-desktop: 1.2;
+        --scale-tv: 1.3;
+      }
+      
+      body {
+        font-size: calc(16px * var(--scale-tv));
+      }
+      
+      .navbar {
+        height: calc(60px * var(--scale-tv));
+        padding: 0 calc(8px * var(--scale-tv));
+      }
+      
+      .navbar-hamburger {
+        font-size: calc(2rem * var(--scale-tv));
+        padding: 0 calc(24px * var(--scale-tv));
+      }
+      
+      .sidebar {
+        width: calc(220px * var(--scale-tv));
+        padding-top: calc(56px * var(--scale-tv));
+      }
+      
+      .sidebar a {
+        padding: calc(18px * var(--scale-tv)) calc(24px * var(--scale-tv));
+        font-size: calc(1.1rem * var(--scale-tv));
+      }
+      
+      .clock-in-btn, .clock-out-btn, .break-btn, .work-from-home-btn {
+        padding: calc(12px * var(--scale-tv)) calc(24px * var(--scale-tv));
+        font-size: calc(16px * var(--scale-tv));
+        margin: calc(10px * var(--scale-tv));
+      }
+      
+      .status-indicator {
+        font-size: calc(14px * var(--scale-tv));
+        padding: calc(8px * var(--scale-tv)) calc(16px * var(--scale-tv));
+      }
+    }
     .header {
       align-items: left;
       padding: 10px 20px;
