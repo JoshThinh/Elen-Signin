@@ -102,6 +102,154 @@
     .sidebar-overlay.open {
       display: block;
     }
+    
+    /* Visual Desk Selector Modal */
+    .desk-selector-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .desk-selector-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    }
+    
+    .desk-selector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .desk-selector-header h3 {
+      margin: 0;
+      color: #333;
+      font-size: 1.5rem;
+    }
+    
+    .close-desk-selector {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    
+    .close-desk-selector:hover {
+      background: #c82333;
+    }
+    
+    .office-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin: 20px 0;
+    }
+    
+    .office-grid table {
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
+    
+    .office-grid td {
+      aspect-ratio: 1;
+      box-sizing: border-box;
+      border: 1px solid #bbb;
+      text-align: center;
+      padding: 0;
+      font-size: 12px;
+      transition: outline 0.2s;
+      cursor: pointer;
+      background: #f8f9fa;
+    }
+    
+    .office-grid td.desk-cell {
+      background: #e0f7fa;
+      cursor: pointer;
+    }
+    
+    .office-grid td.desk-cell:hover {
+      outline: 2px solid #2d2e4b;
+    }
+    
+    .office-grid td.desk-cell.selected {
+      outline: 2px solid #007bff;
+      background: #d4edda;
+    }
+    
+    .office-grid td.desk-cell.occupied {
+      background: #f8d7da;
+      cursor: not-allowed;
+    }
+    
+    .office-grid td.desk-cell.current-user {
+      background: #d4edda;
+      border: 2px solid #28a745;
+    }
+    
+    .desk-legend {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    
+    .select-desk-btn {
+      background: #2d2e4b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 20px;
+      width: 100%;
+    }
+    
+    .select-desk-btn:hover {
+      background: #1a1b2e;
+    }
+    
+    .select-desk-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
     .users-container {
       flex: 1;
       display: flex;
@@ -362,12 +510,14 @@
                 <label>Status:
                   <select id="edit-status-${user.username}">
                     <option value="clocked-in" ${user.status === 'clocked-in' ? 'selected' : ''}>Clocked In</option>
+                    <option value="work-from-home" ${user.status === 'work-from-home' ? 'selected' : ''}>Work from Home</option>
                     <option value="break" ${user.status === 'break' ? 'selected' : ''}>Break</option>
                     <option value="clocked-out" ${user.status === 'clocked-out' ? 'selected' : ''}>Clocked Out</option>
                   </select>
                 </label>
                 <label>Desk:
-                  <input type="text" id="edit-desk-${user.username}" value="${user.desk || ''}" placeholder="e.g. 3,2">
+                  <input type="text" id="edit-desk-${user.username}" value="${user.desk || ''}" placeholder="e.g. 3,2" readonly>
+                  <button type="button" onclick="showVisualDeskSelector('${user.username}')" style="background: #2d2e4b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-left: 8px; font-size: 12px;">📋 Visual Selector</button>
                 </label>
                 <button type="submit" class="edit-btn">Save</button>
                 <button type="button" class="delete-btn" onclick="hideEditForm('${user.username}')">Cancel</button>
@@ -449,6 +599,170 @@
       loadUsers();
       return false;
     }
+    
+    // Visual Desk Selector Functions
+    let currentEditingUsername = null;
+    let selectedDesk = null;
+    let allUsers = [];
+    
+    // Desk positions (same as board.html)
+    const deskPositions = [
+      // Row 0: xoxox
+      {x:1, y:0}, {x:3, y:0},
+      // Row 1: oxxx
+      {x:0, y:1},
+      // Row 2: oxxoxxxo
+      {x:0, y:2}, {x:3, y:2}, {x:8, y:2},
+      // Row 3: xxxxxxxxxxoxxoxxo
+      {x:10, y:4}, {x:11, y:4}, {x:13, y:4}, {x:14, y:4}, {x:16, y:4}, {x:17, y:4},
+      // Row 4: oxxxx
+      {x:0, y:5},
+      // Row 5: oxxooxooxooxooxooxo
+      {x:0, y:6}, {x:2, y:6}, {x:3, y:6}, {x:6, y:6}, {x:7, y:6}, {x:10, y:6}, {x:11, y:6}, {x:14, y:6}, {x:15, y:6}, {x:18, y:6}, {x:19, y:6}, {x:21, y:6},
+      // Row 6: xxxooxooxooxooxooxo
+      {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7},
+    ];
+    
+    const gridCols = 22; // 0-21
+    const gridRows = 8;  // 0-7
+    
+    function showVisualDeskSelector(username) {
+      currentEditingUsername = username;
+      selectedDesk = null;
+      
+      // Load current users to check occupied desks
+      fetch(`${window.ApiUrlLink}/users`)
+        .then(res => res.json())
+        .then(data => {
+          allUsers = data.users;
+          generateDeskGrid();
+          document.getElementById('deskSelectorModal').style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error loading users for desk selector:', error);
+          alert('Error loading office layout. Please try again.');
+        });
+    }
+    
+    function generateDeskGrid() {
+      const deskGrid = document.getElementById('deskGrid');
+      deskGrid.innerHTML = '';
+      
+      const takenDesks = new Set(allUsers.map(u => u.desk));
+      const currentUser = allUsers.find(u => u.username === currentEditingUsername);
+      const currentUserDesk = currentUser ? currentUser.desk : null;
+      
+      const table = document.createElement('table');
+      table.style.borderCollapse = 'collapse';
+      table.style.borderSpacing = '0';
+      table.style.margin = '0 auto';
+      table.style.width = '100%';
+      table.style.tableLayout = 'fixed';
+      
+             // Calculate cell size for larger grid
+       const containerWidth = deskGrid.offsetWidth - 32;
+       const availableWidth = Math.max(containerWidth, 600);
+       const cellSize = Math.min(availableWidth / gridCols, 20);
+      
+      for (let y = 0; y < gridRows; y++) {
+        const tr = document.createElement('tr');
+        for (let x = 0; x < gridCols; x++) {
+          const td = document.createElement('td');
+          td.style.width = `${cellSize}px`;
+          td.style.height = `${cellSize}px`;
+          td.style.minWidth = `${cellSize}px`;
+          td.style.minHeight = `${cellSize}px`;
+          td.style.maxWidth = `${cellSize}px`;
+          td.style.maxHeight = `${cellSize}px`;
+          td.style.border = '1px solid #bbb';
+          td.style.textAlign = 'center';
+          td.style.padding = '0';
+          td.style.fontSize = Math.max(10, cellSize * 0.35) + 'px';
+          td.style.transition = 'outline 0.2s';
+          td.style.boxSizing = 'border-box';
+          td.style.verticalAlign = 'middle';
+          
+          const isDesk = deskPositions.some(d => d.x === x && d.y === y);
+          if (isDesk) {
+            const deskKey = `${x},${y}`;
+            td.className = 'desk-cell';
+            td.textContent = '🪑';
+            
+                         // Add data attribute for easy selection
+             td.setAttribute('data-desk', deskKey);
+             
+             if (deskKey === currentUserDesk) {
+               td.classList.add('current-user');
+             } else if (takenDesks.has(deskKey)) {
+               td.classList.add('occupied');
+               const occupiedUser = allUsers.find(u => u.desk === deskKey);
+               td.title = `Occupied by ${occupiedUser.username}`;
+             } else {
+               td.onclick = function() { selectDesk(deskKey); };
+             }
+                     } else {
+             // Empty space - match board layout
+             if (y === 3) {
+               // Row 3 has desks at specific positions, rest is empty
+               td.style.background = '#f8f9fa';
+             } else if (y === 4) {
+               // Row 4 has desks at specific positions, rest is empty
+               td.style.background = '#f8f9fa';
+             } else {
+               // Other empty spaces
+               td.style.background = '#f8f9fa';
+             }
+             td.textContent = '';
+           }
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+      deskGrid.appendChild(table);
+    }
+    
+    function selectDesk(deskCoord) {
+      console.log('Selecting desk:', deskCoord);
+      
+      // Remove previous selection
+      const allCells = document.querySelectorAll('.desk-cell');
+      allCells.forEach(cell => cell.classList.remove('selected'));
+      
+      // Find the clicked cell using data attribute
+      const selectedCell = document.querySelector(`.desk-cell[data-desk="${deskCoord}"]`);
+      
+      if (selectedCell) {
+        selectedCell.classList.add('selected');
+        selectedDesk = deskCoord;
+        document.getElementById('selectDeskBtn').disabled = false;
+        console.log('Desk selected:', deskCoord);
+      } else {
+        console.log('Could not find cell for desk:', deskCoord);
+      }
+    }
+    
+    function confirmDeskSelection() {
+      if (selectedDesk && currentEditingUsername) {
+        const deskInput = document.getElementById(`edit-desk-${currentEditingUsername}`);
+        deskInput.value = selectedDesk;
+        closeDeskSelector();
+      }
+    }
+    
+    function closeDeskSelector() {
+      document.getElementById('deskSelectorModal').style.display = 'none';
+      currentEditingUsername = null;
+      selectedDesk = null;
+      document.getElementById('selectDeskBtn').disabled = true;
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('deskSelectorModal');
+      if (event.target === modal) {
+        closeDeskSelector();
+      }
+    }
   </script>
   <script>
     // Navbar fade on scroll
@@ -461,5 +775,42 @@
       }
     });
   </script>
+  
+  <!-- Visual Desk Selector Modal -->
+  <div id="deskSelectorModal" class="desk-selector-modal">
+    <div class="desk-selector-content">
+      <div class="desk-selector-header">
+        <h3>Select Desk Location</h3>
+        <button class="close-desk-selector" onclick="closeDeskSelector()">✕</button>
+      </div>
+      
+      <div class="office-grid" id="deskGrid">
+        <!-- Desk grid will be generated here -->
+      </div>
+      
+      <div class="desk-legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #e0f7fa; border-color: #bbb;"></div>
+          <span>Available</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #f8d7da; border-color: #dc3545;"></div>
+          <span>Occupied</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #d4edda; border-color: #28a745;"></div>
+          <span>Current User</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #d4edda; border-color: #007bff;"></div>
+          <span>Selected</span>
+        </div>
+      </div>
+      
+      <button id="selectDeskBtn" class="select-desk-btn" onclick="confirmDeskSelection()" disabled>
+        Select Desk
+      </button>
+    </div>
+  </div>
 </body>
 </html>
