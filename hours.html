@@ -24,28 +24,35 @@
     });
   </script>
   <style>
-    :root {
-      --color-bg-dark: #003135;
-      --color-bg-medium: #024950;
-      --color-accent: #964734;
-      --color-primary: #0fa4af;
-      --color-bg-light: #afdde5;
-      --color-white: #fff;
-    }
     body {
-      padding-top: 56px; /* Prevent content from being hidden under navbar */
-      font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      /*background: url('static/Images/Background/work.gif') center center fixed, linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-dark) 100%);*/
-      background-size: cover, cover;
-      background-attachment: fixed, fixed;
-      color: var(--color-bg-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       margin: 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 16px;
+      color: #777777;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
+    
+    .hours-container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+      max-width: 1200px;
+      width: 100%;
+    }
+    
     .navbar {
       width: 100%;
-      height: 56px;
-      background: rgba(65, 38, 83, 0.3); /* #412653 with 95% opacity */
-      color: var(--color-white);
+      height: 60px;
+      background: #2d2e4bf2;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -55,50 +62,55 @@
       z-index: 1001;
       box-sizing: border-box;
       padding-right: 8px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      transition: background 0.4s;
     }
+    
     .navbar-hamburger {
       font-size: 2rem;
       cursor: pointer;
       padding: 0 24px;
       user-select: none;
     }
+    
     .navbar-title {
       font-size: 1.3rem;
       font-weight: bold;
       margin-left: 12px;
     }
+    
     .sidebar {
       position: fixed;
       top: 0;
       right: -220px;
       width: 220px;
       height: 100%;
-      background: rgba(65, 38, 83, 0.3); /* #412653 with 95% opacity */
-      color: var(--color-white);
+      background: #2d2e4bf2;
+      color: rgba(45, 46, 75, 0.95);
       display: flex;
       flex-direction: column;
       padding-top: 56px;
-      backdrop-filter: blur(6px);
       transition: right 0.3s;
       z-index: 1002;
     }
+    
     .sidebar.open {
       right: 0;
     }
+    
     .sidebar a {
-      color: var(--color-white);
+      color: #DDDDDD;
       padding: 18px 24px;
       text-decoration: none;
       font-size: 1.1rem;
-      border-bottom: 1px solid #4a324a;
+      border-bottom: 1px solid #444;
       transition: background 0.2s;
     }
+    
     .sidebar a:hover {
-      background: rgba(198, 186, 222, 0.5);
-      color: #4a324a;
+      background: rgba(45, 46, 75, 0.8);
+      color: #fff;
     }
+    
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -106,121 +118,161 @@
       background: rgba(0,0,0,0.3);
       z-index: 1000;
     }
+    
     .sidebar-overlay.open {
       display: block;
     }
+    
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
     .refresh-indicator {
       text-align: center;
       color: #666;
       font-size: 14px;
       margin: 10px 0;
     }
+    
     .refreshing {
-      color: #007bff;
+      color: #2d2e4b;
       font-weight: bold;
     }
+    
     .last-updated {
-      color: #2e151b;
+      color: #333;
     }
-    .hours-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+    
     .user-hours-section {
-      background: rgba(198, 186, 222, 0.7); /* #c6bade with 70% opacity */
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       margin-bottom: 20px;
       padding: 20px;
-      border: 2.5px solid rgba(175, 221, 229, 0.2); /* keep the border as before */
+      text-align: left;
     }
+    
     .user-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 15px;
       padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #e0e0e0;
     }
+    
     .user-name {
       font-size: 1.2rem;
       font-weight: bold;
-      color: #de638a;
+      color: #333;
     }
+    
     .user-status {
       font-size: 0.9rem;
       padding: 4px 8px;
       border-radius: 4px;
       color: white;
     }
+    
     .status-active {
-      background: #de638a;
+      background: #2d2e4b;
     }
+    
     .status-inactive {
       background: #6c757d;
     }
+    
     .days-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 15px;
     }
+    
     .day-card {
-      background: #c6bade;
-      border-radius: 6px;
+      background: white;
+      border-radius: 8px;
       padding: 15px;
       text-align: center;
-      border: 2px solid #f3d9e5;
+      border: 2px solid #e0e0e0;
+      position: relative;
+      transition: border-color 0.3s;
     }
+    
+    .day-card:hover {
+      border-color: #2d2e4b;
+    }
+    
     .day-header {
       font-size: 0.9rem;
       font-weight: bold;
-      color: #de638a;
+      color: #333;
       margin-bottom: 10px;
     }
+    
     .hours-display {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+    
     .hour-card {
       text-align: center;
       padding: 10px;
-      background: white;
+      background: #f8f9fa;
       border-radius: 4px;
       border-left: 3px solid;
     }
+    
     .work-hours {
-      border-left-color: #f7b9c4;
+      border-left-color: #2d2e4b;
     }
+    
     .break-hours {
-      border-left-color: #f3d9e5;
+      border-left-color: #6c757d;
     }
+    
     .hour-label {
       font-size: 0.8rem;
-      color: #de638a;
+      color: #333;
       margin-bottom: 3px;
     }
+    
     .hour-value {
       font-size: 1.1rem;
       font-weight: bold;
+      color: #333;
     }
+    
     .work-hours .hour-value {
-      color: #f7b9c4;
+      color: #2d2e4b;
     }
+    
     .break-hours .hour-value {
-      color: #f3d9e5;
+      color: #6c757d;
     }
+    
     .today-indicator {
-      background: #f3d9e5;
-      border: 2px solid #f7b9c4;
+      background: #e8e9f0;
+      border: 2px solid #2d2e4b;
     }
+    
     .real-time-indicator {
       position: absolute;
       top: -5px;
       right: -5px;
-      background: #de638a;
-      color: #f3d9e5;
+      background: #2d2e4b;
+      color: white;
       border-radius: 50%;
       width: 20px;
       height: 20px;
@@ -230,12 +282,6 @@
       font-size: 0.7rem;
       font-weight: bold;
     }
-    .day-card {
-      position: relative;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
       margin-bottom: 20px;
     }
   </style>
@@ -293,11 +339,11 @@
     function loadHoursData() {
       updateRefreshIndicator('Refreshing data...', 'refreshing');
       
-      // Fetch both weekly timesheets and current hours
-      Promise.all([
-        fetch(`${API_URL}/weekly_timesheets`).then(res => res.json()),
-        fetch(`${API_URL}/current_hours`).then(res => res.json())
-      ]).then(([weekData, currentData]) => {
+          // Fetch both weekly timesheets and current hours
+    Promise.all([
+      fetch(`${window.ApiUrlLink}/weekly_timesheets`).then(res => res.json()),
+      fetch(`${window.ApiUrlLink}/current_hours`).then(res => res.json())
+    ]).then(([weekData, currentData]) => {
         console.log('Weekly data:', weekData);
         console.log('Current hours data:', currentData);
         
@@ -456,66 +502,63 @@
 
       if (!username) {
         window.location.href = "index.html";
-      } else {
-        fetch(`${window.ApiUrlLink}/user/${username}`)
-          .then(res => {
-            if (!res.ok) {
-              if (res.status === 404) {
-                // User not found (deleted)
-                alert('Your account has been deleted. You will be redirected to the login page.');
-                localStorage.removeItem('user');
-                window.location.href = "index.html";
-                return;
-              }
-              throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            return res.json();
-          })
-          .then(user => {
-            if (!user) return; // User was deleted, already redirected
-            
-            // Check if user is admin
-            if (user.role !== "admin") {
-              alert('Access Denied. Admin privileges required to view hours.');
-              window.location.href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        return;
+      }
+
+      fetch(`${window.ApiUrlLink}/user/${username}`)
+        .then(res => {
+          if (!res.ok) {
+            if (res.status === 404) {
+              // User not found (deleted)
+              alert('Your account has been deleted. You will be redirected to the login page.');
+              localStorage.removeItem('user');
+              window.location.href = "index.html";
               return;
             }
-            
-            document.getElementById('userDisplay').textContent = user.username;
-            // Edit Users link is now visible to everyone
-          })
-          .catch((error) => {
-            console.error('Error validating user:', error);
-            alert('Error validating your account. Please log in again.');
-            localStorage.removeItem('user');
-            window.location.href = "index.html";
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(user => {
+          if (!user) return; // User was deleted, already redirected
+          
+          // Check if user is admin
+          if (user.role !== "admin") {
+            alert('Access Denied. Admin privileges required to view hours.');
+            window.location.href = `dashboard.html?username=${encodeURIComponent(username)}`;
+            return;
+          }
+          
+          document.getElementById('userDisplay').textContent = user.username;
+          
+          // Update sidebar links to include username
+          if (username) {
+            document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+            document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+            document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+            document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+            document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
+            document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+          }
+          
+          // Initial load
+          loadHoursData();
+
+          // Set up auto-refresh every 30 seconds
+          const refreshInterval = setInterval(loadHoursData, 30000); // 30 seconds
+
+          // Clean up interval when page is unloaded
+          window.addEventListener('beforeunload', () => {
+            clearInterval(refreshInterval);
           });
-      }
+        })
+        .catch((error) => {
+          console.error('Error validating user:', error);
+          alert('Error validating your account. Please log in again.');
+          localStorage.removeItem('user');
+          window.location.href = "index.html";
+        });
     });
-    
-    // Update sidebar links to include username
-    document.addEventListener('DOMContentLoaded', function() {
-      const username = getQueryParam('username');
-      if (username) {
-        document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
-      }
-    });
-
-    // Initial load
-    loadHoursData();
-
-    // Set up auto-refresh every 30 seconds
-    const refreshInterval = setInterval(loadHoursData, 30000); // 30 seconds
-
-    // Clean up interval when page is unloaded
-    window.addEventListener('beforeunload', () => {
-      clearInterval(refreshInterval);
-    });
-  </script>
-</body>
-</html>
+       </script>
+  </body>
+  </html>
