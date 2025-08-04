@@ -200,6 +200,11 @@ let lastFrameTime = 0;
 
 const deskImg = new Image();
 deskImg.src = `${document.baseURI}Static/Images/Desks/desk.png`;
+const deskOpImg = new Image();
+deskOpImg.src = `${document.baseURI}Static/Images/Desks/deskop.png`;
+
+
+
 const spriteSheet = new Image();
 spriteSheet.src = `${document.baseURI}Static/Images/Characters/Boy_idle.png`;
 
@@ -341,13 +346,13 @@ function drawOfficeWithUsers(users) {
       ctx.translate(deskCenterX, deskCenterY);
       ctx.rotate(desk.rotation);
       ctx.drawImage(
-        deskImg,
+        deskOpImg,
         -cellSize / 2, -cellSize / 2,
         cellSize, cellSize
       );
     } else {
       ctx.drawImage(
-        deskImg,
+        deskOpImg,
         px, py,
         cellSize, cellSize
       );
