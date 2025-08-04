@@ -472,11 +472,10 @@
             
             if (user.role === "admin") {
               document.getElementById('hourLink').style.display = 'block';
-              document.getElementById('editUsersLink').style.display = 'block';
             } else {
               document.getElementById('hourLink').style.display = 'none';
-              document.getElementById('editUsersLink').style.display = 'none';
             }
+            // Edit Users link is now visible to everyone
             document.getElementById("userDisplay").innerText = user.username;
             updateStatusIndicators(user.status);
           })
@@ -636,7 +635,7 @@
     <a href="#" id="submitLink">Submit Email</a>
     <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" id="hourLink">Hours</a>
-    <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
+    <a href="#" id="editUsersLink">Edit Users</a>
     <a href="#" id="signOutLink">Sign Out</a>
   </div>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>

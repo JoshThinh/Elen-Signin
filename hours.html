@@ -252,7 +252,7 @@
     <a href="#" id="submitLink">Submit Email</a>
     <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" style="display:none;">Hours</a>
-    <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
+    <a href="#" id="editUsersLink">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
   </div>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -445,44 +445,53 @@
     }
     
     const username = getQueryParam('username');
-    if (!username) {
-      window.location.href = "index.html";
-    } else {
-      fetch(`http://localhost:5000/user/${username}`)
-        .then(res => {
-          if (!res.ok) {
-            if (res.status === 404) {
-              // User not found (deleted)
-              alert('Your account has been deleted. You will be redirected to the login page.');
-              localStorage.removeItem('user');
-              window.location.href = "index.html";
+    
+    // Wait for DOM and config to be loaded before making API calls
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure config.js is loaded and ApiUrlLink is set
+      if (typeof window.ApiUrlLink === 'undefined') {
+        console.error('ApiUrlLink is not defined. Check config.js loading.');
+        return;
+      }
+
+      if (!username) {
+        window.location.href = "index.html";
+      } else {
+        fetch(`${window.ApiUrlLink}/user/${username}`)
+          .then(res => {
+            if (!res.ok) {
+              if (res.status === 404) {
+                // User not found (deleted)
+                alert('Your account has been deleted. You will be redirected to the login page.');
+                localStorage.removeItem('user');
+                window.location.href = "index.html";
+                return;
+              }
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(user => {
+            if (!user) return; // User was deleted, already redirected
+            
+            // Check if user is admin
+            if (user.role !== "admin") {
+              alert('Access Denied. Admin privileges required to view hours.');
+              window.location.href = `dashboard.html?username=${encodeURIComponent(username)}`;
               return;
             }
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then(user => {
-          if (!user) return; // User was deleted, already redirected
-          
-          // Check if user is admin
-          if (user.role !== "admin") {
-            alert('Access Denied. Admin privileges required to view hours.');
-            window.location.href = `dashboard.html?username=${encodeURIComponent(username)}`;
-            return;
-          }
-          
-          document.getElementById('userDisplay').textContent = user.username;
-          // Show Edit Users link for admin
-          document.getElementById('editUsersLink').style.display = 'block';
-        })
-        .catch((error) => {
-          console.error('Error validating user:', error);
-          alert('Error validating your account. Please log in again.');
-          localStorage.removeItem('user');
-          window.location.href = "index.html";
-        });
-    }
+            
+            document.getElementById('userDisplay').textContent = user.username;
+            // Edit Users link is now visible to everyone
+          })
+          .catch((error) => {
+            console.error('Error validating user:', error);
+            alert('Error validating your account. Please log in again.');
+            localStorage.removeItem('user');
+            window.location.href = "index.html";
+          });
+      }
+    });
     
     // Update sidebar links to include username
     document.addEventListener('DOMContentLoaded', function() {

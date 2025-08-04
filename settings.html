@@ -46,11 +46,10 @@
             // Check if user is admin and show/hide admin-only links
             if (user.role === "admin") {
               document.getElementById('hourLink').style.display = 'block';
-              document.getElementById('editUsersLink').style.display = 'block';
             } else {
               document.getElementById('hourLink').style.display = 'none';
-              document.getElementById('editUsersLink').style.display = 'none';
             }
+            // Edit Users link is now visible to everyone
           })
           .catch((error) => {
             console.error('Error validating user:', error);
@@ -258,7 +257,7 @@
     <a href="#" id="submitLink">Submit Email</a>
     <a href="#" id="viewEmailLink">View Email</a>
     <a href="#" id="hourLink">Hours</a>
-    <a href="#" id="editUsersLink" style="display:none;">Edit Users</a>
+    <a href="#" id="editUsersLink">Edit Users</a>
     <a href="#" onclick="signOut()">Sign Out</a>
   </div>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
