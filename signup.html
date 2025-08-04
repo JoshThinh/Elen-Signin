@@ -147,23 +147,23 @@
   <script>
     const DESK_IDS = ["desk1", "desk2", "desk3", "desk4", "desk5", "desk6"];
 
-    const gridCols = 6;
-    const gridRows = 18;
+    const gridCols = 22;
+    const gridRows = 8;
     const deskPositions = [
-      {x:2, y:0}, {x:5, y:0},
-      {x:1, y:2}, {x:3, y:2}, {x:5, y:2},
-      {x:3, y:3}, {x:5, y:3},
-      {x:1, y:4},
-      {x:3, y:5}, {x:5, y:5},
-      {x:1, y:6}, {x:3, y:6}, {x:5, y:6},
-      {x:3, y:8}, {x:5, y:8},
-      {x:3, y:9}, {x:5, y:9},
-      {x:3, y:11}, {x:5, y:11},
-      {x:3, y:12}, {x:5, y:12},
-      {x:3, y:14}, {x:5, y:14},
-      {x:3, y:15}, {x:5, y:15},
-      {x:5, y:16},
-      {x:4, y:17}
+      // Row 0: xoxox
+      {x:1, y:0}, {x:3, y:0},
+      // Row 1: oxxx
+      {x:0, y:1},
+      // Row 2: oxxoxxxo
+      {x:0, y:2}, {x:3, y:2}, {x:8, y:2},
+      // Row 3: xxxxxxxxxxoxxoxxo
+      {x:10, y:4}, {x:11, y:4}, {x:13, y:4}, {x:14, y:4}, {x:16, y:4}, {x:17, y:4},
+      // Row 4: oxxxx
+      {x:0, y:5},
+      // Row 5: oxxooxooxooxooxooxo
+      {x:0, y:6}, {x:2, y:6}, {x:3, y:6}, {x:6, y:6}, {x:7, y:6}, {x:10, y:6}, {x:11, y:6}, {x:14, y:6}, {x:15, y:6}, {x:18, y:6}, {x:19, y:6}, {x:21, y:6},
+      // Row 6: xxxooxooxooxooxooxo
+      {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7}
     ];
 
     // Wait for DOM to be ready and ApiUrlLink to be available
