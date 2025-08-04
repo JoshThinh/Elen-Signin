@@ -293,14 +293,26 @@ const userAnimStates = {};
 
 // Load background carpet image
 const carpetImg = new window.Image();
-//carpetImg.src = `${document.baseURI}Static/Images/Background/carpet.png`;
+carpetImg.src = `${document.baseURI}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
-  // Draw background
-  ctx.save();
-  ctx.fillStyle = '#f8f9fa'; // Light gray background
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.restore();
+  // Draw carpet background
+  if (carpetImg.complete) {
+    const pattern = ctx.createPattern(carpetImg, 'repeat');
+    ctx.save();
+    ctx.setTransform(0.5, 0, 0, 0.5, 0, 0); // Scale down to 50%
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, canvas.width * 2, canvas.height * 2);
+    ctx.restore();
+    
+    // Add a light overlay to make the carpet appear lighter
+    ctx.save();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // White overlay with 50% opacity
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+  } else {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
   // Draw grid (optional, for visual reference)
   ctx.save();
   ctx.strokeStyle = '#999999';
