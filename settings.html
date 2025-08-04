@@ -20,7 +20,48 @@
   
       window.ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
   
-      // Continue rest of logic here if needed
+      // Validate user after ApiUrlLink is set
+      if (username) {
+        fetch(`${window.ApiUrlLink}/user/${username}`)
+          .then(res => {
+            console.log('User fetch status:', res.status);
+            res.clone().text().then(txt => console.log('User fetch body:', txt));
+            if (!res.ok) {
+              if (res.status === 404) {
+                // User not found (deleted)
+                alert('Your account has been deleted. You will be redirected to the login page.');
+                localStorage.removeItem('user');
+                window.location.href = "index.html";
+                return;
+              }
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(user => {
+            console.log('User object:', user);
+            console.log('User role:', user.role);
+            if (!user) return; // User was deleted, already redirected
+            
+            // Check if user is admin and show/hide admin-only links
+            if (user.role === "admin") {
+              document.getElementById('hourLink').style.display = 'block';
+              document.getElementById('editUsersLink').style.display = 'block';
+            } else {
+              document.getElementById('hourLink').style.display = 'none';
+              document.getElementById('editUsersLink').style.display = 'none';
+            }
+          })
+          .catch((error) => {
+            console.error('Error validating user:', error);
+            if (error && error.stack) {
+              console.error('Stack:', error.stack);
+            }
+            alert('Error validating your account. Please log in again.');
+            localStorage.removeItem('user');
+            window.location.href = "index.html";
+          });
+      }
     });
   </script>
   <style>
@@ -260,46 +301,6 @@
     const username = getQueryParam('username');
     if (!username) {
       window.location.href = "index.html";
-    } else {
-      fetch(`${window.ApiUrlLink}/user/${username}`)
-        .then(res => {
-          console.log('User fetch status:', res.status);
-          res.clone().text().then(txt => console.log('User fetch body:', txt));
-          if (!res.ok) {
-            if (res.status === 404) {
-              // User not found (deleted)
-              alert('Your account has been deleted. You will be redirected to the login page.');
-              localStorage.removeItem('user');
-              window.location.href = "index.html";
-              return;
-            }
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then(user => {
-          console.log('User object:', user);
-          console.log('User role:', user.role);
-          if (!user) return; // User was deleted, already redirected
-          
-          // Check if user is admin and show/hide admin-only links
-          if (user.role === "admin") {
-            document.getElementById('hourLink').style.display = 'block';
-            document.getElementById('editUsersLink').style.display = 'block';
-          } else {
-            document.getElementById('hourLink').style.display = 'none';
-            document.getElementById('editUsersLink').style.display = 'none';
-          }
-        })
-        .catch((error) => {
-          console.error('Error validating user:', error);
-          if (error && error.stack) {
-            console.error('Stack:', error.stack);
-          }
-          alert('Error validating your account. Please log in again.');
-          localStorage.removeItem('user');
-          window.location.href = "index.html";
-        });
     }
     
     // Update sidebar links to include username
