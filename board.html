@@ -140,7 +140,7 @@
   
   <div class="board-container">
     <h1 class="board-title">Office Presence Board</h1>
-    <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"></canvas>
+    <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"></canvas>
   </div>
 
   <script defer>
@@ -293,23 +293,17 @@ const userAnimStates = {};
 
 // Load background carpet image
 const carpetImg = new window.Image();
-carpetImg.src = `${document.baseURI}Static/Images/Background/carpet.png`;
+//carpetImg.src = `${document.baseURI}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
-  // Draw carpet background
-  if (carpetImg.complete) {
-    const pattern = ctx.createPattern(carpetImg, 'repeat');
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0); // reset any transforms
-    ctx.fillStyle = pattern;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
-  } else {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+  // Draw background
+  ctx.save();
+  ctx.fillStyle = '#f8f9fa'; // Light gray background
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
   // Draw grid (optional, for visual reference)
   ctx.save();
-  ctx.strokeStyle = '#e0e0e0';
+  ctx.strokeStyle = '#999999';
   for (let r = 0; r <= gridRows; r++) {
     ctx.beginPath();
     ctx.moveTo(0, r * cellSize);
