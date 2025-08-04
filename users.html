@@ -248,27 +248,15 @@
     const username = getUsernameFromURL();
     let isAdmin = false;
 
-    if (!username) {
-      window.location.href = 'login.html';
-    } else {
-      // Validate user with backend, but don't restrict access
-      fetch(`http://localhost:5000/user/${encodeURIComponent(username)}`)
-        .then(res => res.json())
-        .then(user => {
-          if (!user) {
-            window.location.href = 'login.html';
-          } else {
-            isAdmin = user.role === 'admin';
-            loadUsers();
-          }
-        })
-        .catch(err => {
-          window.location.href = 'login.html';
-        });
-    }
-    
-    // Update sidebar links to include username
+    // Wait for DOM and config to be loaded before making API calls
     document.addEventListener('DOMContentLoaded', function() {
+      // Ensure config.js is loaded and ApiUrlLink is set
+      if (typeof window.ApiUrlLink === 'undefined') {
+        console.error('ApiUrlLink is not defined. Check config.js loading.');
+        return;
+      }
+
+      // Update sidebar links to include username
       if (username) {
         document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
@@ -277,10 +265,35 @@
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
       }
+
+      if (!username) {
+        window.location.href = 'index.html';
+      } else {
+        // Validate user with backend, but don't restrict access
+        fetch(`${window.ApiUrlLink}/user/${encodeURIComponent(username)}`)
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(user => {
+            if (!user) {
+              window.location.href = 'index.html';
+            } else {
+              isAdmin = user.role === 'admin';
+              loadUsers();
+            }
+          })
+          .catch(err => {
+            console.error('Error validating user:', err);
+            window.location.href = 'index.html';
+          });
+      }
     });
     
     function loadUsers() {
-      fetch(`${API_URL}/users`)
+      fetch(`${window.ApiUrlLink}/users`)
         .then(res => {
           if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
@@ -380,7 +393,7 @@
     async function deleteUser(username) {
       if (confirm(`Are you sure you want to delete user: ${username}?\n\nThis action cannot be undone.`)) {
         try {
-          const response = await fetch(`${API_URL}/delete_user`, {
+          const response = await fetch(`${window.ApiUrlLink}/delete_user`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
@@ -424,9 +437,9 @@
       const status = document.getElementById(`edit-status-${username}`).value;
       const desk = document.getElementById(`edit-desk-${username}`).value.trim();
       // Update status
-      await fetch(`${API_URL}/status/${username}/${status}`, { method: 'POST' });
+      await fetch(`${window.ApiUrlLink}/status/${username}/${status}`, { method: 'POST' });
       // Update desk
-      await fetch(`${API_URL}/update_desk`, {
+      await fetch(`${window.ApiUrlLink}/update_desk`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, desk })
