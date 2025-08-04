@@ -214,43 +214,29 @@ const totalFrames = 4;
 const frameDuration = 200; // ms per frame
 
 // --- Office Layout Config ---
-const gridCols = 6; // number of columns in your grid
-const gridRows = 18; // number of rows in your grid
+const gridCols = 22; // number of columns in your grid (positions 0-21)
+const gridRows = 8; // number of rows in your grid (reduced to match your layout)
 const cellSize = 64; // pixels per grid cell
-canvas.width = gridRows * cellSize; // Swapped: height becomes width
-canvas.height = gridCols * cellSize; // Swapped: width becomes height
+canvas.width = gridCols * cellSize;
+canvas.height = gridRows * cellSize;
 
-// Desk positions from the provided text grid (x = column, y = row, 0-indexed)
-const deskPositions = [
-  // Row 0
-  {x:2, y:0}, {x:5, y:0},
-  // Row 2
-  {x:1, y:2}, {x:3, y:2}, {x:5, y:2},
-  // Row 3
-  {x:3, y:3}, {x:5, y:3},
-  // Row 4
-  {x:1, y:4},
-  // Row 5
-  {x:3, y:5}, {x:5, y:5},
-  // Row 6
-  {x:1, y:6}, {x:3, y:6}, {x:5, y:6},
-  // Row 8
-  {x:3, y:8}, {x:5, y:8},
-  // Row 9
-  {x:3, y:9}, {x:5, y:9},
-  // Row 11
-  {x:3, y:11}, {x:5, y:11},
-  // Row 12
-  {x:3, y:12}, {x:5, y:12},
-  // Row 14
-  {x:3, y:14}, {x:5, y:14},
-  // Row 15
-  {x:3, y:15}, {x:5, y:15},
-  // Row 16
-  {x:5, y:16},
-  // Row 17
-  {x:4, y:17}
-];
+  // Desk positions from the provided text grid (x = column, y = row, 0-indexed)
+  const deskPositions = [
+    // Row 0: xoxox
+    {x:1, y:0}, {x:3, y:0},
+    // Row 1: oxxx
+    {x:0, y:1},
+    // Row 2: oxxoxxxo
+    {x:0, y:2}, {x:3, y:2}, {x:8, y:2},
+    // Row 3: xxxxxxxxxxoxxoxxo
+    {x:10, y:4}, {x:11, y:4}, {x:13, y:4}, {x:14, y:4}, {x:16, y:4}, {x:17, y:4},
+    // Row 4: oxxxx
+    {x:0, y:5},
+    // Row 5: oxxooxooxooxooxooxo
+    {x:0, y:6}, {x:2, y:6}, {x:3, y:6}, {x:6, y:6}, {x:7, y:6}, {x:10, y:6}, {x:11, y:6}, {x:14, y:6}, {x:15, y:6}, {x:18, y:6}, {x:19, y:6}, {x:21, y:6},
+    // Row 6: xxxooxooxooxooxooxo
+    {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7},
+  ];
 // --- Drawing Logic ---
 // Global users array for animation
 let boardUsers = [];
@@ -301,12 +287,6 @@ const carpetImg = new window.Image();
 carpetImg.src = `${document.baseURI}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
-  // Rotate entire canvas 90 degrees to the right
-  ctx.save();
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.rotate(Math.PI / 2); // 90 degrees clockwise
-  ctx.translate(-canvas.height / 2, -canvas.width / 2);
-  
   // Draw carpet background
   if (carpetImg.complete) {
     const pattern = ctx.createPattern(carpetImg, 'repeat');
@@ -314,12 +294,6 @@ function drawOfficeWithUsers(users) {
     ctx.setTransform(0.5, 0, 0, 0.5, 0, 0); // Scale down to 50%
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, canvas.width * 2, canvas.height * 2);
-    ctx.restore();
-    
-    // Add a light overlay to make the carpet appear lighter
-    ctx.save();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; // White overlay with 40% opacity
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
   } else {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -341,28 +315,27 @@ function drawOfficeWithUsers(users) {
   }
   ctx.restore();
 
+  // Add overlay to fade background (before desks)
+  ctx.save();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; // White overlay with 40% opacity
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
+
   // Draw desks
   deskPositions.forEach(desk => {
     const px = desk.x * cellSize;
     const py = desk.y * cellSize;
     ctx.save();
-    if (desk.rotation) {
-      const deskCenterX = px + cellSize / 2;
-      const deskCenterY = py + cellSize / 2;
-      ctx.translate(deskCenterX, deskCenterY);
-      ctx.rotate(desk.rotation);
-      ctx.drawImage(
-        deskOpImg,
-        -cellSize / 2, -cellSize / 2,
-        cellSize, cellSize
-      );
-    } else {
-      ctx.drawImage(
-        deskOpImg,
-        px, py,
-        cellSize, cellSize
-      );
-    }
+    
+    // Use desk.png for specific x-coordinates (2, 6, 10, 14, 18, 21)
+    const useRegularDesk = [2, 6, 10, 14, 18, 21].includes(desk.x);
+    const deskImage = useRegularDesk ? deskImg : deskOpImg;
+    
+    ctx.drawImage(
+      deskImage,
+      px, py,
+      cellSize, cellSize
+    );
     ctx.restore();
   });
 
@@ -420,17 +393,12 @@ function drawOfficeWithUsers(users) {
       ctx.fillStyle = '#FF0000'; // Red color
       ctx.textAlign = 'center';
       
-      // Rotate username text 90 degrees to the left to appear upright
-      ctx.save();
-      ctx.translate(px + cellSize/2 - 10, py + cellSize - 50); // Moved 10 pixels to the left
-      ctx.rotate(-Math.PI / 2); // 90 degrees counterclockwise
-      ctx.fillText(user.username, 0, 0);
-      ctx.restore();
+      // Draw username text normally (no rotation needed)
+      ctx.fillText(user.username, px + cellSize/2 - 10, py + cellSize - 50);
       
       ctx.restore();
     }
   });
-  ctx.restore(); // Close the rotation transform
 }
 
 function animateSprite(timestamp) {
