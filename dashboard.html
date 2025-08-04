@@ -219,6 +219,17 @@
       border-color: #4a4c67;
     }
     
+    .action-btn.work-from-home {
+      background: rgba(23, 162, 184, 0.6); /* Teal color for work from home */
+      border: 2.5px solid #17a2b8;
+      color: #2d2e4b;
+    }
+    
+    .action-btn.work-from-home:hover {
+      background: rgba(23, 162, 184, 0.8);
+      border-color: #138496;
+    }
+    
     /* Button content */
     .btn-content {
       display: flex;
@@ -424,6 +435,14 @@
           <span class="btn-text">Clock Out</span>
         </div>
       </button>
+      <div class="action-divider"></div>
+      <button class="action-btn work-from-home" id="workFromHomeBtn">
+        <div class="loading-bar"></div>
+        <div class="btn-content">
+          <span class="btn-icon">🏡</span>
+          <span class="btn-text">Work from Home</span>
+        </div>
+      </button>
     </div>
     
     <div class="popup-message" id="popupMessage" style="display:none;"></div>
@@ -438,16 +457,8 @@
       const username = getQueryParam('username');
 
       function updateStatusIndicators(currentStatus) {
-         // There are three buttons: 0 = clock-in, 1 = break, 2 = clock-out
-         document.querySelectorAll('.status-indicator').forEach((el, idx) => {
-           el.classList.remove('active', 'break');
-           if (idx === 0 && currentStatus === 'clocked-in') {
-             el.classList.add('active'); // Clock In button
-           } else if (idx === 1 && currentStatus === 'break') {
-             el.classList.add('break'); // Break button
-           }
-           // No special class for clock-out (default style)
-         });
+         // Status indicator logic can be added here if needed in the future
+         console.log('Current status:', currentStatus);
        }
 
       if (!username) {
@@ -552,6 +563,9 @@
       };
       document.getElementById('clockOutBtn').onclick = function() {
         updateStatus("clocked-out", "Successfully clocked out!", this);
+      };
+      document.getElementById('workFromHomeBtn').onclick = function() {
+        updateStatus("work-from-home", "Successfully set to work from home!", this);
       };
     });
 

@@ -510,7 +510,8 @@ function drawOfficeWithUsers(users) {
   // Draw users at their desks
   users.forEach(user => {
     if (!user.avatar) return;
-    if (user.desk && (user.status === "clocked-in" || user.status === "break")) {
+    console.log(`User ${user.username}: status = ${user.status}, desk = ${user.desk}`);
+    if (user.desk && (user.status === "clocked-in" || user.status === "break" || user.status === "work-from-home")) {
       let deskCoord = user.desk;
       if (typeof deskCoord === "string") {
         const [x, y] = deskCoord.split(',').map(Number);
@@ -550,6 +551,17 @@ function drawOfficeWithUsers(users) {
       // Adjust avatar positioning and direction based on desk type
       let avatarOffsetX = 6; // default pixels left (moved back to the right)
       let avatarOffsetY = -16; // pixels up (moved higher)
+      
+      // Draw house icon behind avatar and name for users working from home
+      if (user.status === "work-from-home") {
+        ctx.save();
+        ctx.font = '60px Arial'; // Even bigger house icon
+        ctx.fillStyle = '#17a2b8'; // Solid teal color
+        ctx.textAlign = 'center';
+        // Position house icon at the center of the desk, behind everything
+        ctx.fillText('🏡', px + cellSize/2, py + cellSize/2 + 10);
+        ctx.restore();
+      }
       
       ctx.save();
       if (user.status === "break") {
