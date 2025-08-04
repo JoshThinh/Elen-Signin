@@ -115,6 +115,105 @@
       font-size: 2rem;
       font-weight: bold;
     }
+    
+    /* Board Header and Stats */
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .board-stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      min-width: 100px;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2d2e4b;
+    }
+    
+    /* Canvas Container */
+    .canvas-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    
+    /* Board Controls */
+    .board-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .control-btn {
+      background: #2d2e4b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .control-btn:hover {
+      background: #1a1b2e;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .board-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .board-stats {
+        justify-content: center;
+        width: 100%;
+      }
+      
+      .stat-item {
+        min-width: 80px;
+        padding: 8px 12px;
+      }
+      
+      .board-controls {
+        gap: 8px;
+      }
+      
+      .control-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -139,8 +238,39 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
   
   <div class="board-container">
-    <h1 class="board-title">Office Presence Board</h1>
-    <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"></canvas>
+    <div class="board-header">
+      <h1 class="board-title">Office Presence Board</h1>
+      <div class="board-stats">
+        <div class="stat-item">
+          <span class="stat-label">Total Active:</span>
+          <span class="stat-value" id="totalActive">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Clocked In:</span>
+          <span class="stat-value" id="clockedInCount">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">On Break:</span>
+          <span class="stat-value" id="breakCount">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Last Updated:</span>
+          <span class="stat-value" id="lastUpdated">--</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="canvas-container">
+      <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"></canvas>
+    </div>
+    
+    <div class="board-controls">
+      <button id="refreshBtn" class="control-btn">🔄 Refresh</button>
+      <button id="zoomInBtn" class="control-btn">🔍+</button>
+      <button id="zoomOutBtn" class="control-btn">🔍-</button>
+      <button id="resetZoomBtn" class="control-btn">🔍 Reset</button>
+      <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
+    </div>
   </div>
 
   <script defer>
@@ -240,13 +370,95 @@ canvas.height = gridRows * cellSize;
 // Global users array for animation
 let boardUsers = [];
 
+// Global variables for zoom and pan
+let zoomLevel = 1;
+let panX = 0;
+let panY = 0;
+let isDragging = false;
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+// Function to update statistics
+function updateStats(users) {
+  const activeUsers = users.filter(user => 
+    user.desk && (user.status === "clocked-in" || user.status === "break")
+  );
+  const clockedInUsers = users.filter(user => 
+    user.desk && user.status === "clocked-in"
+  );
+  const breakUsers = users.filter(user => 
+    user.desk && user.status === "break"
+  );
+  
+  document.getElementById('totalActive').textContent = activeUsers.length;
+  document.getElementById('clockedInCount').textContent = clockedInUsers.length;
+  document.getElementById('breakCount').textContent = breakUsers.length;
+  document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+}
+
+// Function to refresh data
+function refreshData() {
+  fetch(`${ApiUrlLink}/users`)
+    .then(res => res.json())
+    .then(data => {
+      boardUsers = data.users;
+      updateStats(boardUsers);
+      requestAnimationFrame(animateSprite);
+    })
+    .catch(error => {
+      console.error('Error fetching users:', error);
+    });
+}
+
 // Fetch users and update boardUsers, then start animation
-fetch(`${ApiUrlLink}/users`)
-  .then(res => res.json())
-  .then(data => {
-    boardUsers = data.users;
-    requestAnimationFrame(animateSprite);
-  });
+refreshData();
+
+// Auto-refresh every 30 seconds
+setInterval(refreshData, 30000);
+
+// Zoom and Pan Functions (moved outside event listeners for global access)
+function applyZoomAndPan() {
+  ctx.save();
+  ctx.translate(panX, panY);
+  ctx.scale(zoomLevel, zoomLevel);
+}
+
+function resetZoomAndPan() {
+  ctx.restore();
+}
+
+// Zoom controls
+function zoomIn() {
+  console.log('zoomIn called, current zoomLevel:', zoomLevel);
+  zoomLevel = Math.min(zoomLevel * 1.2, 3);
+  console.log('new zoomLevel:', zoomLevel);
+}
+
+function zoomOut() {
+  console.log('zoomOut called, current zoomLevel:', zoomLevel);
+  zoomLevel = Math.max(zoomLevel / 1.2, 0.5);
+  console.log('new zoomLevel:', zoomLevel);
+}
+
+function resetZoom() {
+  console.log('resetZoom called');
+  zoomLevel = 1;
+  panX = 0;
+  panY = 0;
+  console.log('reset complete - zoomLevel:', zoomLevel, 'panX:', panX, 'panY:', panY);
+}
+
+// Fullscreen function
+function toggleFullscreen() {
+  const canvas = document.getElementById('boardCanvas');
+  if (!document.fullscreenElement) {
+    canvas.requestFullscreen().catch(err => {
+      console.log('Error attempting to enable fullscreen:', err);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
 
 // Avatar animation configs
 const avatarConfigs = {
@@ -286,6 +498,9 @@ const carpetImg = new window.Image();
 carpetImg.src = `${document.baseURI}Static/Images/Background/carpet.png`;
 
 function drawOfficeWithUsers(users) {
+  // Apply zoom and pan transformations
+  applyZoomAndPan();
+  
   // Draw carpet background
   if (carpetImg.complete) {
     const pattern = ctx.createPattern(carpetImg, 'repeat');
@@ -375,29 +590,82 @@ function drawOfficeWithUsers(users) {
       const drawHeight = config.frameHeight * scale;
       const offsetX = px + (cellSize - AVATAR_BOX_SIZE) / 2 + (AVATAR_BOX_SIZE - drawWidth) / 2;
       const offsetY = py + (cellSize - AVATAR_BOX_SIZE) / 2 + (AVATAR_BOX_SIZE - drawHeight) / 2;
-      // Move avatar a bit to the right and up
-      const avatarOffsetX = 8; // pixels right
-      const avatarOffsetY = -8; // pixels up
+      // Check if user is at a desk that uses desk.png (regular desk)
+      const useRegularDesk = [2, 6, 10, 14, 18, 21].includes(deskCoord.x);
+      
+      // Adjust avatar positioning and direction based on desk type
+      let avatarOffsetX = 6; // default pixels left (moved back to the right)
+      let avatarOffsetY = -16; // pixels up (moved higher)
+      
       ctx.save();
       if (user.status === "break") {
         ctx.globalAlpha = 0.3; // faded
       }
-      ctx.drawImage(
-        spriteSheet,
-        frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
-        offsetX + avatarOffsetX, offsetY + avatarOffsetY, drawWidth, drawHeight
-      );
+      
+      if (useRegularDesk) {
+        // For regular desks (desk.png), use normal positioning
+        ctx.drawImage(
+          spriteSheet,
+          frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+          offsetX + avatarOffsetX, offsetY + avatarOffsetY, drawWidth, drawHeight
+        );
+      } else {
+        // For other desks (deskop.png), flip avatar horizontally and shift more to the right
+        avatarOffsetX = -6; // more pixels right (moved left)
+        ctx.scale(-1, 1); // flip horizontally
+        ctx.drawImage(
+          spriteSheet,
+          frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+          -(offsetX + avatarOffsetX + drawWidth), offsetY + avatarOffsetY, drawWidth, drawHeight
+        );
+        ctx.restore(); // Restore canvas state after flipped avatar
+        ctx.save(); // Save state for name tag
+      }
       ctx.globalAlpha = 1.0;
       ctx.font = 'bold 12px Arial';
-      ctx.fillStyle = '#FF0000'; // Red color
       ctx.textAlign = 'center';
       
-      // Draw username text normally (no rotation needed)
-      ctx.fillText(user.username, px + cellSize/2 - 10, py + cellSize - 50);
+      // Draw username with blue text, light grey fill, and blue border
+      const username = user.username;
+      const textX = px + cellSize/2 - 10;
+      const textY = py + cellSize - 50;
+      
+      // Measure text for background sizing
+      const textMetrics = ctx.measureText(username);
+      const textWidth = textMetrics.width;
+      const textHeight = 14; // Smaller height for tighter fit
+      const padding = 2; // Smaller padding for more centered look
+      const borderWidth = 1; // Border width
+      
+      // Draw light grey fill
+      ctx.fillStyle = '#e0e0e0'; // Light grey fill
+      ctx.fillRect(
+        textX - textWidth/2 - padding, 
+        textY - textHeight - padding, 
+        textWidth + padding * 2, 
+        textHeight + padding * 2
+      );
+      
+      // Draw blue border
+      ctx.strokeStyle = '#2d2e4b'; // Theme blue color for border
+      ctx.lineWidth = borderWidth;
+      ctx.strokeRect(
+        textX - textWidth/2 - padding, 
+        textY - textHeight - padding, 
+        textWidth + padding * 2, 
+        textHeight + padding * 2
+      );
+      
+      // Draw blue text matching theme
+      ctx.fillStyle = '#2d2e4b'; // Theme blue color
+      ctx.fillText(username, textX, textY);
       
       ctx.restore();
     }
   });
+  
+  // Reset zoom and pan transformations
+  resetZoomAndPan();
 }
 
 function animateSprite(timestamp) {
@@ -411,6 +679,76 @@ function animateSprite(timestamp) {
   requestAnimationFrame(animateSprite);
 }
 
+// Event listeners for controls
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Setting up control event listeners...');
+  
+  const refreshBtn = document.getElementById('refreshBtn');
+  const zoomInBtn = document.getElementById('zoomInBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const resetZoomBtn = document.getElementById('resetZoomBtn');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  console.log('Buttons found:', { refreshBtn, zoomInBtn, zoomOutBtn, resetZoomBtn, fullscreenBtn });
+  
+  if (refreshBtn) refreshBtn.addEventListener('click', function() { console.log('Refresh clicked'); refreshData(); });
+  if (zoomInBtn) zoomInBtn.addEventListener('click', function() { console.log('Zoom in clicked'); zoomIn(); });
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', function() { console.log('Zoom out clicked'); zoomOut(); });
+  if (resetZoomBtn) resetZoomBtn.addEventListener('click', function() { console.log('Reset zoom clicked'); resetZoom(); });
+  if (fullscreenBtn) fullscreenBtn.addEventListener('click', function() { console.log('Fullscreen clicked'); toggleFullscreen(); });
+  
+  // Mouse controls for panning
+  const canvas = document.getElementById('boardCanvas');
+  
+  canvas.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+  });
+  
+  canvas.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+      const deltaX = e.clientX - lastMouseX;
+      const deltaY = e.clientY - lastMouseY;
+      panX += deltaX;
+      panY += deltaY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    }
+  });
+  
+  canvas.addEventListener('mouseup', function() {
+    isDragging = false;
+    canvas.style.cursor = 'grab';
+  });
+  
+  canvas.addEventListener('mouseleave', function() {
+    isDragging = false;
+    canvas.style.cursor = 'grab';
+  });
+  
+  // Wheel zoom
+  canvas.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+    const newZoom = Math.max(0.5, Math.min(3, zoomLevel * zoomFactor));
+    
+    if (newZoom !== zoomLevel) {
+      const scaleChange = newZoom / zoomLevel;
+      panX = mouseX - (mouseX - panX) * scaleChange;
+      panY = mouseY - (mouseY - panY) * scaleChange;
+      zoomLevel = newZoom;
+    }
+  });
+  
+  canvas.style.cursor = 'grab';
+});
+
 // Wait for both images to load before animating
 let imagesLoaded = 0;
 function checkLoaded() {
@@ -421,7 +759,7 @@ function checkLoaded() {
 }
 deskImg.onload = checkLoaded;
 spriteSheet.onload = checkLoaded;
-});
+}); // Close the first DOMContentLoaded event listener
   </script>
 </body>
 </html>
