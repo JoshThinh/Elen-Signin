@@ -72,24 +72,26 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Crimson Text', serif;
+      font-size: 16px;
+      color: #777777;
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
     .settings-container {
       background: white;
       padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       text-align: center;
-      max-width: 400px;
+      max-width: 600px;
       width: 100%;
     }
     .navbar {
       width: 100%;
-      height: 56px;
-      background: rgba(65, 38, 83, 0.3); /* #412653 with 95% opacity */
-      color: var(--color-white);
+      height: 60px;
+      background: #2d2e4bf2;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -99,8 +101,7 @@
       z-index: 1001;
       box-sizing: border-box;
       padding-right: 8px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      transition: background 0.4s;
     }
     .navbar-hamburger {
       font-size: 2rem;
@@ -119,12 +120,11 @@
       right: -220px;
       width: 220px;
       height: 100%;
-      background: rgba(65, 38, 83, 0.3); /* #412653 with 95% opacity */
-      color: var(--color-white);
+      background: #2d2e4bf2;
+      color: rgba(45, 46, 75, 0.95);
       display: flex;
       flex-direction: column;
       padding-top: 56px;
-      backdrop-filter: blur(6px);
       transition: right 0.3s;
       z-index: 1002;
     }
@@ -132,16 +132,16 @@
       right: 0;
     }
     .sidebar a {
-      color: var(--color-white);
+      color: #DDDDDD;
       padding: 18px 24px;
       text-decoration: none;
       font-size: 1.1rem;
-      border-bottom: 1px solid #4a324a;
+      border-bottom: 1px solid #444;
       transition: background 0.2s;
     }
     .sidebar a:hover {
-      background: rgba(198, 186, 222, 0.5);
-      color: #4a324a;
+      background: rgba(45, 46, 75, 0.8);
+      color: #fff;
     }
     .sidebar-overlay {
       display: none;
@@ -156,6 +156,15 @@
     h1 {
       margin-bottom: 30px;
       color: #333;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.5rem;
+      font-weight: bold;
     }
     .form-group {
       margin-bottom: 20px;
@@ -163,30 +172,39 @@
     }
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-weight: bold;
       color: #333;
+      font-size: 1rem;
     }
     input[type="email"], input[type="password"] {
       width: 100%;
       padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
       box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.3s;
     }
-    button[type="submit"] {
+    input[type="email"]:focus, input[type="password"]:focus {
+      outline: none;
+      border-color: #2d2e4b;
+    }
+    button[type="submit"], button[type="button"] {
       width: 100%;
       padding: 12px;
-      background-color: #f7b9c4;
+      background-color: #2d2e4b;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       margin-top: 20px;
       font-size: 16px;
+      font-weight: 500;
+      transition: background-color 0.3s;
     }
-    button[type="submit"]:hover {
-      background-color: #f3d9e5;
+    button[type="submit"]:hover, button[type="button"]:hover {
+      background-color: #1a1b2e;
     }
     .desk-selectable { 
       cursor: pointer; 
@@ -194,8 +212,8 @@
       transition: border 0.2s; 
     }
     .desk-selectable.selected { 
-      border: 2px solid #f7b9c4; 
-      background: #f3d9e5; 
+      border: 2px solid #2d2e4b; 
+      background: #e8e9f0; 
     }
     .desk-selectable.disabled {
       opacity: 0.3;
@@ -204,6 +222,27 @@
     .desk-selectable.current {
       border: 2px solid #28a745;
       background: #d4edda;
+    }
+    
+    /* Grid styling improvements */
+    .office-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    
+    .office-grid table {
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
+    
+    .office-grid td {
+      aspect-ratio: 1;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -246,16 +285,16 @@
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h3 style="margin: 0; color: #333; font-size: 1.1rem;">Today's Hours</h3>
-            <button onclick="refreshPersonalHours()" style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">Refresh</button>
+            <button onclick="refreshPersonalHours()" style="background: #2d2e4b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.3s;">Refresh</button>
           </div>
           <div id="personalHours" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #f7b9c4;">
+            <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #2d2e4b;">
               <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Work Hours</div>
-              <div id="workHours" style="font-size: 1.5rem; font-weight: bold; color: #f7b9c4;">--:--</div>
+              <div id="workHours" style="font-size: 1.5rem; font-weight: bold; color: #2d2e4b;">--:--</div>
             </div>
             <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #ffc107;">
               <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Break Hours</div>
-              <div id="breakHours" style="font-size: 1.5rem; font-weight: bold; color: #f3d9e5;">--:--</div>
+              <div id="breakHours" style="font-size: 1.5rem; font-weight: bold; color: #2d2e4b;">--:--</div>
             </div>
           </div>
           <div id="personalHoursMessage" style="margin-top: 15px; text-align: center; font-size: 0.9rem; color: #666;"></div>
@@ -274,7 +313,7 @@
           <div id="deskLegend"></div>
           <div class="office-grid" id="deskGrid"></div>
         </div>
-        <button type="button" id="updateDeskBtn" style="background-color: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px;">Update Desk</button>
+        <button type="button" id="updateDeskBtn" style="background-color: #2d2e4b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 20px; font-weight: 500; transition: background-color 0.3s;">Update Desk</button>
         <div id="deskMessage" style="margin-top:20px;"></div>
       </div>
     </div>
@@ -318,6 +357,7 @@
     // Desk selection constants and variables
     const gridCols = 22;
     const gridRows = 8;
+    
     const deskPositions = [
       // Row 0: xoxox
       {x:1, y:0}, {x:3, y:0},
@@ -332,7 +372,7 @@
       // Row 5: oxxooxooxooxooxooxo
       {x:0, y:6}, {x:2, y:6}, {x:3, y:6}, {x:6, y:6}, {x:7, y:6}, {x:10, y:6}, {x:11, y:6}, {x:14, y:6}, {x:15, y:6}, {x:18, y:6}, {x:19, y:6}, {x:21, y:6},
       // Row 6: xxxooxooxooxooxooxo
-      {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7}
+      {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7},
     ];
 
     function renderDeskLegend() {
@@ -362,28 +402,50 @@
           const deskGrid = document.getElementById('deskGrid');
           deskGrid.innerHTML = '';
           deskGrid.style.overflowX = 'auto';
-          deskGrid.style.padding = '8px 0';
+          deskGrid.style.overflowY = 'hidden';
+          deskGrid.style.padding = '12px';
           deskGrid.style.background = '#f8f9fa';
           deskGrid.style.borderRadius = '8px';
+          deskGrid.style.width = '100%';
           deskGrid.style.maxWidth = '100%';
           deskGrid.style.margin = '0 auto';
+          deskGrid.style.boxSizing = 'border-box';
+          deskGrid.style.display = 'flex';
+          deskGrid.style.justifyContent = 'center';
+          deskGrid.style.alignItems = 'center';
 
           renderDeskLegend();
 
           const table = document.createElement('table');
           table.style.borderCollapse = 'collapse';
+          table.style.borderSpacing = '0';
           table.style.margin = '0 auto';
+          table.style.width = '100%';
+          table.style.tableLayout = 'fixed';
+          table.style.minWidth = `${gridCols * 20}px`; // Reduced minimum width to ensure all columns are visible
+          
+          // Calculate cell size to fit the full width
+          const containerWidth = deskGrid.offsetWidth - 32; // Account for padding
+          const availableWidth = Math.max(containerWidth, 440); // Reduced minimum width for 22 columns
+          const cellSize = Math.min(availableWidth / gridCols, 24); // Reduced max size to 24px
+          
           for (let y = 0; y < gridRows; y++) {
             const tr = document.createElement('tr');
             for (let x = 0; x < gridCols; x++) {
               const td = document.createElement('td');
-              td.style.width = '28px';
-              td.style.height = '28px';
+              td.style.width = `${cellSize}px`;
+              td.style.height = `${cellSize}px`;
+              td.style.minWidth = `${cellSize}px`;
+              td.style.minHeight = `${cellSize}px`;
+              td.style.maxWidth = `${cellSize}px`;
+              td.style.maxHeight = `${cellSize}px`;
               td.style.border = '1px solid #bbb';
               td.style.textAlign = 'center';
               td.style.padding = '0';
-              td.style.fontSize = '18px';
+              td.style.fontSize = Math.max(10, cellSize * 0.35) + 'px';
               td.style.transition = 'outline 0.2s';
+              td.style.boxSizing = 'border-box';
+              td.style.verticalAlign = 'middle';
               const isDesk = deskPositions.some(d => d.x === x && d.y === y);
               if (isDesk) {
                 const deskKey = `${x},${y}`;
@@ -402,7 +464,13 @@
                   };
                 }
               } else {
-                td.style.background = '#f8f9fa';
+                // Make the empty column at x=5 more visible
+                if (x === 5) {
+                  td.style.background = '#e9ecef';
+                  td.style.border = '1px solid #adb5bd';
+                } else {
+                  td.style.background = '#f8f9fa';
+                }
                 td.textContent = '';
               }
               tr.appendChild(td);
@@ -470,6 +538,15 @@
     document.addEventListener('DOMContentLoaded', function() {
       loadDeskSelection();
       loadPersonalHours(); // Load personal hours when page loads
+      
+      // Add resize handler to recalculate grid
+      let resizeTimeout;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+          loadDeskSelection();
+        }, 250);
+      });
     });
     
     // Personal hours functions
