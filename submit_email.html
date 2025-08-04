@@ -27,16 +27,20 @@
     body {
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
       min-height: 100vh;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Crimson Text', serif;
+      font-size: 16px;
+      color: #777777;
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
     .navbar {
       width: 100%;
-      height: 56px;
-      background: #222;
+      height: 60px;
+      background: #2d2e4bf2;
       color: #fff;
       display: flex;
       align-items: center;
@@ -47,6 +51,7 @@
       z-index: 1001;
       box-sizing: border-box;
       padding-right: 8px;
+      transition: background 0.4s;
     }
     .navbar-hamburger {
       font-size: 2rem;
@@ -65,8 +70,8 @@
       right: -220px;
       width: 220px;
       height: 100%;
-      background: #333;
-      color: #fff;
+      background: #2d2e4bf2;
+      color: rgba(45, 46, 75, 0.95);
       display: flex;
       flex-direction: column;
       padding-top: 56px;
@@ -77,7 +82,7 @@
       right: 0;
     }
     .sidebar a {
-      color: #fff;
+      color: #DDDDDD;
       padding: 18px 24px;
       text-decoration: none;
       font-size: 1.1rem;
@@ -85,7 +90,8 @@
       transition: background 0.2s;
     }
     .sidebar a:hover {
-      background: #444;
+      background: rgba(45, 46, 75, 0.8);
+      color: #fff;
     }
     .sidebar-overlay {
       display: none;
@@ -97,26 +103,13 @@
     .sidebar-overlay.open {
       display: block;
     }
-    .submit-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    .submit-title {
-      margin-bottom: 30px;
-      color: #333;
-      font-size: 2rem;
-      font-weight: bold;
-    }
-    .submit-form {
+    .settings-container {
       background: white;
       padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       text-align: center;
-      max-width: 500px;
+      max-width: 600px;
       width: 100%;
     }
     .form-group {
@@ -140,20 +133,7 @@
       height: 120px;
       resize: vertical;
     }
-    button[type="submit"] {
-      width: 100%;
-      padding: 12px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 20px;
-      font-size: 16px;
-    }
-    button[type="submit"]:hover {
-      background-color: #0056b3;
-    }
+
     .message {
       margin-top: 20px;
       padding: 10px;
@@ -168,6 +148,57 @@
       background: #f8d7da;
       color: #721c24;
       border: 1px solid #f5c6cb;
+    }
+    
+    /* Form styling to match settings page */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+      font-size: 1rem;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: #2d2e4b;
+    }
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #2d2e4b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    /* Button hover effects */
+    button[type="submit"]:hover {
+      background-color: #1a1b2e;
+    }
+    
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
     }
   </style>
 </head>
@@ -189,23 +220,21 @@
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   
   <div class="settings-container">
-    <h1 class="submit-title">Compose Email</h1>
-    <form id="emailForm" style="background: white; padding: 40px 32px 32px 32px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; width: 100%; margin: 0 auto;">
-      <div class="form-group" style="margin-bottom: 24px;">
-        <label style="font-weight: 500; color: #333;">To (Username):</label>
-        <input type="text" id="receiver" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-top: 6px;">
+    <h1>Compose Email</h1>
+    <form id="emailForm">
+      <div class="form-group">
+        <label>To (Username):</label>
+        <input type="text" id="receiver" required>
       </div>
-      <div class="form-group" style="margin-bottom: 24px;">
-        <label style="font-weight: 500; color: #333;">Subject:</label>
-        <input type="text" id="subject" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-top: 6px;">
+      <div class="form-group">
+        <label>Subject:</label>
+        <input type="text" id="subject" required>
       </div>
-      <div class="form-group" style="margin-bottom: 32px;">
-        <label style="font-weight: 500; color: #333;">Message:</label>
-        <textarea id="message" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-top: 6px; min-height: 120px; resize: vertical;"></textarea>
+      <div class="form-group">
+        <label>Message:</label>
+        <textarea id="message" required style="min-height: 120px; resize: vertical;"></textarea>
       </div>
-      <div style="display: flex; justify-content: flex-end;">
-        <button type="submit" style="background-color: #007bff; color: white; border: none; border-radius: 4px; padding: 12px 32px; font-size: 1.1em; font-weight: 500; cursor: pointer;">Send</button>
-      </div>
+      <button type="submit">Send</button>
     </form>
     <div id="emailStatus" style="margin-top: 24px;"></div>
   </div>
@@ -267,6 +296,55 @@
               document.getElementById('hourLink').style.display = 'none';
             }
             // Edit Users link is now visible to everyone
+            
+            // Update sidebar links to include username
+            if (username) {
+              document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+              document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+              document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+              document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
+              document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+              document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+            }
+            
+            // Handle email form submission
+            const emailForm = document.getElementById('emailForm');
+            if (emailForm) {
+              emailForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const receiver = document.getElementById('receiver').value.trim();
+                const subject = document.getElementById('subject').value.trim();
+                const message = document.getElementById('message').value.trim();
+                const sender = getQueryParam('username'); // or however you get the current user
+
+                if (!receiver || !subject || !message) {
+                  showMessage('Please fill in all fields.', 'error');
+                  return;
+                }
+
+                try {
+                  const response = await fetch(`${window.ApiUrlLink}/inbox`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sender, receiver, subject, message })
+                  });
+                  const data = await response.json();
+                  const emailStatus = document.getElementById('emailStatus');
+                  if (emailStatus) {
+                    emailStatus.textContent = data.message || data.error;
+                  }
+                  if (response.ok) {
+                    emailForm.reset();
+                    showMessage('Email sent successfully!', 'success');
+                  } else {
+                    showMessage(data.error || 'Failed to send email.', 'error');
+                  }
+                } catch (error) {
+                  console.error('Error sending email:', error);
+                  showMessage('Error sending email. Please try again.', 'error');
+                }
+              });
+            }
           })
           .catch((error) => {
             console.error('Error validating user:', error);
@@ -277,54 +355,17 @@
       }
     });
     
-    // Update sidebar links to include username
-    if (username) {
-      document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
-      document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
-      document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
-      document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
-      document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
-      document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
-    }
-    
-    // Handle email form submission
-    document.getElementById('emailForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const receiver = document.getElementById('receiver').value.trim();
-      const subject = document.getElementById('subject').value.trim();
-      const message = document.getElementById('message').value.trim();
-      const sender = getQueryParam('username'); // or however you get the current user
-
-      if (!receiver || !subject || !message) {
-        showMessage('Please fill in all fields.', 'error');
-        return;
-      }
-
-      try {
-        const response = await fetch(`${window.ApiUrlLink}/inbox`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sender, receiver, subject, message })
-        });
-        const data = await response.json();
-        document.getElementById('emailStatus').textContent = data.message || data.error;
-        if (response.ok) {
-          document.getElementById('emailForm').reset();
-        }
-      } catch (error) {
-        document.getElementById('emailStatus').textContent = 'Error sending email.';
-      }
-    });
-    
     function showMessage(text, type) {
-      const messageDiv = document.getElementById('message');
-      messageDiv.textContent = text;
-      messageDiv.className = `message ${type}`;
-      messageDiv.style.display = 'block';
-      
-      setTimeout(() => {
-        messageDiv.style.display = 'none';
-      }, 5000);
+      const messageDiv = document.getElementById('emailStatus');
+      if (messageDiv) {
+        messageDiv.textContent = text;
+        messageDiv.className = `message ${type}`;
+        messageDiv.style.display = 'block';
+        
+        setTimeout(() => {
+          messageDiv.style.display = 'none';
+        }, 5000);
+      }
     }
   </script>
 </body>
