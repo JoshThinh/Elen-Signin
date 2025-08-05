@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Office Board</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
@@ -163,6 +164,43 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     }
     
+    /* Fullscreen styles */
+    #boardCanvas:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    
+    #boardCanvas:-webkit-full-screen {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    
+    #boardCanvas:-moz-full-screen {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    
+    #boardCanvas:-ms-fullscreen {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    
     /* Board Controls */
     .board-controls {
       display: flex;
@@ -260,7 +298,7 @@
     </div>
     
     <div class="canvas-container">
-      <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"></canvas>
+      <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); cursor: grab;"></canvas>
     </div>
     
     <div class="board-controls">
@@ -674,12 +712,45 @@ function resetZoom() {
 // Fullscreen function
 function toggleFullscreen() {
   const canvas = document.getElementById('boardCanvas');
-  if (!document.fullscreenElement) {
-    canvas.requestFullscreen().catch(err => {
-      console.log('Error attempting to enable fullscreen:', err);
-    });
+  
+  // Check if fullscreen is supported
+  if (!document.fullscreenEnabled && 
+      !document.webkitFullscreenEnabled && 
+      !document.mozFullScreenEnabled && 
+      !document.msFullscreenEnabled) {
+    alert('Fullscreen is not supported in this browser');
+    return;
+  }
+  
+  // Check if already in fullscreen
+  if (!document.fullscreenElement && 
+      !document.webkitFullscreenElement && 
+      !document.mozFullScreenElement && 
+      !document.msFullscreenElement) {
+    // Enter fullscreen
+    if (canvas.requestFullscreen) {
+      canvas.requestFullscreen().catch(err => {
+        console.log('Error attempting to enable fullscreen:', err);
+        alert('Failed to enter fullscreen mode');
+      });
+    } else if (canvas.webkitRequestFullscreen) {
+      canvas.webkitRequestFullscreen();
+    } else if (canvas.mozRequestFullScreen) {
+      canvas.mozRequestFullScreen();
+    } else if (canvas.msRequestFullscreen) {
+      canvas.msRequestFullscreen();
+    }
   } else {
-    document.exitFullscreen();
+    // Exit fullscreen
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
   }
 }
 
