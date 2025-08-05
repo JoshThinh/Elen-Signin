@@ -80,6 +80,20 @@
         gap: calc(10px * var(--scale-phone));
       }
       
+      .status-legend {
+        order: 1;
+        align-self: flex-start;
+        margin-bottom: calc(10px * var(--scale-phone));
+      }
+      
+      .board-title {
+        order: 2;
+      }
+      
+      .board-stats {
+        order: 3;
+      }
+      
       .board-stats {
         gap: calc(8px * var(--scale-phone));
         justify-content: center;
@@ -129,6 +143,36 @@
         padding: calc(8px * var(--scale-phone)) calc(12px * var(--scale-phone));
         font-size: calc(12px * var(--scale-phone));
         border-radius: calc(4px * var(--scale-phone));
+      }
+      
+      /* Status Legend Mobile Scaling */
+      .status-legend {
+        padding: calc(10px * var(--scale-phone));
+        min-width: calc(150px * var(--scale-phone));
+        position: absolute;
+        left: calc(10px * var(--scale-phone));
+        top: calc(-80px * var(--scale-phone));
+        transform: scale(var(--scale-phone));
+        transform-origin: top left;
+      }
+      
+      .status-legend h3 {
+        font-size: calc(0.9rem * var(--scale-phone));
+        margin-bottom: calc(8px * var(--scale-phone));
+      }
+      
+      .legend-items {
+        gap: calc(6px * var(--scale-phone));
+      }
+      
+      .legend-item {
+        gap: calc(6px * var(--scale-phone));
+        font-size: calc(0.75rem * var(--scale-phone));
+      }
+      
+      .status-circle {
+        width: calc(10px * var(--scale-phone));
+        height: calc(10px * var(--scale-phone));
       }
     }
     
@@ -220,16 +264,20 @@
       color: #333;
       font-size: 2rem;
       font-weight: bold;
+      text-align: center;
+      width: 100%;
     }
     
     /* Board Header and Stats */
     .board-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       margin-bottom: 20px;
       flex-wrap: wrap;
       gap: 20px;
+      position: relative;
+      width: 100%;
     }
     
     .board-stats {
@@ -259,6 +307,67 @@
       font-size: 1.2rem;
       font-weight: bold;
       color: #2d2e4b;
+    }
+    
+    /* Status Legend Styles */
+    .status-legend {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      min-width: 200px;
+      position: absolute;
+      left: 0;
+      top: -80px;
+    }
+    
+    .status-legend h3 {
+      margin: 0 0 10px 0;
+      color: #2d2e4b;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #333;
+    }
+    
+    .status-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .status-circle.clocked-in {
+      background-color: #28a745; /* Green */
+    }
+    
+    .status-circle.break {
+      background-color: #ffc107; /* Yellow */
+    }
+    
+    .status-circle.work-from-home {
+      background-color: #17a2b8; /* Blue */
+    }
+    
+    .status-circle.job-site {
+      background-color: #8B4513; /* Brown */
+    }
+    
+    .status-circle.clocked-out {
+      background-color: #dc3545; /* Red */
     }
     
     /* Canvas Container */
@@ -304,6 +413,25 @@
       border: none;
       border-radius: 0;
       box-shadow: none;
+    }
+    
+    /* Center Stats */
+    .center-stats {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .center-stat {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .center-stat .stat-label,
+    .center-stat .stat-value {
+      color: white;
     }
     
     /* Board Controls */
@@ -353,8 +481,33 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
   
   <div class="board-container">
+    <h1 class="board-title">Office Presence Board</h1>
     <div class="board-header">
-      <h1 class="board-title">Office Presence Board</h1>
+      <div class="status-legend">
+        <h3>Status Legend</h3>
+        <div class="legend-items">
+          <div class="legend-item">
+            <div class="status-circle clocked-in"></div>
+            <span>Clocked In</span>
+          </div>
+          <div class="legend-item">
+            <div class="status-circle break"></div>
+            <span>On Break</span>
+          </div>
+          <div class="legend-item">
+            <div class="status-circle work-from-home"></div>
+            <span>Work from Home</span>
+          </div>
+          <div class="legend-item">
+            <div class="status-circle job-site"></div>
+            <span>Job Site</span>
+          </div>
+          <div class="legend-item">
+            <div class="status-circle clocked-out"></div>
+            <span>Clocked Out</span>
+          </div>
+        </div>
+      </div>
       <div class="board-stats">
         <div class="stat-item">
           <span class="stat-label">Total Active:</span>
@@ -741,6 +894,42 @@ function drawOfficeWithUsers(users) {
       // Draw blue text matching theme
       ctx.fillStyle = '#2d2e4b'; // Theme blue color
       ctx.fillText(username, textX, textY);
+      
+      // Draw status circle in top right corner of name tag
+      const circleRadius = 4;
+      const circleX = textX + textWidth/2 + padding + circleRadius - 4; // Moved a little to the left
+      const circleY = textY - textHeight - padding - circleRadius + 2; // Moved a little down
+      
+      // Set status circle color based on user status
+      let statusColor;
+      switch(user.status) {
+        case 'clocked-in':
+          statusColor = '#28a745'; // Green
+          break;
+        case 'break':
+          statusColor = '#ffc107'; // Yellow
+          break;
+        case 'work-from-home':
+          statusColor = '#17a2b8'; // Blue
+          break;
+        case 'job-site':
+          statusColor = '#8B4513'; // Brown
+          break;
+        case 'clocked-out':
+          statusColor = '#dc3545'; // Red
+          break;
+        default:
+          statusColor = '#6c757d'; // Gray for unknown status
+      }
+      
+      // Draw status circle
+      ctx.beginPath();
+      ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
+      ctx.fillStyle = statusColor;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
       
       ctx.restore();
     }
