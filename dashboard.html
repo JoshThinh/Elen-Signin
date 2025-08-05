@@ -1118,17 +1118,36 @@
         document.getElementById('jobSiteBtn').style.display = 'block';
         document.getElementById('clockOutBtn').classList.remove('hidden');
         
-        // Hide the button corresponding to current status
+        // Reset all dividers to visible first
+        const dividers = document.querySelectorAll('.action-divider');
+        dividers.forEach(divider => divider.style.display = 'block');
+        
+        // Hide the button and its divider corresponding to current status
         if (currentStatus === "clocked-in") {
           document.getElementById('clockInBtn').style.display = 'none';
+          // Hide the divider after clock in button
+          const clockInDivider = document.querySelector('.action-divider');
+          if (clockInDivider) clockInDivider.style.display = 'none';
         } else if (currentStatus === "break") {
           document.getElementById('breakBtn').style.display = 'none';
+          // Hide the divider after break button (second divider)
+          const dividers = document.querySelectorAll('.action-divider');
+          if (dividers[1]) dividers[1].style.display = 'none';
         } else if (currentStatus === "work-from-home") {
           document.getElementById('workFromHomeBtn').style.display = 'none';
+          // Hide the divider after work from home button (fourth divider)
+          const dividers = document.querySelectorAll('.action-divider');
+          if (dividers[3]) dividers[3].style.display = 'none';
         } else if (currentStatus === "job-site") {
           document.getElementById('jobSiteBtn').style.display = 'none';
+          // Hide the divider after job site button (third divider)
+          const dividers = document.querySelectorAll('.action-divider');
+          if (dividers[2]) dividers[2].style.display = 'none';
         } else if (currentStatus === "clocked-out") {
           document.getElementById('clockOutBtn').classList.add('hidden');
+          // Hide the divider after clock out button (fifth divider)
+          const dividers = document.querySelectorAll('.action-divider');
+          if (dividers[4]) dividers[4].style.display = 'none';
         }
       }
 
