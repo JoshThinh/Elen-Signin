@@ -679,6 +679,7 @@
       background: rgba(45, 46, 75, 0.15); /* 10% tint of #2d2e4b */
       color: #2d2e4b;
       border: 2.5px solid #bdbdd7;
+      text-align: center;
     }
     
     .action-btn::before {
@@ -730,14 +731,17 @@
     }
     
     .action-btn.clock-out {
-      background: rgba(45, 46, 75, 0.6); /* 60% tint */
-      border: 2.5px solid #676883;
-      color: #2d2e4b;
+      background: #dc3545; /* Solid red color for clock out */
+      border: 2.5px solid #dc3545;
+      color: white;
+      width: 620px; /* Same width as other buttons */
+      height: 40px; /* Skinnier height */
+      border-radius: 0; /* Sharp corners */
     }
     
     .action-btn.clock-out:hover {
-      background: rgba(45, 46, 75, 0.8);
-      border-color: #4a4c67;
+      background: #c82333;
+      border-color: #c82333;
     }
     
     .action-btn.work-from-home {
@@ -752,14 +756,14 @@
     }
     
     .action-btn.job-site {
-      background: rgba(255, 193, 7, 0.6); /* Yellow/Orange color for job site */
-      border: 2.5px solid #ffc107;
+      background: rgba(45, 46, 75, 0.6); /* Clock out color for job site */
+      border: 2.5px solid #676883;
       color: #2d2e4b;
     }
     
     .action-btn.job-site:hover {
-      background: rgba(255, 193, 7, 0.8);
-      border-color: #e0a800;
+      background: rgba(45, 46, 75, 0.8);
+      border-color: #4a4c67;
     }
     
     /* Modal styles */
@@ -847,9 +851,12 @@
     .btn-content {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 12px;
       z-index: 2;
       position: relative;
+      width: 100%;
+      text-align: center;
     }
     
     .btn-icon {
@@ -860,6 +867,8 @@
     .btn-text {
       font-size: 1.1rem;
       font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
     }
     
     /* Loading state */
@@ -890,6 +899,11 @@
     .action-btn:disabled:hover {
       transform: none;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
+    
+    /* Hidden state for clock out button */
+    .action-btn.hidden {
+      display: none;
     }
     
     /* Enhanced popup */
@@ -1006,15 +1020,17 @@
       font-size: 1.1rem;
       opacity: 0.8;
       font-weight: 300;
-      color: #34495e;
+            color: #34495e;
     }
+    
     .action-divider {
       width: 620px;
-      height: 1.5px;
+      height: 2px;
       background: linear-gradient(90deg, #e0e0e0 0%, #c6bade 100%);
-      margin: 0 0 18px 0;
+      margin: 10px 0;
       border: none;
     }
+ 
   </style>
 </head>
 <body>
@@ -1041,11 +1057,11 @@
         </div>
       </button>
       <div class="action-divider"></div>
-      <button class="action-btn clock-out" id="clockOutBtn">
+      <button class="action-btn job-site" id="jobSiteBtn">
         <div class="loading-bar"></div>
         <div class="btn-content">
-          <span class="btn-icon">🏠</span>
-          <span class="btn-text">Clock Out</span>
+          <span class="btn-icon">🏗️</span>
+          <span class="btn-text">Job Site</span>
         </div>
       </button>
       <div class="action-divider"></div>
@@ -1057,11 +1073,11 @@
         </div>
       </button>
       <div class="action-divider"></div>
-      <button class="action-btn job-site" id="jobSiteBtn">
+      <button class="action-btn clock-out hidden" id="clockOutBtn">
         <div class="loading-bar"></div>
         <div class="btn-content">
-          <span class="btn-icon">🏗️</span>
-          <span class="btn-text">Job Site</span>
+          <span class="btn-icon">🏠</span>
+          <span class="btn-text">Clock Out</span>
         </div>
       </button>
       
@@ -1176,6 +1192,36 @@
             if (res.ok) {
               showPopup(successMsg);
               updateStatusIndicators(action); // Update indicator after status change
+              btn.style.display = 'none'; // Hide button after loading animation completes
+              
+              // Show/hide buttons based on current action
+              if (action === "clocked-in") {
+                document.getElementById('clockOutBtn').classList.remove('hidden');
+                document.getElementById('breakBtn').style.display = 'block';
+                document.getElementById('workFromHomeBtn').style.display = 'block';
+                document.getElementById('jobSiteBtn').style.display = 'block';
+              } else if (action === "break") {
+                document.getElementById('clockInBtn').style.display = 'block';
+                document.getElementById('clockOutBtn').classList.remove('hidden');
+                document.getElementById('workFromHomeBtn').style.display = 'block';
+                document.getElementById('jobSiteBtn').style.display = 'block';
+              } else if (action === "work-from-home") {
+                document.getElementById('clockInBtn').style.display = 'block';
+                document.getElementById('breakBtn').style.display = 'block';
+                document.getElementById('clockOutBtn').classList.remove('hidden');
+                document.getElementById('jobSiteBtn').style.display = 'block';
+              } else if (action === "job-site") {
+                document.getElementById('clockInBtn').style.display = 'block';
+                document.getElementById('clockOutBtn').classList.remove('hidden');
+                document.getElementById('breakBtn').style.display = 'block';
+                document.getElementById('workFromHomeBtn').style.display = 'block';
+              } else if (action === "clocked-out") {
+                document.getElementById('clockInBtn').style.display = 'block';
+                document.getElementById('breakBtn').style.display = 'block';
+                document.getElementById('workFromHomeBtn').style.display = 'block';
+                document.getElementById('jobSiteBtn').style.display = 'block';
+                document.getElementById('clockOutBtn').classList.add('hidden');
+              }
             } else {
               showPopup("Failed. Try again.");
             }
@@ -1213,6 +1259,8 @@
           updateStatus("job-site", `Successfully set to job site: ${location}!`, document.getElementById('jobSiteBtn'));
           document.getElementById('jobSiteModal').style.display = 'none';
           document.getElementById('jobSiteLocation').value = '';
+          // Show clock out button after job site is confirmed
+          document.getElementById('clockOutBtn').classList.remove('hidden');
         } else {
           alert('Please enter a job site location.');
         }
