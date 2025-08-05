@@ -1110,6 +1110,28 @@
          console.log('Current status:', currentStatus);
        }
 
+      function updateButtonVisibility(currentStatus) {
+        // Reset all buttons to visible first
+        document.getElementById('clockInBtn').style.display = 'block';
+        document.getElementById('breakBtn').style.display = 'block';
+        document.getElementById('workFromHomeBtn').style.display = 'block';
+        document.getElementById('jobSiteBtn').style.display = 'block';
+        document.getElementById('clockOutBtn').classList.remove('hidden');
+        
+        // Hide the button corresponding to current status
+        if (currentStatus === "clocked-in") {
+          document.getElementById('clockInBtn').style.display = 'none';
+        } else if (currentStatus === "break") {
+          document.getElementById('breakBtn').style.display = 'none';
+        } else if (currentStatus === "work-from-home") {
+          document.getElementById('workFromHomeBtn').style.display = 'none';
+        } else if (currentStatus === "job-site") {
+          document.getElementById('jobSiteBtn').style.display = 'none';
+        } else if (currentStatus === "clocked-out") {
+          document.getElementById('clockOutBtn').classList.add('hidden');
+        }
+      }
+
       if (!username) {
         window.location.href = "index.html";
       } else {
@@ -1138,6 +1160,9 @@
             // Edit Users link is now visible to everyone
             document.getElementById("userDisplay").innerText = user.username;
             updateStatusIndicators(user.status);
+            
+            // Show/hide buttons based on current user status
+            updateButtonVisibility(user.status);
           })
           .catch((error) => {
             console.error('Error validating user:', error);
@@ -1192,36 +1217,9 @@
             if (res.ok) {
               showPopup(successMsg);
               updateStatusIndicators(action); // Update indicator after status change
-              btn.style.display = 'none'; // Hide button after loading animation completes
               
-              // Show/hide buttons based on current action
-              if (action === "clocked-in") {
-                document.getElementById('clockOutBtn').classList.remove('hidden');
-                document.getElementById('breakBtn').style.display = 'block';
-                document.getElementById('workFromHomeBtn').style.display = 'block';
-                document.getElementById('jobSiteBtn').style.display = 'block';
-              } else if (action === "break") {
-                document.getElementById('clockInBtn').style.display = 'block';
-                document.getElementById('clockOutBtn').classList.remove('hidden');
-                document.getElementById('workFromHomeBtn').style.display = 'block';
-                document.getElementById('jobSiteBtn').style.display = 'block';
-              } else if (action === "work-from-home") {
-                document.getElementById('clockInBtn').style.display = 'block';
-                document.getElementById('breakBtn').style.display = 'block';
-                document.getElementById('clockOutBtn').classList.remove('hidden');
-                document.getElementById('jobSiteBtn').style.display = 'block';
-              } else if (action === "job-site") {
-                document.getElementById('clockInBtn').style.display = 'block';
-                document.getElementById('clockOutBtn').classList.remove('hidden');
-                document.getElementById('breakBtn').style.display = 'block';
-                document.getElementById('workFromHomeBtn').style.display = 'block';
-              } else if (action === "clocked-out") {
-                document.getElementById('clockInBtn').style.display = 'block';
-                document.getElementById('breakBtn').style.display = 'block';
-                document.getElementById('workFromHomeBtn').style.display = 'block';
-                document.getElementById('jobSiteBtn').style.display = 'block';
-                document.getElementById('clockOutBtn').classList.add('hidden');
-              }
+              // Update button visibility based on new status
+              updateButtonVisibility(action);
             } else {
               showPopup("Failed. Try again.");
             }
@@ -1259,8 +1257,6 @@
           updateStatus("job-site", `Successfully set to job site: ${location}!`, document.getElementById('jobSiteBtn'));
           document.getElementById('jobSiteModal').style.display = 'none';
           document.getElementById('jobSiteLocation').value = '';
-          // Show clock out button after job site is confirmed
-          document.getElementById('clockOutBtn').classList.remove('hidden');
         } else {
           alert('Please enter a job site location.');
         }
