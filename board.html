@@ -25,6 +25,14 @@
     });
   </script>
   <style>
+    /* Responsive scaling variables */
+    :root {
+      --scale-phone: 0.8;
+      --scale-tablet: 0.9;
+      --scale-desktop: 1;
+      --scale-tv: 1.1;
+    }
+    
     body {
       display: flex;
       flex-direction: column;
@@ -36,6 +44,94 @@
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding-top: 56px; /* Prevent content from being hidden under navbar */
     }
+    
+    /* iPhone and small phones (up to 428px) */
+    @media screen and (max-width: 428px) {
+      :root {
+        --scale-phone: 0.75;
+        --scale-tablet: 0.8;
+        --scale-desktop: 0.85;
+        --scale-tv: 0.9;
+      }
+      
+      body {
+        font-size: calc(14px * var(--scale-phone));
+        padding-top: calc(50px * var(--scale-phone));
+      }
+      
+      .board-container {
+        padding: calc(10px * var(--scale-phone)) !important;
+        margin: calc(10px * var(--scale-phone)) !important;
+        max-width: calc(100vw - 20px) !important;
+        width: calc(100vw - 20px) !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+      }
+      
+      .board-title {
+        font-size: calc(1.5rem * var(--scale-phone));
+        margin-bottom: calc(15px * var(--scale-phone));
+      }
+      
+      .board-header {
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: calc(15px * var(--scale-phone));
+        gap: calc(10px * var(--scale-phone));
+      }
+      
+      .board-stats {
+        gap: calc(8px * var(--scale-phone));
+        justify-content: center;
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      
+      .stat-item {
+        min-width: calc(70px * var(--scale-phone));
+        padding: calc(6px * var(--scale-phone)) calc(8px * var(--scale-phone));
+      }
+      
+      .stat-label {
+        font-size: calc(0.7rem * var(--scale-phone));
+        margin-bottom: calc(2px * var(--scale-phone));
+      }
+      
+      .stat-value {
+        font-size: calc(1rem * var(--scale-phone));
+      }
+      
+      .canvas-container {
+        border-radius: calc(12px * var(--scale-phone));
+        box-shadow: 0 calc(2px * var(--scale-phone)) calc(12px * var(--scale-phone)) rgba(0,0,0,0.08);
+        overflow: hidden;
+        max-width: calc(100vw - 20px);
+        width: calc(100vw - 20px);
+      }
+      
+      #boardCanvas {
+        width: calc(100vw - 20px) !important;
+        height: auto !important;
+        max-height: calc(60vh * var(--scale-phone));
+        margin: calc(10px * var(--scale-phone)) auto !important;
+        border-width: calc(2px * var(--scale-phone)) !important;
+        border-radius: calc(12px * var(--scale-phone)) !important;
+      }
+      
+      .board-controls {
+        gap: calc(6px * var(--scale-phone));
+        margin-top: calc(15px * var(--scale-phone));
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .control-btn {
+        padding: calc(8px * var(--scale-phone)) calc(12px * var(--scale-phone));
+        font-size: calc(12px * var(--scale-phone));
+        border-radius: calc(4px * var(--scale-phone));
+      }
+    }
+    
     .navbar {
       width: 100%;
       height: 60px;
@@ -52,17 +148,20 @@
       padding-right: 8px;
       transition: background 0.4s;
     }
+    
     .navbar-hamburger {
       font-size: 2rem;
       cursor: pointer;
       padding: 0 24px;
       user-select: none;
     }
+    
     .navbar-title {
       font-size: 1.3rem;
       font-weight: bold;
       margin-left: 12px;
     }
+    
     .sidebar {
       position: fixed;
       top: 0;
@@ -77,9 +176,11 @@
       transition: right 0.3s;
       z-index: 1002;
     }
+    
     .sidebar.open {
       right: 0;
     }
+    
     .sidebar a {
       color: #DDDDDD;
       padding: 18px 24px;
@@ -88,21 +189,24 @@
       border-bottom: 1px solid #444;
       transition: background 0.2s;
     }
+    
     .sidebar a:hover {
       background: rgba(45, 46, 75, 0.8);
       color: #fff;
-      ;
     }
+    
     .sidebar-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.3);
-      z-index: 1000;
+      z-index: 1001;
     }
+    
     .sidebar-overlay.open {
       display: block;
     }
+    
     .board-container {
       flex: 1;
       display: flex;
@@ -110,6 +214,7 @@
       align-items: center;
       padding: 20px;
     }
+    
     .board-title {
       margin-bottom: 20px;
       color: #333;
@@ -225,39 +330,12 @@
     .control-btn:hover {
       background: #1a1b2e;
     }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .board-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .board-stats {
-        justify-content: center;
-        width: 100%;
-      }
-      
-      .stat-item {
-        min-width: 80px;
-        padding: 8px 12px;
-      }
-      
-      .board-controls {
-        gap: 8px;
-      }
-      
-      .control-btn {
-        padding: 8px 12px;
-        font-size: 12px;
-      }
-    }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="header">
-      <h1>Office Board</h1>
+      <h1 class ="navbar-title">Office Board</h1>
     </div>
     <div class="navbar-title"></div>
     <div class="navbar-hamburger" id="navbarHamburger">&#9776;</div>
