@@ -458,6 +458,71 @@
     .control-btn:hover {
       background: #1a1b2e;
     }
+
+    /* User Info Modal Styles */
+    .user-info-modal {
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .user-info-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    
+    .user-info-content h3 {
+      margin-bottom: 20px;
+      color: #2d2e4b;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .user-info-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .user-info-label {
+      font-weight: bold;
+      color: #2d2e4b;
+    }
+    
+    .user-info-value {
+      color: #6c757d;
+    }
+
+    .confirm-btn {
+      background-color: #2d2e4b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .confirm-btn:hover {
+      background-color: #1a1b2e;
+    }
   </style>
 </head>
 <body>
@@ -538,6 +603,17 @@
       <button id="zoomOutBtn" class="control-btn">🔍-</button>
       <button id="resetZoomBtn" class="control-btn">🔍 Reset</button>
       <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
+    </div>
+  </div>
+
+  <!-- User Info Modal -->
+  <div id="userInfoModal" class="user-info-modal">
+    <div class="user-info-content">
+      <h3 id="userInfoTitle">User Information</h3>
+      <div id="userInfoDetails">
+        <!-- User info will be populated here -->
+      </div>
+      <button id="closeUserInfo" class="confirm-btn" style="margin-top: 20px;">Close</button>
     </div>
   </div>
 
@@ -780,7 +856,7 @@ function drawOfficeWithUsers(users) {
   users.forEach(user => {
     if (!user.avatar) return;
     console.log(`User ${user.username}: status = ${user.status}, desk = ${user.desk}`);
-    if (user.desk && (user.status === "clocked-in" || user.status === "break" || user.status === "work-from-home")) {
+    if (user.desk) {
       let deskCoord = user.desk;
       if (typeof deskCoord === "string") {
         const [x, y] = deskCoord.split(',').map(Number);
@@ -833,28 +909,35 @@ function drawOfficeWithUsers(users) {
       }
       
       ctx.save();
+      
+      // Handle different statuses
       if (user.status === "break") {
         ctx.globalAlpha = 0.3; // faded
+      } else if (user.status === "clocked-out") {
+        ctx.globalAlpha = 0.1; // very faded for clocked out users
       }
       
-      if (useRegularDesk) {
-        // For regular desks (desk.png), use normal positioning
-        ctx.drawImage(
-          spriteSheet,
-          frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
-          offsetX + avatarOffsetX, offsetY + avatarOffsetY, drawWidth, drawHeight
-        );
-      } else {
-        // For other desks (deskop.png), flip avatar horizontally and shift more to the right
-        avatarOffsetX = -6; // more pixels right (moved left)
-        ctx.scale(-1, 1); // flip horizontally
-        ctx.drawImage(
-          spriteSheet,
-          frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
-          -(offsetX + avatarOffsetX + drawWidth), offsetY + avatarOffsetY, drawWidth, drawHeight
-        );
-        ctx.restore(); // Restore canvas state after flipped avatar
-        ctx.save(); // Save state for name tag
+      // Only draw avatar if user is not clocked out
+      if (user.status !== "clocked-out") {
+        if (useRegularDesk) {
+          // For regular desks (desk.png), use normal positioning
+          ctx.drawImage(
+            spriteSheet,
+            frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+            offsetX + avatarOffsetX, offsetY + avatarOffsetY, drawWidth, drawHeight
+          );
+        } else {
+          // For other desks (deskop.png), flip avatar horizontally and shift more to the right
+          avatarOffsetX = -6; // more pixels right (moved left)
+          ctx.scale(-1, 1); // flip horizontally
+          ctx.drawImage(
+            spriteSheet,
+            frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+            -(offsetX + avatarOffsetX + drawWidth), offsetY + avatarOffsetY, drawWidth, drawHeight
+          );
+          ctx.restore(); // Restore canvas state after flipped avatar
+          ctx.save(); // Save state for name tag
+        }
       }
       ctx.globalAlpha = 1.0;
       ctx.font = 'bold 12px Arial';
@@ -1081,16 +1164,175 @@ document.addEventListener('DOMContentLoaded', function() {
   canvas.style.cursor = 'grab';
 });
 
-// Wait for both images to load before animating
-let imagesLoaded = 0;
-function checkLoaded() {
-  imagesLoaded++;
-  if (imagesLoaded === 2) {
-    requestAnimationFrame(animateSprite);
+  // Wait for both images to load before animating
+  let imagesLoaded = 0;
+  function checkLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded === 2) {
+      requestAnimationFrame(animateSprite);
+    }
   }
-}
-deskImg.onload = checkLoaded;
-spriteSheet.onload = checkLoaded;
+  deskImg.onload = checkLoaded;
+  spriteSheet.onload = checkLoaded;
+
+  // Add click event listener to canvas for user info
+  canvas.addEventListener('click', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left - panX) / zoomLevel;
+    const y = (e.clientY - rect.top - panY) / zoomLevel;
+    
+    // Check if click is on a user
+    const clickedUser = findUserAtPosition(x, y);
+    if (clickedUser) {
+      showUserInfo(clickedUser);
+    }
+  });
+
+  function findUserAtPosition(x, y) {
+    return boardUsers.find(user => {
+      if (!user.desk) return false;
+      
+      let deskCoord = user.desk;
+      if (typeof deskCoord === "string") {
+        const [x, y] = deskCoord.split(',').map(Number);
+        deskCoord = {x, y};
+      }
+      
+      const px = deskCoord.x * cellSize;
+      const py = deskCoord.y * cellSize;
+      
+      // Check if click is within the desk area (including avatar and name tag)
+      return x >= px && x <= px + cellSize && y >= py && y <= py + cellSize;
+    });
+  }
+
+  async function showUserInfo(user) {
+    const modal = document.getElementById('userInfoModal');
+    const title = document.getElementById('userInfoTitle');
+    const details = document.getElementById('userInfoDetails');
+    
+    title.textContent = `${user.username}'s Information`;
+    
+    try {
+      // Fetch user's detailed information including clock times
+      const response = await fetch(`${ApiUrlLink}/user/${user.username}`);
+      const userData = await response.json();
+      
+      // Also fetch current hours data which might contain clock times
+      let hoursData = null;
+      try {
+        const hoursResponse = await fetch(`${ApiUrlLink}/current_hours`);
+        if (hoursResponse.ok) {
+          const hoursResponseData = await hoursResponse.json();
+          hoursData = hoursResponseData.find(u => u.username === user.username);
+          console.log('Hours data for user:', user.username, hoursData);
+        }
+      } catch (e) {
+        console.log('Could not fetch hours data:', e);
+      }
+      
+      console.log('User data from /user endpoint:', userData);
+      
+      // Calculate working time if clocked in
+      let workingTime = 'N/A';
+      let clockInTime = 'N/A';
+      let clockOutTime = 'N/A';
+      
+      // Try to get clock times from multiple sources
+      const clockInTimeField = userData.clock_in_time || userData.clockInTime || userData.clock_in || 
+                              (hoursData && hoursData.clock_in_time) || (hoursData && hoursData.clockInTime);
+      const clockOutTimeField = userData.clock_out_time || userData.clockOutTime || userData.clock_out || 
+                               (hoursData && hoursData.clock_out_time) || (hoursData && hoursData.clockOutTime);
+      
+      console.log('Available fields in userData:', Object.keys(userData));
+      console.log('Available fields in hoursData:', hoursData ? Object.keys(hoursData) : 'No hours data');
+      console.log('Clock in time field found:', clockInTimeField);
+      console.log('Clock out time field found:', clockOutTimeField);
+      
+      if (clockInTimeField) {
+        try {
+          const clockIn = new Date(clockInTimeField);
+          if (!isNaN(clockIn.getTime())) {
+            clockInTime = clockIn.toLocaleTimeString();
+            
+            if (userData.status === 'clocked-out' && clockOutTimeField) {
+              try {
+                const clockOut = new Date(clockOutTimeField);
+                if (!isNaN(clockOut.getTime())) {
+                  clockOutTime = clockOut.toLocaleTimeString();
+                  const duration = clockOut - clockIn;
+                  workingTime = Math.floor(duration / (1000 * 60 * 60)) + 'h ' + 
+                               Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60)) + 'm';
+                }
+              } catch (e) {
+                console.log('Error parsing clock out time:', e);
+              }
+            } else if (userData.status !== 'clocked-out') {
+              const now = new Date();
+              const duration = now - clockIn;
+              workingTime = Math.floor(duration / (1000 * 60 * 60)) + 'h ' + 
+                           Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60)) + 'm';
+            }
+          }
+        } catch (e) {
+          console.log('Error parsing clock in time:', e);
+        }
+      }
+      
+      // Handle desk coordinates properly
+      let deskDisplay = 'N/A';
+      if (user.desk) {
+        if (typeof user.desk === 'string') {
+          deskDisplay = user.desk;
+        } else if (user.desk.x !== undefined && user.desk.y !== undefined) {
+          deskDisplay = `${user.desk.x}, ${user.desk.y}`;
+        }
+      }
+
+      details.innerHTML = `
+        <div class="user-info-item">
+          <span class="user-info-label">Email:</span>
+          <span class="user-info-value">${userData.email || 'N/A'}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Status:</span>
+          <span class="user-info-value">${userData.status || 'N/A'}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Desk:</span>
+          <span class="user-info-value">${deskDisplay}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Clock In Time:</span>
+          <span class="user-info-value">${clockInTime}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Working Time:</span>
+          <span class="user-info-value">${workingTime}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Clock Out Time:</span>
+          <span class="user-info-value">${clockOutTime}</span>
+        </div>
+      `;
+    } catch (error) {
+      details.innerHTML = '<p>Error loading user information.</p>';
+    }
+    
+    modal.style.display = 'flex';
+  }
+
+  // Close user info modal
+  document.getElementById('closeUserInfo').onclick = function() {
+    document.getElementById('userInfoModal').style.display = 'none';
+  };
+  
+  // Close modal when clicking outside
+  document.getElementById('userInfoModal').onclick = function(e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+    }
+  };
 }); // Close the first DOMContentLoaded event listener
   </script>
 </body>
