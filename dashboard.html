@@ -938,7 +938,7 @@
       background: rgba(255, 255, 255, 0.3);
       transition: width 1.2s linear;
       z-index: 1;
-      border-radius: 16px;
+      border-radius: 8px;
     }
     
     /* Disabled state */
@@ -961,26 +961,35 @@
     /* Enhanced popup */
     .popup-message {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      color: #2c3e50;
-      padding: 60px 80px;
-      border-radius: 24px;
-      font-size: 2.2rem;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #2d2e4bf2;
+      color: white;
+      padding: 0;
+      border-radius: 0;
+      font-size: 3.5rem;
       font-weight: 700;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+      box-shadow: none;
       z-index: 2000;
       text-align: center;
-      min-width: 400px;
-      min-height: 120px;
-      backdrop-filter: blur(15px);
-      border: 2px solid rgba(255, 255, 255, 0.9);
+      min-width: 100vw;
+      min-height: 100vh;
+      backdrop-filter: none;
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      animation: fadeInOut 2s ease-in-out;
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
     }
     
     /* Enhanced confetti */
@@ -1479,9 +1488,19 @@
       const popup = document.getElementById('popupMessage');
       popup.textContent = message;
       popup.style.display = 'flex';
+      
+      // Show confetti for all messages
       showConfetti();
+      
+      // After 2 seconds, hide popup and restore original button visibility
       setTimeout(() => {
         popup.style.display = 'none';
+        // Get current status and update button visibility properly
+        const userStatusElement = document.getElementById('userStatus');
+        if (userStatusElement) {
+          const currentStatus = userStatusElement.innerText.trim();
+          updateButtonVisibility(currentStatus);
+        }
       }, 2000);
     }
   </script>
