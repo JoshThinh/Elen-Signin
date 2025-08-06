@@ -1113,7 +1113,7 @@
     </div>
     
     <div class="center-actions">
-      <p class="welcome-subtitle">Manage your work schedule - Status:  <span id="userStatus"> Loading...</span></p>
+      <p class="welcome-subtitle">Manage your work schedule - Status: &nbsp;&nbsp;<span id="userStatus"> Loading...</span></p>
       <button class="action-btn clock-in" id="clockInBtn">
         <div class="loading-bar"></div>
                   <div class="btn-content">
@@ -1194,9 +1194,31 @@
       const username = getQueryParam('username');
 
       function updateStatusIndicators(currentStatus) {
+         // Convert technical status to user-friendly text
+         let displayStatus = currentStatus;
+         switch (currentStatus) {
+           case 'clocked-in':
+             displayStatus = 'Clocked In';
+             break;
+           case 'clocked-out':
+             displayStatus = 'Clocked Out';
+             break;
+           case 'break':
+             displayStatus = 'On Break';
+             break;
+           case 'work-from-home':
+             displayStatus = 'Working from Home';
+             break;
+           case 'job-site':
+             displayStatus = 'At Job Site';
+             break;
+           default:
+             displayStatus = currentStatus;
+         }
+         
          // Update the status display in the subtitle
-         document.getElementById("userStatus").innerText = currentStatus;
-         console.log('Current status:', currentStatus);
+         document.getElementById("userStatus").innerText = displayStatus;
+         console.log('Current status:', currentStatus, 'Display status:', displayStatus);
        }
 
       function updateButtonVisibility(currentStatus) {
