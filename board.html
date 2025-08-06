@@ -917,27 +917,25 @@ function drawOfficeWithUsers(users) {
         ctx.globalAlpha = 0.1; // very faded for clocked out users
       }
       
-      // Only draw avatar if user is not clocked out
-      if (user.status !== "clocked-out") {
-        if (useRegularDesk) {
-          // For regular desks (desk.png), use normal positioning
-          ctx.drawImage(
-            spriteSheet,
-            frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
-            offsetX + avatarOffsetX, offsetY + avatarOffsetY, drawWidth, drawHeight
-          );
-        } else {
-          // For other desks (deskop.png), flip avatar horizontally and shift more to the right
-          avatarOffsetX = -6; // more pixels right (moved left)
-          ctx.scale(-1, 1); // flip horizontally
-          ctx.drawImage(
-            spriteSheet,
-            frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
-            -(offsetX + avatarOffsetX + drawWidth), offsetY + avatarOffsetY, drawWidth, drawHeight
-          );
-          ctx.restore(); // Restore canvas state after flipped avatar
-          ctx.save(); // Save state for name tag
-        }
+      // Draw avatar for all users (including clocked-out with very low opacity)
+      if (useRegularDesk) {
+        // For regular desks (desk.png), use normal positioning
+        ctx.drawImage(
+          spriteSheet,
+          frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+          offsetX + avatarOffsetX, offsetY + avatarOffsetY, drawWidth, drawHeight
+        );
+      } else {
+        // For other desks (deskop.png), flip avatar horizontally and shift more to the right
+        avatarOffsetX = -6; // more pixels right (moved left)
+        ctx.scale(-1, 1); // flip horizontally
+        ctx.drawImage(
+          spriteSheet,
+          frameToDraw * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+          -(offsetX + avatarOffsetX + drawWidth), offsetY + avatarOffsetY, drawWidth, drawHeight
+        );
+        ctx.restore(); // Restore canvas state after flipped avatar
+        ctx.save(); // Save state for name tag
       }
       ctx.globalAlpha = 1.0;
       ctx.font = 'bold 12px Arial';
@@ -1215,17 +1213,32 @@ document.addEventListener('DOMContentLoaded', function() {
     
     try {
       // Fetch user's detailed information including clock times
+      console.log('Fetching user data from:', `${ApiUrlLink}/user/${user.username}`);
       const response = await fetch(`${ApiUrlLink}/user/${user.username}`);
+      console.log('User response status:', response.status);
+      console.log('User response ok:', response.ok);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const userData = await response.json();
+      console.log('User data received:', userData);
       
       // Also fetch current hours data which might contain clock times
       let hoursData = null;
       try {
+        console.log('Fetching hours data from:', `${ApiUrlLink}/current_hours`);
         const hoursResponse = await fetch(`${ApiUrlLink}/current_hours`);
+        console.log('Hours response status:', hoursResponse.status);
+        
         if (hoursResponse.ok) {
           const hoursResponseData = await hoursResponse.json();
+          console.log('All hours data:', hoursResponseData);
           hoursData = hoursResponseData.find(u => u.username === user.username);
           console.log('Hours data for user:', user.username, hoursData);
+        } else {
+          console.log('Hours response not ok:', hoursResponse.status);
         }
       } catch (e) {
         console.log('Could not fetch hours data:', e);
@@ -1244,25 +1257,40 @@ document.addEventListener('DOMContentLoaded', function() {
       const clockOutTimeField = userData.clock_out_time || userData.clockOutTime || userData.clock_out || 
                                (hoursData && hoursData.clock_out_time) || (hoursData && hoursData.clockOutTime);
       
+      console.log('Full userData object:', userData);
+      console.log('Full hoursData object:', hoursData);
       console.log('Available fields in userData:', Object.keys(userData));
       console.log('Available fields in hoursData:', hoursData ? Object.keys(hoursData) : 'No hours data');
       console.log('Clock in time field found:', clockInTimeField);
       console.log('Clock out time field found:', clockOutTimeField);
+      console.log('User status:', userData.status);
       
       if (clockInTimeField) {
         try {
+          console.log('Parsing clock in time:', clockInTimeField);
           const clockIn = new Date(clockInTimeField);
+          console.log('Parsed clock in Date object:', clockIn);
+          console.log('Clock in timestamp:', clockIn.getTime());
+          console.log('Is NaN:', isNaN(clockIn.getTime()));
+          
           if (!isNaN(clockIn.getTime())) {
             clockInTime = clockIn.toLocaleTimeString();
+            console.log('Successfully parsed clock in time:', clockInTime);
             
             if (userData.status === 'clocked-out' && clockOutTimeField) {
               try {
+                console.log('Parsing clock out time:', clockOutTimeField);
                 const clockOut = new Date(clockOutTimeField);
+                console.log('Parsed clock out Date object:', clockOut);
+                console.log('Clock out timestamp:', clockOut.getTime());
+                console.log('Is NaN:', isNaN(clockOut.getTime()));
+                
                 if (!isNaN(clockOut.getTime())) {
                   clockOutTime = clockOut.toLocaleTimeString();
                   const duration = clockOut - clockIn;
                   workingTime = Math.floor(duration / (1000 * 60 * 60)) + 'h ' + 
                                Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60)) + 'm';
+                  console.log('Successfully calculated working time for clocked-out user:', workingTime);
                 }
               } catch (e) {
                 console.log('Error parsing clock out time:', e);
@@ -1272,11 +1300,16 @@ document.addEventListener('DOMContentLoaded', function() {
               const duration = now - clockIn;
               workingTime = Math.floor(duration / (1000 * 60 * 60)) + 'h ' + 
                            Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60)) + 'm';
+              console.log('Successfully calculated working time for active user:', workingTime);
             }
+          } else {
+            console.log('Invalid clock in time - NaN result');
           }
         } catch (e) {
           console.log('Error parsing clock in time:', e);
         }
+      } else {
+        console.log('No clock in time field found');
       }
       
       // Handle desk coordinates properly
@@ -1316,7 +1349,8 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       `;
     } catch (error) {
-      details.innerHTML = '<p>Error loading user information.</p>';
+      console.error('Error in showUserInfo:', error);
+      details.innerHTML = `<p>Error loading user information: ${error.message}</p>`;
     }
     
     modal.style.display = 'flex';
