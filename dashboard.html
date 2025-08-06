@@ -1340,6 +1340,36 @@
         }
       }
 
+      async function updateStatusWithLocation(action, location, successMsg, btn) {
+        animateButtonLoading(btn);
+        try {
+          const res = await fetch(`${ApiUrlLink}/status/${username}/${action}`, { 
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ location: location })
+          });
+          setTimeout(() => { // Wait for animation to finish
+            resetButtonLoading(btn);
+            if (res.ok) {
+              showPopup(successMsg);
+              updateStatusIndicators(action); // Update indicator after status change
+              
+              // Update button visibility based on new status
+              updateButtonVisibility(action);
+            } else {
+              showPopup("Failed. Try again.");
+            }
+          }, 1200);
+        } catch (error) {
+          setTimeout(() => {
+            resetButtonLoading(btn);
+            showPopup("Error. Try again.");
+          }, 1200);
+        }
+      }
+
       document.getElementById('clockInBtn').onclick = function() {
         updateStatus("clocked-in", "Successfully clocked in!", this);
       };
@@ -1362,7 +1392,7 @@
       document.getElementById('confirmJobSite').onclick = function() {
         const location = document.getElementById('jobSiteLocation').value.trim();
         if (location) {
-          updateStatus("job-site", `Successfully set to job site: ${location}!`, document.getElementById('jobSiteBtn'));
+          updateStatusWithLocation("job-site", location, `Successfully set to job site: ${location}!`, document.getElementById('jobSiteBtn'));
           document.getElementById('jobSiteModal').style.display = 'none';
           document.getElementById('jobSiteLocation').value = '';
         } else {

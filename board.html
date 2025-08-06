@@ -1312,6 +1312,46 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('No clock in time field found');
       }
       
+      // Calculate break times
+      let breakStartTime = 'N/A';
+      let breakEndTime = 'N/A';
+      let breakDuration = 'N/A';
+
+      const breakStartTimeField = userData.break_start_time || (hoursData && hoursData.break_start_time);
+      const breakEndTimeField = userData.break_end_time || (hoursData && hoursData.break_end_time);
+
+      if (breakStartTimeField) {
+        try {
+          const breakStart = new Date(breakStartTimeField);
+          if (!isNaN(breakStart.getTime())) {
+            breakStartTime = breakStart.toLocaleTimeString();
+            
+            // If user is currently on break, calculate current break duration
+            if (userData.status === 'break') {
+              const now = new Date();
+              const duration = now - breakStart;
+              breakDuration = Math.floor(duration / (1000 * 60 * 60)) + 'h ' + 
+                             Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60)) + 'm';
+            } else if (breakEndTimeField) {
+              // User finished break, calculate break duration from start to end
+              try {
+                const breakEnd = new Date(breakEndTimeField);
+                if (!isNaN(breakEnd.getTime())) {
+                  const duration = breakEnd - breakStart;
+                  breakDuration = Math.floor(duration / (1000 * 60 * 60)) + 'h ' + 
+                                 Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60)) + 'm';
+                  breakEndTime = breakEnd.toLocaleTimeString();
+                }
+              } catch (e) {
+                console.log('Error calculating break end time:', e);
+              }
+            }
+          }
+        } catch (e) {
+          console.log('Error parsing break start time:', e);
+        }
+      }
+      
       // Handle desk coordinates properly
       let deskDisplay = 'N/A';
       if (user.desk) {
@@ -1322,6 +1362,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
+      // Get work and break hours from the backend data
+      const workHours = hoursData ? hoursData.work_hours : (userData.work_hours || 0);
+      const breakHours = hoursData ? hoursData.break_hours : (userData.break_hours || 0);
+      
+      // Format hours for display
+      const formatHours = (hours) => {
+        if (hours === 0) return '0h 0m';
+        const wholeHours = Math.floor(hours);
+        const minutes = Math.round((hours - wholeHours) * 60);
+        return `${wholeHours}h ${minutes}m`;
+      };
+
+      // Get job site location if available
+      const jobSiteLocation = userData.job_site_location || 'N/A';
+      
+      // Create Google Maps link for job site location
+      const createMapLink = (location) => {
+        if (location && location !== 'N/A') {
+          const encodedLocation = encodeURIComponent(location);
+          return `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
+        }
+        return null;
+      };
+      
+      const mapLink = createMapLink(jobSiteLocation);
+      
       details.innerHTML = `
         <div class="user-info-item">
           <span class="user-info-label">Email:</span>
@@ -1335,17 +1401,48 @@ document.addEventListener('DOMContentLoaded', function() {
           <span class="user-info-label">Desk:</span>
           <span class="user-info-value">${deskDisplay}</span>
         </div>
+        ${userData.status === 'job-site' ? `
+        <div class="user-info-item">
+          <span class="user-info-label">Job Site Location:</span>
+          <span class="user-info-value">
+            ${mapLink ? 
+              `<a href="${mapLink}" target="_blank" style="color: #007bff; text-decoration: underline; cursor: pointer;">${jobSiteLocation} 📍</a>` : 
+              jobSiteLocation
+            }
+          </span>
+        </div>
+        ` : ''}
         <div class="user-info-item">
           <span class="user-info-label">Clock In Time:</span>
           <span class="user-info-value">${clockInTime}</span>
         </div>
         <div class="user-info-item">
-          <span class="user-info-label">Working Time:</span>
+          <span class="user-info-label">Total Work Hours:</span>
+          <span class="user-info-value">${formatHours(workHours)}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Total Break Hours:</span>
+          <span class="user-info-value">${formatHours(breakHours)}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Current Session:</span>
           <span class="user-info-value">${workingTime}</span>
         </div>
         <div class="user-info-item">
           <span class="user-info-label">Clock Out Time:</span>
           <span class="user-info-value">${clockOutTime}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Break Start Time:</span>
+          <span class="user-info-value">${breakStartTime}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Break End Time:</span>
+          <span class="user-info-value">${breakEndTime}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Current Break:</span>
+          <span class="user-info-value">${breakDuration}</span>
         </div>
       `;
     } catch (error) {
