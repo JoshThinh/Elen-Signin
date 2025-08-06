@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clock In Page</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
   <script defer>
     document.addEventListener("DOMContentLoaded", () => {
@@ -46,41 +46,124 @@
       width: 100vw !important;
       margin: 0 !important;
       padding: 0 !important;
-      padding-top: 56px !important; /* To prevent content from being hidden under navbar */
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding-left: 100px !important; /* To prevent content from being hidden under sidebar */
+      background: #2d2e4bf2;
       min-height: 100vh;
       font-size: 16px;
-      color: #777777;
-      font-family: 'Crimson Text', serif;
+      color: white;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    .navbar {
-      width: 100%;
-      height: 60px;
-      background: #2d2e4bf2;
-      color: #fff;
+         .left-sidebar {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100px;
+       height: 100vh;
+       background: #4a4c6b;
+       color: #fff;
+       z-index: 1001;
+       transition: width 0.3s ease;
+       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+     }
+    
+         .left-sidebar.expanded {
+       width: 200px;
+     }
+    
+         .sidebar-header {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       padding: 15px 15px;
+       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+       cursor: pointer;
+     }
+    
+    .sidebar-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      position: absolute;
+      left: 20px;
+    }
+    
+    .left-sidebar.expanded .sidebar-header h3 {
+      opacity: 1;
+    }
+    
+         .sidebar-toggle {
+       font-size: 2.5rem;
+       cursor: pointer !important;
+       user-select: none;
+       -webkit-user-select: none;
+       -moz-user-select: none;
+       -ms-user-select: none;
+       transition: transform 0.3s ease;
+       width: 80px;
+       height: 80px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       pointer-events: auto;
+       background: transparent;
+       border: none;
+       outline: none;
+       margin: 0 auto;
+     }
+     
+     .left-sidebar.expanded .sidebar-toggle {
+       height: 60px;
+     }
+    
+    .left-sidebar.expanded .sidebar-toggle {
+      transform: rotate(90deg);
+    }
+    
+         .sidebar-icons {
+       padding: 10px 0;
+     }
+    
+    .sidebar-icon-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 1001;
-      box-sizing: border-box;
-      padding-right: 8px;
-      transition: background 0.4s;
+      justify-content: center;
+      width: 100%;
+      height: 50px;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
     }
     
-    .navbar-hamburger {
-      font-size: 2rem;
-      cursor: pointer;
-      padding: 0 24px;
-      user-select: none;
+    .sidebar-icon-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-left-color: #fff;
     }
     
-    .navbar-title {
+    .sidebar-icon-item .icon {
       font-size: 1.3rem;
-      font-weight: bold;
-      margin-left: 12px;
+      filter: grayscale(60%);
+    }
+    
+    .sidebar-text {
+      padding: 20px 0;
+    }
+    
+    .sidebar-text a {
+      display: block;
+      padding: 15px 20px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-text a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-left-color: #fff;
     }
     /* iPhone and small phones (up to 428px) */
     @media screen and (max-width: 428px) {
@@ -125,6 +208,14 @@
       .navbar {
         height: calc(50px * var(--scale-phone));
         padding: 0 calc(8px * var(--scale-phone));
+      }
+      
+      .left-sidebar {
+        width: calc(100px * var(--scale-phone));
+        height: 100vh;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
       
       .navbar-hamburger {
@@ -175,10 +266,10 @@
       }
       
       .action-btn {
-        width: calc(300px * var(--scale-phone)) !important;
-        height: calc(60px * var(--scale-phone)) !important;
-        font-size: calc(1rem * var(--scale-phone)) !important;
-        border-radius: calc(12px * var(--scale-phone)) !important;
+        width: calc(350px * var(--scale-phone)) !important;
+        height: calc(80px * var(--scale-phone)) !important;
+        font-size: calc(1.2rem * var(--scale-phone)) !important;
+        border-radius: calc(8px * var(--scale-phone)) !important;
         max-width: calc(100vw - 40px) !important;
         overflow: hidden !important;
         white-space: nowrap !important;
@@ -292,7 +383,7 @@
         width: calc(350px * var(--scale-phone));
         height: calc(75px * var(--scale-phone));
         font-size: calc(1.1rem * var(--scale-phone));
-        border-radius: calc(14px * var(--scale-phone));
+        border-radius: calc(7px * var(--scale-phone));
       }
       
       .action-divider {
@@ -374,7 +465,7 @@
         width: calc(450px * var(--scale-desktop));
         height: calc(90px * var(--scale-desktop));
         font-size: calc(1.2rem * var(--scale-desktop));
-        border-radius: calc(16px * var(--scale-desktop));
+        border-radius: calc(8px * var(--scale-desktop));
       }
       
       .action-divider {
@@ -456,7 +547,7 @@
         width: calc(500px * var(--scale-desktop));
         height: calc(100px * var(--scale-desktop));
         font-size: calc(1.3rem * var(--scale-desktop));
-        border-radius: calc(18px * var(--scale-desktop));
+        border-radius: calc(9px * var(--scale-desktop));
       }
       
       .action-divider {
@@ -538,7 +629,7 @@
         width: calc(550px * var(--scale-tv));
         height: calc(110px * var(--scale-tv));
         font-size: calc(1.4rem * var(--scale-tv));
-        border-radius: calc(20px * var(--scale-tv));
+        border-radius: calc(10px * var(--scale-tv));
       }
       
       .action-divider {
@@ -597,53 +688,14 @@
       padding: 0 24px;
       user-select: none;
     }
-    .sidebar {
-      position: fixed;
-      top: 0;
-      right: -220px;
-      width: 220px;
-      height: 100%;
-      background: #2d2e4bf2;
-      color: rgba(45, 46, 75, 0.95);
-      display: flex;
-      flex-direction: column;
-      padding-top: 56px;
-      transition: right 0.3s;
-      z-index: 1002;
-    }
-    .sidebar a {
-      color: #DDDDDD;
-      padding: 18px 24px;
-      text-decoration: none;
-      font-size: 1.1rem;
-      border-bottom: 1px solid #444;
-      transition: background 0.2s;
-    }
-    .sidebar a:hover {
-      background: rgba(45, 46, 75, 0.8);
-      color: #fff;
-      ;
-    }
-    .sidebar.open {
-      right: 0;
-    }
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.3);
-      z-index: 1000;
-    }
-    .sidebar-overlay.open {
-      display: block;
-    }
+
     body {
-      padding-top: 56px; /* To prevent content from being hidden under navbar */
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding-left: 100px; /* To prevent content from being hidden under sidebar */
+      background: #2d2e4bf2;
       min-height: 100vh;
       font-size: 16px;
-      color: #777777;
-      font-family: 'Crimson Text', serif;
+      color: white;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
     /* Professional Button Styling */
@@ -652,10 +704,10 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      min-height: 40vh;
+      min-height: auto;
       gap: 0;
       padding: 0;
-      margin-top: 40px;
+      margin-top: 150px;
     }
     
     .action-btn {
@@ -663,23 +715,23 @@
       width: 620px;
       height: 100px;
       border: none;
-      border-radius: 16px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Crimson Text', serif;
-      font-weight: 700;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 600;
       font-size: 1.35rem;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      letter-spacing: 0.3px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
       overflow: hidden;
-      background: rgba(45, 46, 75, 0.15); /* 10% tint of #2d2e4b */
-      color: #2d2e4b;
+      background: linear-gradient(90deg, rgba(135, 206, 250, 0.05) 0%, rgba(45, 46, 75, 0.25) 100%);
+      color: white;
       border: 2.5px solid #bdbdd7;
       text-align: center;
+      transform: translateY(-2px);
     }
     
     .action-btn::before {
@@ -698,20 +750,20 @@
     }
     
     .action-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.15);
     }
     
     .action-btn:active {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 3px 12px rgba(0, 0, 0, 0.1);
     }
     
     /* Specific button styles */
     .action-btn.clock-in {
-      background: rgba(45, 46, 75, 0.2); /* 20% tint */
+      background: linear-gradient(90deg, rgba(135, 206, 250, 0.05) 0%, rgba(45, 46, 75, 0.25) 100%);
       border: 2.5px solid #a1a1bb;
-      color: #2d2e4b;
+      color: white;
     }
     
     .action-btn.clock-in:hover {
@@ -720,9 +772,9 @@
     }
     
     .action-btn.break {
-      background: rgba(45, 46, 75, 0.4); /* 40% tint */
+      background: linear-gradient(90deg, rgba(135, 206, 250, 0.05) 0%, rgba(45, 46, 75, 0.25) 100%);
       border: 2.5px solid #84849f;
-      color: #2d2e4b;
+      color: white;
     }
     
     .action-btn.break:hover {
@@ -731,12 +783,12 @@
     }
     
     .action-btn.clock-out {
-      background: #dc3545; /* Solid red color for clock out */
+      background: linear-gradient(90deg, #ff6b6b 0%, #dc3545 100%);
       border: 2.5px solid #dc3545;
       color: white;
       width: 620px; /* Same width as other buttons */
       height: 40px; /* Skinnier height */
-      border-radius: 0; /* Sharp corners */
+      border-radius: 8px; /* Sharp corners */
     }
     
     .action-btn.clock-out:hover {
@@ -745,9 +797,9 @@
     }
     
     .action-btn.work-from-home {
-      background: rgba(23, 162, 184, 0.6); /* Teal color for work from home */
-      border: 2.5px solid #17a2b8;
-      color: #2d2e4b;
+      background: linear-gradient(90deg, rgba(135, 206, 250, 0.05) 0%, rgba(45, 46, 75, 0.25) 100%);
+      border: 2.5px solid #676883;
+      color: white;
     }
     
     .action-btn.work-from-home:hover {
@@ -756,9 +808,9 @@
     }
     
     .action-btn.job-site {
-      background: rgba(45, 46, 75, 0.6); /* Clock out color for job site */
+      background: linear-gradient(90deg, rgba(135, 206, 250, 0.05) 0%, rgba(45, 46, 75, 0.25) 100%);
       border: 2.5px solid #676883;
-      color: #2d2e4b;
+      color: white;
     }
     
     .action-btn.job-site:hover {
@@ -851,17 +903,17 @@
     .btn-content {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
+      justify-content: space-between;
       z-index: 2;
       position: relative;
       width: 100%;
-      text-align: center;
+      padding: 0 20px;
     }
     
     .btn-icon {
       font-size: 1.5rem;
-      opacity: 0.9;
+      opacity: 0.95;
+      filter: grayscale(60%);
     }
     
     .btn-text {
@@ -1004,23 +1056,35 @@
     
     /* Welcome message styling */
     .welcome-container {
-      text-align: center;
-      margin-bottom: 40px;
-      color: #2c3e50;
+      position: fixed;
+      top: -20px;
+      left: 120px;
+      z-index: 1000;
+      color: white;
+      text-align: left;
     }
     
     .welcome-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 10px;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 5px;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .welcome-subtitle {
-      font-size: 1.1rem;
-      opacity: 0.8;
-      font-weight: 300;
-            color: #34495e;
+      font-size: 1.2rem;
+      opacity: 0.9;
+      font-weight: 700;
+      color: white;
+      text-align: left;
+      margin-bottom: 5px;
+      margin-left: 0px;
+      display: flex;
+      align-items: center;
+      height: auto;
+      min-height: 100px;
+      white-space: normal;
+      flex-wrap: wrap;
     }
     
     .action-divider {
@@ -1037,48 +1101,63 @@
   <div style="padding: 20px;">
     <div class="welcome-container">
       <h1 class="welcome-title">Welcome, <span id="userDisplay"></span></h1>
-      <p class="welcome-subtitle">Manage your work schedule</p>
     </div>
     
     <div class="center-actions">
+      <p class="welcome-subtitle">Manage your work schedule - Status:  <span id="userStatus"> Loading...</span></p>
       <button class="action-btn clock-in" id="clockInBtn">
         <div class="loading-bar"></div>
-        <div class="btn-content">
-          <span class="btn-icon">⏰</span>
-          <span class="btn-text">Clock In</span>
-        </div>
+                  <div class="btn-content">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="btn-icon">⏰</span>
+              <span class="btn-text">Clock in</span>
+            </div>
+            <span style="font-size: 1.2rem; opacity: 0.8;">→</span>
+          </div>
       </button>
       <div class="action-divider"></div>
       <button class="action-btn break" id="breakBtn">
         <div class="loading-bar"></div>
-        <div class="btn-content">
-          <span class="btn-icon">☕</span>
-          <span class="btn-text">Break</span>
-        </div>
+                  <div class="btn-content">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="btn-icon">☕</span>
+              <span class="btn-text">Break</span>
+            </div>
+            <span style="font-size: 1.2rem; opacity: 0.8;">→</span>
+          </div>
       </button>
       <div class="action-divider"></div>
       <button class="action-btn job-site" id="jobSiteBtn">
         <div class="loading-bar"></div>
-        <div class="btn-content">
-          <span class="btn-icon">🏗️</span>
-          <span class="btn-text">Job Site</span>
-        </div>
+                  <div class="btn-content">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="btn-icon">🏗️</span>
+              <span class="btn-text">Job site</span>
+            </div>
+            <span style="font-size: 1.2rem; opacity: 0.8;">→</span>
+          </div>
       </button>
       <div class="action-divider"></div>
       <button class="action-btn work-from-home" id="workFromHomeBtn">
         <div class="loading-bar"></div>
-        <div class="btn-content">
-          <span class="btn-icon">🏡</span>
-          <span class="btn-text">Work from Home</span>
-        </div>
+                  <div class="btn-content">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="btn-icon">🏠</span>
+              <span class="btn-text">Work from home</span>
+            </div>
+            <span style="font-size: 1.2rem; opacity: 0.8;">→</span>
+          </div>
       </button>
       <div class="action-divider"></div>
       <button class="action-btn clock-out hidden" id="clockOutBtn">
         <div class="loading-bar"></div>
-        <div class="btn-content">
-          <span class="btn-icon">🏠</span>
-          <span class="btn-text">Clock Out</span>
-        </div>
+                  <div class="btn-content">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="btn-icon">🚪</span>
+              <span class="btn-text">Clock out</span>
+            </div>
+            <span style="font-size: 1.2rem; opacity: 0.8;">→</span>
+          </div>
       </button>
       
       <!-- Job Site Location Input Modal -->
@@ -1106,7 +1185,8 @@
       const username = getQueryParam('username');
 
       function updateStatusIndicators(currentStatus) {
-         // Status indicator logic can be added here if needed in the future
+         // Update the status display in the subtitle
+         document.getElementById("userStatus").innerText = currentStatus;
          console.log('Current status:', currentStatus);
        }
 
@@ -1149,6 +1229,14 @@
           const dividers = document.querySelectorAll('.action-divider');
           if (dividers[4]) dividers[4].style.display = 'none';
         }
+        
+        // Only show break button if user is in an active work status
+        if (currentStatus === "clocked-out" || currentStatus === "break") {
+          document.getElementById('breakBtn').style.display = 'none';
+          // Hide the divider after break button (second divider)
+          const dividers = document.querySelectorAll('.action-divider');
+          if (dividers[1]) dividers[1].style.display = 'none';
+        }
       }
 
       if (!username) {
@@ -1178,6 +1266,7 @@
             }
             // Edit Users link is now visible to everyone
             document.getElementById("userDisplay").innerText = user.username;
+            document.getElementById("userStatus").innerText = user.status;
             updateStatusIndicators(user.status);
             
             // Show/hide buttons based on current user status
@@ -1367,39 +1456,103 @@
     }
   </script>
   
-  <div class="navbar">
-    <div class="header">
-      <h1>Welcome <span id="userDisplay"></span></h1>
+  <div class="left-sidebar" id="leftSidebar">
+    <div class="sidebar-header" onclick="toggleSidebar()">
+      <h3>Menu</h3>
+      <div class="sidebar-toggle" id="sidebarToggle">&#9776;</div>
     </div>
-    <div class="navbar-title"></div>
-    <div class="navbar-hamburger" id="navbarHamburger">&#9776;</div>
+    
+    <!-- Icon Mode -->
+    <div class="sidebar-icons" id="sidebarIcons">
+      <a href="#" class="sidebar-icon-item" id="dashboardIcon" title="Dashboard">
+        <span class="icon">📊</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="boardIcon" title="Board">
+        <span class="icon">📋</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="settingsIcon" title="Settings">
+        <span class="icon">⚙️</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="submitIcon" title="Submit Email">
+        <span class="icon">📧</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="viewEmailIcon" title="View Email">
+        <span class="icon">📬</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="hoursIcon" title="Hours">
+        <span class="icon">⏱️</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="editUsersIcon" title="Edit Users">
+        <span class="icon">👥</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="signOutIcon" title="Sign Out">
+        <span class="icon">🚪</span>
+      </a>
+    </div>
+    
+    <!-- Text Mode -->
+    <div class="sidebar-text" id="sidebarText" style="display: none;">
+      <a href="#" id="dashboardLink">Dashboard</a>
+      <a href="#" id="boardLink">Board</a>
+      <a href="#" id="settingsLink">Settings</a>
+      <a href="#" id="submitLink">Submit Email</a>
+      <a href="#" id="viewEmailLink">View Email</a>
+      <a href="#" id="hourLink">Hours</a>
+      <a href="#" id="editUsersLink">Edit Users</a>
+      <a href="#" id="signOutLink">Sign Out</a>
+    </div>
   </div>
-  <div class="sidebar" id="sidebar">
-    <a href="#" id="dashboardLink" style="display:none;">Dashboard</a>
-    <a href="#" id="boardLink">Board</a>
-    <a href="#" id="settingsLink">Settings</a>
-    <a href="#" id="submitLink">Submit Email</a>
-    <a href="#" id="viewEmailLink">View Email</a>
-    <a href="#" id="hourLink">Hours</a>
-    <a href="#" id="editUsersLink">Edit Users</a>
-    <a href="#" id="signOutLink">Sign Out</a>
-  </div>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   
-  <script defer>
-    document.getElementById('navbarHamburger').onclick = function() {
-      document.getElementById('sidebar').classList.add('open');
-      document.getElementById('sidebarOverlay').classList.add('open');
-    };
-    document.getElementById('sidebarOverlay').onclick = function() {
-      document.getElementById('sidebar').classList.remove('open');
-      document.getElementById('sidebarOverlay').classList.remove('open');
-    };
+    <script defer>
+    function toggleSidebar() {
+      console.log('Sidebar toggle clicked!');
+      const sidebar = document.getElementById('leftSidebar');
+      const icons = document.getElementById('sidebarIcons');
+      const text = document.getElementById('sidebarText');
+      
+      if (sidebar.classList.contains('expanded')) {
+        // Close the sidebar
+        sidebar.classList.remove('expanded');
+        icons.style.display = 'block';
+        text.style.display = 'none';
+        document.body.style.paddingLeft = '100px';
+        console.log('Sidebar closed');
+      } else {
+        // Open the sidebar
+        sidebar.classList.add('expanded');
+        icons.style.display = 'none';
+        text.style.display = 'block';
+        document.body.style.paddingLeft = '200px';
+        console.log('Sidebar opened');
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarHeader = document.querySelector('.sidebar-header');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleSidebar();
+        });
+      }
+      
+      if (sidebarHeader) {
+        sidebarHeader.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleSidebar();
+        });
+      }
+    });
+    
     document.getElementById('signOutLink').onclick = function(e) {
       e.preventDefault();
       localStorage.removeItem("user");
       window.location.href = "index.html";
     };
+    
     // Add your own handlers for submit and email settings:
     document.addEventListener("DOMContentLoaded", () => {
       function getQueryParam(name) {
@@ -1411,11 +1564,17 @@
       // Update all sidebar links to include username
       if (username) {
         document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardIcon').href = `board.html?username=${encodeURIComponent(username)}`;
         document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsIcon').href = `settings.html?username=${encodeURIComponent(username)}`;
         document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitIcon').href = `submit_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
         document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailIcon').href = `view_email.html?username=${encodeURIComponent(username)}`;
       }
       // Add other sidebar links here as needed
     });
