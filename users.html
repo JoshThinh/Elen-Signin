@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Edit Users</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css?family=Crimson+Text:400,600,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
   <script defer>
     document.addEventListener("DOMContentLoaded", () => {
@@ -43,10 +43,10 @@
       flex-direction: column;
       min-height: 100vh;
       margin: 0;
-      font-family: 'Crimson Text', serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       font-size: 16px;
-      color: #777777;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: white;
+      background: #2d2e4bf2;
       padding-top: 0; /* No navbar needed */
       padding-left: 100px; /* To prevent content from being hidden under sidebar */
       overflow-x: hidden;
@@ -226,7 +226,7 @@
     }
     
     .desk-selector-content {
-      background-color: white;
+      background-color: #4a4c6b;
       margin: 5% auto;
       padding: 20px;
       border-radius: 16px;
@@ -234,7 +234,7 @@
       max-width: 800px;
       max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
     }
     
     .desk-selector-header {
@@ -243,12 +243,12 @@
       align-items: center;
       margin-bottom: 20px;
       padding-bottom: 10px;
-      border-bottom: 2px solid #e0e0e0;
+      border-bottom: 2px solid #6c757d;
     }
     
     .desk-selector-header h3 {
       margin: 0;
-      color: #333;
+      color: white;
       font-size: 1.5rem;
     }
     
@@ -285,37 +285,38 @@
     .office-grid td {
       aspect-ratio: 1;
       box-sizing: border-box;
-      border: 1px solid #bbb;
+      border: 1px solid #6c757d;
       text-align: center;
       padding: 0;
       font-size: 12px;
       transition: outline 0.2s;
       cursor: pointer;
-      background: #f8f9fa;
+      background: #2d2e4b;
+      color: white;
     }
     
     .office-grid td.desk-cell {
-      background: #e0f7fa;
+      background: #4a4c6b;
       cursor: pointer;
     }
     
     .office-grid td.desk-cell:hover {
-      outline: 2px solid #2d2e4b;
+      outline: 2px solid #007bff;
     }
     
     .office-grid td.desk-cell.selected {
       outline: 2px solid #007bff;
-      background: #d4edda;
+      background: #28a745;
     }
     
     .office-grid td.desk-cell.occupied {
-      background: #f8d7da;
+      background: #dc3545;
       cursor: not-allowed;
     }
     
     .office-grid td.desk-cell.current-user {
-      background: #d4edda;
-      border: 2px solid #28a745;
+      background: #28a745;
+      border: 2px solid #20c997;
     }
     
     .desk-legend {
@@ -337,7 +338,7 @@
       width: 20px;
       height: 20px;
       border-radius: 4px;
-      border: 1px solid #ccc;
+      border: 1px solid #6c757d;
     }
     
     .select-desk-btn {
@@ -371,7 +372,7 @@
     }
     .users-title {
       margin-bottom: 40px;
-      color: #333;
+      color: white;
       font-size: 2rem;
       font-weight: bold;
     }
@@ -379,9 +380,9 @@
       width: 100%;
       max-width: 1500px;
       border-collapse: collapse;
-      background: white;
+      background: #4a4c6b;
       border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
       overflow: hidden;
       font-size: 1.35em;
     }
@@ -389,15 +390,16 @@
     .users-table td {
       padding: 32px 28px;
       text-align: left;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #6c757d;
+      color: white;
     }
     .users-table th {
-      background: #f8f9fa;
+      background: #2d2e4b;
       font-weight: bold;
-      color: #333;
+      color: white;
     }
     .users-table tr:hover {
-      background: #f8f9fa;
+      background: #6c757d;
     }
     .edit-btn {
       background: #007bff;
