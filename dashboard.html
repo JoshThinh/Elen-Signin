@@ -102,7 +102,7 @@
        -ms-user-select: none;
        transition: transform 0.3s ease;
        width: 80px;
-       height: 50px;
+       height: 80px;
        display: flex;
        align-items: center;
        justify-content: center;
@@ -111,6 +111,8 @@
        border: none;
        outline: none;
        margin: 0 auto;
+       position: relative;
+       top: 5px;
      }
      
      .left-sidebar.expanded .sidebar-toggle {
@@ -119,6 +121,35 @@
     
     .left-sidebar.expanded .sidebar-toggle {
       transform: rotate(90deg);
+    }
+    
+    .sidebar-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+      background: none;
+      border: none;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    
+    .left-sidebar.expanded .sidebar-close {
+      opacity: 1;
+    }
+    
+    .sidebar-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Hide only the toggle button when sidebar is expanded, keep the header and menu text */
+    .left-sidebar.expanded .sidebar-toggle {
+      display: none;
     }
     
          .sidebar-icons {
@@ -1221,6 +1252,28 @@
          console.log('Current status:', currentStatus, 'Display status:', displayStatus);
        }
 
+      function setupSidebarIconLinks(username) {
+        // Set href attributes for sidebar icons
+        document.getElementById('dashboardIcon').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardIcon').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsIcon').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitIcon').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailIcon').href = `view_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
+        
+        // Set up sign out functionality for the icon
+        document.getElementById('signOutIcon').onclick = function(e) {
+          e.preventDefault();
+          localStorage.removeItem('user');
+          window.location.href = 'index.html';
+        };
+        
+        // Hide dashboard navigation since we're already on the dashboard page
+        document.getElementById('dashboardIcon').style.display = 'none';
+        document.getElementById('dashboardLink').style.display = 'none';
+      }
+
       function updateButtonVisibility(currentStatus) {
         // Reset all buttons to visible first
         document.getElementById('clockInBtn').style.display = 'block';
@@ -1292,13 +1345,18 @@
             
             if (user.role === "admin") {
               document.getElementById('hourLink').style.display = 'block';
+              document.getElementById('hoursIcon').style.display = 'flex';
             } else {
               document.getElementById('hourLink').style.display = 'none';
+              document.getElementById('hoursIcon').style.display = 'none';
             }
             // Edit Users link is now visible to everyone
             document.getElementById("userDisplay").innerText = user.username;
             document.getElementById("userStatus").innerText = user.status;
             updateStatusIndicators(user.status);
+            
+            // Set up sidebar icon links
+            setupSidebarIconLinks(username);
             
             // Show/hide buttons based on current user status
             updateButtonVisibility(user.status);
@@ -1532,6 +1590,7 @@
       <h3>Menu</h3>
       <div class="sidebar-toggle" id="sidebarToggle">&#9776;</div>
     </div>
+    <button class="sidebar-close" id="sidebarClose" onclick="toggleSidebar()">✕</button>
     
     <!-- Icon Mode -->
     <div class="sidebar-icons" id="sidebarIcons">

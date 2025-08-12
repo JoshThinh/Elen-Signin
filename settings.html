@@ -707,25 +707,34 @@
       }
     });
     
-    // Desk selection constants and variables
-    const gridCols = 22;
-    const gridRows = 8;
+    // Updated desk layout configuration to match board.html
+    // New layout includes rotated desks and different desk types
+    const gridCols = 17;
+    const gridRows = 11;
     
     const deskPositions = [
       // Row 0: xoxox
-      {x:1, y:0}, {x:3, y:0},
+      {x:2.7, y:1, rotation: 90, deskType: 'deskop'}, {x:5, y:1.3, rotation: 0},
       // Row 1: oxxx
-      {x:0, y:1},
+      {x:0.9, y:2.5, rotation: 0, deskType: 'deskop'},
       // Row 2: oxxoxxxo
-      {x:0, y:2}, {x:3, y:2}, {x:8, y:2},
+      {x:0.9, y:3.7, rotation: 0}, {x:4.2, y:3.4, rotation: 0, deskType: 'deskop'}, {x:8, y:4, rotation: 0},
       // Row 3: xxxxxxxxxxoxxoxxo
-      {x:10, y:4}, {x:11, y:4}, {x:13, y:4}, {x:14, y:4}, {x:16, y:4}, {x:17, y:4},
+      {x:2.1, y:7.7, rotation: -45}, {x:2.6, y:8.2, rotation: -45}, 
+
+      {x:5.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:5.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:4.3, y:9.1, rotation: 0}, {x:4.3, y:8.4, rotation: 0},  
+      
+      {x:7.5, y:8.2, rotation: 0, deskType: 'deskop'}, {x:7.5, y:8.9, rotation: 0, deskType: 'deskop'}, {x:6.7, y:8.2, rotation: 0}, {x:6.7, y:8.9, rotation: 0},
+
+      {x:10.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:10.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:9.3, y:9.1, rotation: 0}, {x:9.3, y:8.4, rotation: 0},
+
+      {x:12.2, y:8.5, rotation: 0, deskType: 'deskop'}, {x:12.2, y:9.2, rotation: 0, deskType: 'deskop'}, {x:11.4, y:8.5, rotation: 0}, {x:11.4, y:9.2, rotation: 0},
+      
+      {x:14.35, y:8.2, rotation: 0, deskType: 'deskop'}, {x:14.35, y:8.9, rotation: 0, deskType: 'deskop'}, {x:13.6, y:8.2, rotation: 0}, {x:13.6, y:8.9, rotation: 0},
+
+      {x:15.5, y:7.6, rotation: 0}, {x:15.5, y:9.3, rotation: 0},
       // Row 4: oxxxx
-      {x:0, y:5},
-      // Row 5: oxxooxooxooxooxooxo
-      {x:0, y:6}, {x:2, y:6}, {x:3, y:6}, {x:6, y:6}, {x:7, y:6}, {x:10, y:6}, {x:11, y:6}, {x:14, y:6}, {x:15, y:6}, {x:18, y:6}, {x:19, y:6}, {x:21, y:6},
-      // Row 6: xxxooxooxooxooxooxo
-      {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7},
+      {x:0, y:5, rotation: 0},
     ];
 
     function renderDeskLegend() {
@@ -751,7 +760,7 @@
           const currentUserDesk = currentUser ? currentUser.desk : null;
           document.getElementById('currentDesk').textContent = currentUserDesk || 'Unassigned';
 
-          // Create desk grid
+          // Create canvas-based desk grid (similar to signup.html)
           const deskGrid = document.getElementById('deskGrid');
           deskGrid.innerHTML = '';
           deskGrid.style.overflowX = 'auto';
@@ -769,73 +778,244 @@
 
           renderDeskLegend();
 
-          const table = document.createElement('table');
-          table.style.borderCollapse = 'collapse';
-          table.style.borderSpacing = '0';
-          table.style.margin = '0 auto';
-          table.style.width = '100%';
-          table.style.tableLayout = 'fixed';
-          table.style.minWidth = `${gridCols * 20}px`; // Reduced minimum width to ensure all columns are visible
+          // Create canvas for desk selection
+          const canvas = document.createElement('canvas');
+          canvas.width = 1100; // Match board.html dimensions
+          canvas.height = 700;
+          canvas.style.border = '2px solid #333';
+          canvas.style.borderRadius = '8px';
+          canvas.style.cursor = 'pointer';
+          canvas.style.maxWidth = '100%';
+          canvas.style.height = 'auto';
           
-          // Calculate cell size to fit the full width
-          const containerWidth = deskGrid.offsetWidth - 32; // Account for padding
-          const availableWidth = Math.max(containerWidth, 440); // Reduced minimum width for 22 columns
-          const cellSize = Math.min(availableWidth / gridCols, 24); // Reduced max size to 24px
+          const ctx = canvas.getContext('2d');
           
-          for (let y = 0; y < gridRows; y++) {
-            const tr = document.createElement('tr');
-            for (let x = 0; x < gridCols; x++) {
-              const td = document.createElement('td');
-              td.style.width = `${cellSize}px`;
-              td.style.height = `${cellSize}px`;
-              td.style.minWidth = `${cellSize}px`;
-              td.style.minHeight = `${cellSize}px`;
-              td.style.maxWidth = `${cellSize}px`;
-              td.style.maxHeight = `${cellSize}px`;
-              td.style.border = '1px solid #bbb';
-              td.style.textAlign = 'center';
-              td.style.padding = '0';
-              td.style.fontSize = Math.max(10, cellSize * 0.35) + 'px';
-              td.style.transition = 'outline 0.2s';
-              td.style.boxSizing = 'border-box';
-              td.style.verticalAlign = 'middle';
-              const isDesk = deskPositions.some(d => d.x === x && d.y === y);
-              if (isDesk) {
-                const deskKey = `${x},${y}`;
-                td.style.background = takenDesks.has(deskKey) && deskKey !== currentUserDesk ? '#ccc' : '#e0f7fa';
-                td.style.cursor = (takenDesks.has(deskKey) && deskKey !== currentUserDesk) ? 'not-allowed' : 'pointer';
-                td.textContent = '🪑';
-                if (deskKey === currentUserDesk) {
-                  td.style.background = '#d4edda';
-                  td.style.border = '2px solid #28a745';
-                }
-                if (!takenDesks.has(deskKey) || deskKey === currentUserDesk) {
-                  td.onclick = () => {
-                    document.getElementById('deskSelection').value = deskKey;
-                    Array.from(deskGrid.getElementsByTagName('td')).forEach(cell => cell.style.outline = '');
-                    td.style.outline = '2px solid #007bff';
-                  };
-                }
-              } else {
-                // Make the empty column at x=5 more visible
-                if (x === 5) {
-                  td.style.background = '#e9ecef';
-                  td.style.border = '1px solid #adb5bd';
-                } else {
-                  td.style.background = '#f8f9fa';
-                }
-                td.textContent = '';
-              }
-              tr.appendChild(td);
-            }
-            table.appendChild(tr);
-          }
-          deskGrid.appendChild(table);
+          // Add click event listener
+          canvas.addEventListener('click', function(e) {
+            handleDeskClick(e, ctx, canvas, takenDesks, currentUserDesk);
+          });
+          
+          // Load background image
+          const layoutImg = new Image();
+          layoutImg.onload = function() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background layout
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            
+            const baseScale = Math.min(canvas.width / layoutImg.height, canvas.height / layoutImg.width);
+            const scale = baseScale * 1.2;
+            const scaledWidth = layoutImg.width * scale;
+            const scaledHeight = layoutImg.height * scale;
+            
+            ctx.drawImage(layoutImg, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
+            ctx.restore();
+            
+            // Draw grid
+            drawGrid(ctx, canvas.width, canvas.height);
+            
+            // Draw desks
+            drawDesks(ctx, takenDesks, currentUserDesk);
+          };
+          layoutImg.src = `${document.baseURI}Static/Images/Background/newbackground.png`;
+          
+          deskGrid.appendChild(canvas);
         })
         .catch(error => {
           console.error('Error loading desk data:', error);
           document.getElementById('currentDesk').textContent = 'Error loading';
         });
+    }
+    
+    // Helper functions for canvas-based desk selection
+    function drawGrid(ctx, width, height) {
+      const gridSize = 64; // Match board.html grid size
+      const gridColor = 'rgba(255, 255, 255, 0.4)';
+      
+      ctx.save();
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+      
+      for (let x = 0; x <= width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      
+      for (let y = 0; y <= height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(0, y);
+        ctx.stroke();
+      }
+      
+      ctx.restore();
+    }
+    
+    function drawDesks(ctx, takenDesks, currentUserDesk) {
+      const cellSize = 64; // Match board.html grid size
+      
+      deskPositions.forEach((desk, index) => {
+        const x = desk.x * cellSize;
+        const y = desk.y * cellSize;
+        
+        ctx.save();
+        
+        // Move to desk center for rotation
+        ctx.translate(x + cellSize/2, y + cellSize/2);
+        
+        // Apply rotation if specified
+        if (desk.rotation !== undefined && desk.rotation !== 0) {
+          ctx.rotate(desk.rotation * Math.PI / 180);
+        }
+        
+        // Check if desk is taken
+        const deskKey = `${desk.x},${desk.y}`;
+        const isTaken = takenDesks.has(deskKey);
+        const isCurrentUserDesk = deskKey === currentUserDesk;
+        
+        // Draw desk rectangle
+        const deskSize = cellSize * 0.8;
+        if (isCurrentUserDesk) {
+          ctx.fillStyle = '#d4edda'; // Green for current user's desk
+          ctx.strokeStyle = '#28a745';
+          ctx.lineWidth = 3;
+        } else if (isTaken) {
+          ctx.fillStyle = '#ccc'; // Gray for occupied desks
+          ctx.strokeStyle = '#999';
+          ctx.lineWidth = 1;
+        } else {
+          ctx.fillStyle = '#e0f7fa'; // Light blue for available desks
+          ctx.strokeStyle = '#007bff';
+          ctx.lineWidth = 3;
+        }
+        
+        ctx.fillRect(-deskSize/2, -deskSize/2, deskSize, deskSize);
+        ctx.strokeRect(-deskSize/2, -deskSize/2, deskSize, deskSize);
+        
+        // Add desk number
+        ctx.fillStyle = '#333';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText((index + 1).toString(), 0, 4);
+        
+        // Add desk coordinates for reference
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(`(${desk.x}, ${desk.y})`, -deskSize/2, -deskSize/2 - 5);
+        
+        ctx.restore();
+      });
+    }
+    
+    function handleDeskClick(e, ctx, canvas, takenDesks, currentUserDesk) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+      
+      const cellSize = 64; // Match board.html grid size
+      let deskSelected = false;
+      
+      // Check if click is on a desk
+      for (let i = 0; i < deskPositions.length; i++) {
+        const desk = deskPositions[i];
+        const deskX = desk.x * cellSize;
+        const deskY = desk.y * cellSize;
+        const deskSize = cellSize * 0.8;
+        
+        const deskCenterX = deskX + cellSize/2;
+        const deskCenterY = deskY + cellSize/2;
+        const halfDeskSize = deskSize/2;
+        
+        // Check if click is within the desk bounds
+        if (x >= deskCenterX - halfDeskSize && x <= deskCenterX + halfDeskSize &&
+            y >= deskCenterY - halfDeskSize && y <= deskCenterY + halfDeskSize) {
+          
+          const deskKey = `${desk.x},${desk.y}`;
+          const isTaken = takenDesks.has(deskKey);
+          
+          if (!isTaken || deskKey === currentUserDesk) {
+            console.log(`Desk ${i + 1} selected!`);
+            deskSelected = true;
+            
+            // Select this desk
+            document.getElementById('deskSelection').value = deskKey;
+            
+            // Show selected desk information
+            const selectedDeskDisplay = document.getElementById('selectedDeskDisplay');
+            if (selectedDeskDisplay) {
+              const selectedDeskText = document.getElementById('selectedDeskText');
+              if (selectedDeskText) {
+                selectedDeskText.textContent = `Desk ${i + 1} at position (${desk.x.toFixed(1)}, ${desk.y.toFixed(1)})`;
+                selectedDeskDisplay.style.display = 'block';
+              }
+            }
+            
+            // Redraw to highlight selected desk
+            redrawCanvas(ctx, canvas, takenDesks, deskKey, currentUserDesk);
+            break;
+          } else {
+            console.log(`Desk ${i + 1} is already occupied`);
+            alert(`Desk ${i + 1} is already occupied. Please choose another desk.`);
+          }
+        }
+      }
+      
+      if (!deskSelected) {
+        console.log('Click was not on any desk');
+      }
+    }
+    
+    function redrawCanvas(ctx, canvas, takenDesks, selectedDeskKey, currentUserDesk) {
+      // Clear and redraw with selected desk highlighted
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Redraw background
+      const layoutImg = new Image();
+      layoutImg.onload = function() {
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(-Math.PI / 2);
+        
+        const baseScale = Math.min(canvas.width / layoutImg.height, canvas.height / layoutImg.width);
+        const scale = baseScale * 1.2;
+        const scaledWidth = layoutImg.width * scale;
+        const scaledHeight = layoutImg.height * scale;
+        
+        ctx.drawImage(layoutImg, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
+        ctx.restore();
+        
+        drawGrid(ctx, canvas.width, canvas.height);
+        drawDesks(ctx, takenDesks, currentUserDesk);
+        
+        // Highlight selected desk
+        if (selectedDeskKey) {
+          const selectedDesk = deskPositions.find(d => `${d.x},${d.y}` === selectedDeskKey);
+          if (selectedDesk) {
+            const index = deskPositions.indexOf(selectedDesk);
+            const x = selectedDesk.x * 64;
+            const y = selectedDesk.y * 64;
+            const deskSize = 64 * 0.8;
+            
+            ctx.save();
+            ctx.translate(x + 64/2, y + 64/2);
+            if (selectedDesk.rotation !== undefined && selectedDesk.rotation !== 0) {
+              ctx.rotate(selectedDesk.rotation * Math.PI / 180);
+            }
+            
+            ctx.strokeStyle = '#28a745'; // Green color to match selection theme
+            ctx.lineWidth = 4;
+            ctx.strokeRect(-deskSize/2, -deskSize/2, deskSize, deskSize);
+            ctx.restore();
+          }
+        }
+      };
+      layoutImg.src = `${document.baseURI}Static/Images/Background/newbackground.png`;
     }
     
     // Update desk functionality
