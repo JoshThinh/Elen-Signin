@@ -927,21 +927,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const cellSize = 64; // pixels per grid cell
 
   // Desk positions from the provided text grid (x = column, y = row, 0-indexed)
+  // Desk positions from new_desklayout.html with rotation support
   const deskPositions = [
-    // Row 0: xoxox
-    {x:1, y:0}, {x:3, y:0},
+    // Buddies Row 0: xoxox
+    {x:2.7, y:1, rotation: 90, deskType: 'deskop'}, {x:5, y:1.3, rotation: 0},
     // Row 1: oxxx
-    {x:0, y:1},
+    {x:0.9, y:2.5, rotation: 0, deskType: 'deskop'},
     // Row 2: oxxoxxxo
-    {x:0, y:2}, {x:3, y:2}, {x:8, y:2},
+    {x:0.9, y:3.7, rotation: 0}, {x:4.2, y:3.4, rotation: 0, deskType: 'deskop'}, {x:8, y:4, rotation: 0},
     // Row 3: xxxxxxxxxxoxxoxxo
-    {x:10, y:4}, {x:11, y:4}, {x:13, y:4}, {x:14, y:4}, {x:16, y:4}, {x:17, y:4},
+    {x:2.1, y:7.7, rotation: -45}, {x:2.6, y:8.2, rotation: -45}, 
+
+    {x:5.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:5.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:4.3, y:9.1, rotation: 0}, {x:4.3, y:8.4, rotation: 0},  
+    
+    {x:7.5, y:8.2, rotation: 0, deskType: 'deskop'}, {x:7.5, y:8.9, rotation: 0, deskType: 'deskop'}, {x:6.7, y:8.2, rotation: 0}, {x:6.7, y:8.9, rotation: 0},
+
+    {x:10.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:10.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:9.3, y:9.1, rotation: 0}, {x:9.3, y:8.4, rotation: 0},
+
+    {x:12.2, y:8.5, rotation: 0, deskType: 'deskop'}, {x:12.2, y:9.2, rotation: 0, deskType: 'deskop'}, {x:11.4, y:8.5, rotation: 0}, {x:11.4, y:9.2, rotation: 0},
+    
+    {x:14.35, y:8.2, rotation: 0, deskType: 'deskop'}, {x:14.35, y:8.9, rotation: 0, deskType: 'deskop'}, {x:13.6, y:8.2, rotation: 0}, {x:13.6, y:8.9, rotation: 0},
+
+    {x:15.5, y:7.6, rotation: 0}, {x:15.5, y:9.3, rotation: 0},
     // Row 4: oxxxx
-    {x:0, y:5},
-    // Row 5: oxxooxooxooxooxooxo
-    {x:0, y:6}, {x:2, y:6}, {x:3, y:6}, {x:6, y:6}, {x:7, y:6}, {x:10, y:6}, {x:11, y:6}, {x:14, y:6}, {x:15, y:6}, {x:18, y:6}, {x:19, y:6}, {x:21, y:6},
-    // Row 6: xxxooxooxooxooxooxo
-    {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7},
+    {x:0, y:5, rotation: 0},
   ];
 
 // Function to update statistics
@@ -1064,21 +1073,51 @@ function drawOfficeWithUsers(users) {
   }
   ctx.restore();
 
-  // Draw desks
-  deskPositions.forEach(desk => {
+  // Draw desks with sizing and rotation from new_desklayout.html
+  deskPositions.forEach((desk, index) => {
     const px = desk.x * cellSize;
     const py = desk.y * cellSize;
+    
+    // Scale desk images smaller (75% of original size) - same as new_desklayout.html
+    const deskSize = cellSize * 0.75; // 48px instead of 64px
+    const offsetX = (cellSize - deskSize) / 2; // Center the smaller desk in the cell
+    const offsetY = (cellSize - deskSize) / 2;
+    
     ctx.save();
     
-    // Use desk.png for specific x-coordinates (2, 6, 10, 14, 18, 21)
-    const useRegularDesk = [2, 6, 10, 14, 18, 21].includes(desk.x);
-    const deskImage = useRegularDesk ? deskImg : deskOpImg;
+    // Move to desk center for rotation (if rotation is specified)
+    if (desk.rotation !== undefined && desk.rotation !== 0) {
+      ctx.translate(px + cellSize/2, py + cellSize/2);
+      ctx.rotate(desk.rotation * Math.PI / 180);
+      
+      // Choose desk image based on deskType (if specified) or fall back to old logic
+      const deskImage = desk.deskType === 'deskop' ? deskOpImg : 
+                       (desk.deskType === 'desk' ? deskImg : 
+                       (desk.x === 2 || desk.x === 6 || desk.x === 10 || desk.x === 14 || desk.x === 18 || desk.x === 21 ? deskImg : deskOpImg));
+      
+      // Draw desk image centered at origin
+      ctx.drawImage(deskImage, -deskSize/2, -deskSize/2, deskSize, deskSize);
+    } else {
+      // No rotation - use old logic for desk type
+      const useRegularDesk = [2, 6, 10, 14, 18, 21].includes(desk.x);
+      const deskImage = useRegularDesk ? deskImg : deskOpImg;
+      
+      // Draw desk image with offset to center it
+      ctx.drawImage(
+        deskImage,
+        px + offsetX, py + offsetY,
+        deskSize, deskSize
+      );
+    }
     
-    ctx.drawImage(
-      deskImage,
-      px, py,
-      cellSize, cellSize
-    );
+    ctx.restore();
+    
+    // Add desk number for easy identification (same as new_desklayout.html)
+    ctx.save();
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText((index + 1).toString(), px + cellSize/2, py + cellSize/2 + 5);
     ctx.restore();
   });
 
