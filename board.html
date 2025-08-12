@@ -1,477 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Character encoding for proper text display -->
   <meta charset="UTF-8">
+  <!-- Viewport meta tag for responsive design on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Page title displayed in browser tab -->
   <title>Office Board</title>
+  
+  <!-- External CSS file for styling -->
   <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts - Inter font family for modern typography -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Configuration file containing API endpoints and settings -->
   <script src="config.js" defer></script>
+  
+  <!-- Initialization script that runs when DOM is loaded -->
   <script defer>
     document.addEventListener("DOMContentLoaded", () => {
+      // Create a base element to handle relative URLs for different environments
+      // This allows the app to work both locally and when deployed
       const base = document.createElement('base');
       base.href = location.hostname === 'localhost' ? '/' : 'https://joshthinh.github.io/Elen-Signin/';
       document.head.appendChild(base);
   
-      // Ensure config.js is loaded before accessing API_URL / API_URL_DEPLOYED
+      // Validate that required configuration variables are loaded
+      // These variables define the API endpoints for local vs deployed environments
       if (typeof API_URL === 'undefined' || typeof API_URL_DEPLOYED === 'undefined') {
         console.error('API_URL or API_URL_DEPLOYED is not defined. Check config.js loading.');
         return;
       }
   
+      // Set the global API URL based on current environment
+      // Uses local API for development, deployed API for production
       window.ApiUrlLink = location.hostname === 'localhost' ? API_URL : API_URL_DEPLOYED;
   
       // Continue rest of logic here if needed
     });
   </script>
   <style>
-    /* Responsive scaling variables */
+    /* ===== RESPONSIVE DESIGN SYSTEM ===== */
+    /* CSS Custom Properties (variables) for responsive scaling across different screen sizes */
+    /* These variables control how elements scale on different devices */
     :root {
-      --scale-phone: 0.8;
-      --scale-tablet: 0.9;
-      --scale-desktop: 1;
-      --scale-tv: 1.2;
+      --scale-phone: 0.8;      /* Scale down for small mobile devices */
+      --scale-tablet: 0.9;     /* Slightly smaller for tablets */
+      --scale-desktop: 1;      /* Full size for desktop computers */
+      --scale-tv: 1.2;         /* Larger scale for TV displays */
     }
     
+    /* ===== GLOBAL RESET ===== */
+    /* Apply border-box sizing to all elements for consistent layout calculations */
     * {
       box-sizing: border-box;
     }
+    
+    /* ===== BODY STYLING ===== */
+    /* Main page container with dark theme and sidebar accommodation */
     body {
-      overflow-x: hidden !important;
-      max-width: 100vw !important;
-      width: 100vw !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      padding-left: 100px !important; /* To prevent content from being hidden under sidebar */
-      background: #2d2e4bf2;
-      min-height: 100vh;
-      font-size: 16px;
-      color: white;
+      overflow-x: hidden !important;                    /* Prevent horizontal scrolling */
+      max-width: 100vw !important;                      /* Limit width to viewport */
+      width: 100vw !important;                          /* Full viewport width */
+      margin: 0 !important;                             /* Remove default margins */
+      padding: 0 !important;                            /* Remove default padding */
+      padding-left: 100px !important;                   /* Space for left sidebar */
+      background: #2d2e4bf2;                            /* Dark blue background with transparency */
+      min-height: 100vh;                                /* Full viewport height */
+      font-size: 16px;                                  /* Base font size */
+      color: white;                                      /* White text for dark theme */
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    /* Left Sidebar Styles */
+    /* ===== LEFT SIDEBAR NAVIGATION ===== */
+    /* Collapsible sidebar that provides navigation to different sections of the app */
     .left-sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100px;
-      height: 100vh;
-      background: #4a4c6b;
-      color: #fff;
-      z-index: 1001;
-      transition: width 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      position: fixed;                                    /* Fixed position so it stays visible when scrolling */
+      top: 0;                                            /* Align to top of viewport */
+      left: 0;                                           /* Align to left edge of viewport */
+      width: 100px;                                      /* Default collapsed width */
+      height: 100vh;                                     /* Full viewport height */
+      background: #4a4c6b;                               /* Dark blue-gray background */
+      color: #fff;                                       /* White text */
+      z-index: 1001;                                     /* High z-index to appear above other content */
+      transition: width 0.3s ease;                       /* Smooth width transition animation */
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);       /* Subtle shadow for depth */
     }
     
+    /* Expanded state of sidebar - shows full text labels */
     .left-sidebar.expanded {
-      width: 200px;
+      width: 200px;                                      /* Wider when expanded to show text */
     }
     
+    /* Header section of sidebar with toggle button */
     .sidebar-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 50px 15px;
-      cursor: pointer;
-      height: 50px;
+      display: flex;                                     /* Flexbox layout for centering */
+      align-items: center;                               /* Vertical centering */
+      justify-content: center;                           /* Horizontal centering */
+      padding: 50px 15px;                               /* Padding for spacing */
+      cursor: pointer;                                   /* Indicates clickable area */
+      height: 50px;                                      /* Fixed height for consistency */
     }
     
+    /* "Menu" text that appears when sidebar is expanded */
     .sidebar-header h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      position: absolute;
-      left: 20px;
+      margin: 0;                                         /* Remove default margins */
+      font-size: 1.1rem;                                /* Appropriate font size */
+      font-weight: 600;                                  /* Medium-bold weight */
+      opacity: 0;                                        /* Hidden by default (collapsed state) */
+      transition: opacity 0.3s ease;                     /* Smooth fade in/out */
+      position: absolute;                                /* Absolute positioning for overlay */
+      left: 20px;                                       /* Left offset from edge */
     }
     
+    /* Show the "Menu" text when sidebar is expanded */
     .left-sidebar.expanded .sidebar-header h3 {
-      opacity: 1;
+      opacity: 1;                                        /* Fully visible when expanded */
     }
     
+    /* Hamburger menu button (☰) for toggling sidebar */
     .sidebar-toggle {
-      font-size: 2.5rem;
-      cursor: pointer !important;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      transition: transform 0.3s ease;
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: auto;
-      background: transparent;
-      border: none;
-      outline: none;
-      margin: 0 auto;
-      position: relative;
-      top: 5px;
+      font-size: 2.5rem;                                 /* Large size for easy clicking */
+      cursor: pointer !important;                        /* Pointer cursor to indicate clickable */
+      user-select: none;                                 /* Prevent text selection */
+      -webkit-user-select: none;                         /* Webkit browser support */
+      -moz-user-select: none;                            /* Firefox support */
+      -ms-user-select: none;                             /* IE/Edge support */
+      transition: transform 0.3s ease;                    /* Smooth rotation animation */
+      width: 80px;                                        /* Button width */
+      height: 80px;                                       /* Button height */
+      display: flex;                                      /* Flexbox for centering content */
+      align-items: center;                                /* Vertical centering */
+      justify-content: center;                            /* Horizontal centering */
+      pointer-events: auto;                               /* Ensure button is clickable */
+      background: transparent;                            /* No background */
+      border: none;                                       /* No border */
+      outline: none;                                      /* No outline */
+      margin: 0 auto;                                     /* Center horizontally */
+      position: relative;                                 /* Relative positioning */
+      top: 5px;                                          /* Slight top offset */
     }
     
+    /* Adjust toggle button height when sidebar is expanded */
     .left-sidebar.expanded .sidebar-toggle {
-      height: 60px;
+      height: 60px;                                       /* Smaller height for expanded state */
     }
     
+    /* Rotate toggle button when sidebar is expanded */
     .left-sidebar.expanded .sidebar-toggle {
-      transform: rotate(90deg);
+      transform: rotate(90deg);                           /* 90-degree rotation for visual feedback */
     }
     
+    /* Close button (✕) that appears when sidebar is expanded */
     .sidebar-close {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #fff;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 10;
-      background: none;
-      border: none;
-      padding: 5px;
-      border-radius: 4px;
+      position: absolute;                                 /* Absolute positioning */
+      top: 15px;                                         /* Top offset from sidebar edge */
+      right: 15px;                                       /* Right offset from sidebar edge */
+      font-size: 1.5rem;                                 /* Appropriate size for close button */
+      cursor: pointer;                                    /* Pointer cursor */
+      color: #fff;                                        /* White color */
+      opacity: 0;                                         /* Hidden by default */
+      transition: opacity 0.3s ease;                      /* Smooth fade in/out */
+      z-index: 10;                                        /* Above other sidebar elements */
+      background: none;                                   /* No background */
+      border: none;                                       /* No border */
+      padding: 5px;                                       /* Padding for clickable area */
+      border-radius: 4px;                                 /* Rounded corners */
     }
     
+    /* Show close button when sidebar is expanded */
     .left-sidebar.expanded .sidebar-close {
-      opacity: 1;
+      opacity: 1;                                         /* Fully visible */
     }
     
+    /* Hover effect for close button */
     .sidebar-close:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.1);              /* Subtle white background on hover */
     }
     
-    /* Hide only the toggle button when sidebar is expanded, keep the header and menu text */
+    /* Hide toggle button when sidebar is expanded to avoid confusion */
     .left-sidebar.expanded .sidebar-toggle {
-      display: none;
+      display: none;                                      /* Completely hidden */
     }
     
+    /* Container for sidebar navigation icons */
     .sidebar-icons {
-      padding: 10px 0;
+      padding: 10px 0;                                    /* Vertical padding for spacing */
     }
     
+    /* Individual sidebar navigation item */
     .sidebar-icon-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 50px;
-      color: #fff;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      border-left: 3px solid transparent;
+      display: flex;                                      /* Flexbox layout */
+      align-items: center;                                /* Vertical centering */
+      justify-content: center;                            /* Horizontal centering */
+      width: 100%;                                        /* Full width of sidebar */
+      height: 50px;                                       /* Fixed height for consistency */
+      color: #fff;                                        /* White text/icons */
+      text-decoration: none;                              /* No underline */
+      transition: all 0.3s ease;                          /* Smooth transitions for all properties */
+      border-left: 3px solid transparent;                 /* Transparent left border for hover effect */
     }
     
+    /* Hover effect for sidebar items */
     .sidebar-icon-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-left-color: #fff;
+      background: rgba(255, 255, 255, 0.1);              /* Subtle white background */
+      border-left-color: #fff;                            /* White left border indicator */
     }
     
+    /* Icon styling within sidebar items */
     .sidebar-icon-item .icon {
-      font-size: 1.3rem;
-      filter: grayscale(60%);
+      font-size: 1.3rem;                                  /* Appropriate size for emoji icons */
+      filter: grayscale(60%);                              /* Slightly desaturated for subtle appearance */
     }
     
+    /* Container for text-based navigation (shown when sidebar is expanded) */
     .sidebar-text {
-      padding: 20px 0;
+      padding: 20px 0;                                    /* Vertical padding for spacing */
     }
     
+    /* Individual text navigation links */
     .sidebar-text a {
-      display: block;
-      padding: 15px 20px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      border-left: 3px solid transparent;
+      display: block;                                      /* Block display for full-width clickable area */
+      padding: 15px 20px;                                 /* Comfortable padding for clicking */
+      color: #fff;                                         /* White text */
+      text-decoration: none;                              /* No underline */
+      font-size: 0.95rem;                                 /* Slightly smaller than body text */
+      transition: all 0.3s ease;                          /* Smooth transitions */
+      border-left: 3px solid transparent;                 /* Transparent left border for hover effect */
     }
     
+    /* Hover effect for text navigation links */
     .sidebar-text a:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-left-color: #fff;
+      background: rgba(255, 255, 255, 0.1);              /* Subtle white background */
+      border-left-color: #fff;                            /* White left border indicator */
     }
     
+    /* ===== MAIN BOARD CONTENT AREA ===== */
+    /* Main container for the office board visualization */
     .board-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      flex: 1;                                             /* Take remaining space after sidebar */
+      display: flex;                                       /* Flexbox layout */
+      flex-direction: column;                              /* Stack elements vertically */
+      align-items: center;                                 /* Center content horizontally */
+      padding: 20px;                                       /* Padding around content */
     }
     
+    /* Main title of the office board page */
     .board-title {
-      margin-bottom: 20px;
-      color: white;
-      font-size: 2rem;
-      font-weight: bold;
-      text-align: center;
-      width: 100%;
+      margin-bottom: 20px;                                 /* Space below title */
+      color: white;                                        /* White text for dark theme */
+      font-size: 2rem;                                     /* Large, prominent title */
+      font-weight: bold;                                   /* Bold weight for emphasis */
+      text-align: center;                                  /* Center-aligned text */
+      width: 100%;                                         /* Full width */
     }
     
-    /* Board Header and Stats */
+    /* ===== BOARD HEADER AND STATISTICS ===== */
+    /* Header section containing statistics and status legend */
     .board-header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 20px;
-      position: relative;
-      width: 100%;
+      display: flex;                                       /* Flexbox layout */
+      justify-content: center;                             /* Center content horizontally */
+      align-items: center;                                 /* Center content vertically */
+      margin-bottom: 20px;                                 /* Space below header */
+      flex-wrap: wrap;                                     /* Allow wrapping on small screens */
+      gap: 20px;                                           /* Space between elements */
+      position: relative;                                  /* Positioning context */
+      width: 100%;                                         /* Full width */
     }
     
+    /* Container for statistics display */
     .board-stats {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: flex;                                       /* Flexbox layout */
+      gap: 20px;                                           /* Space between stat items */
+      flex-wrap: wrap;                                     /* Allow wrapping on small screens */
+      justify-content: center;                             /* Center stats horizontally */
     }
     
+    /* Individual statistic item (e.g., "Total Active: 5") */
     .stat-item {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 10px 15px;
-      border-radius: 8px;
-      text-align: center;
-      min-width: 80px;
+      background: rgba(255, 255, 255, 0.1);               /* Semi-transparent white background */
+      padding: 10px 15px;                                 /* Comfortable padding */
+      border-radius: 8px;                                  /* Rounded corners */
+      text-align: center;                                  /* Center text */
+      min-width: 80px;                                     /* Minimum width for consistency */
     }
     
+    /* Label text for statistics (e.g., "Total Active") */
     .stat-label {
-      font-size: 0.8rem;
-      opacity: 0.8;
-      margin-bottom: 5px;
-      display: block;
+      font-size: 0.8rem;                                  /* Smaller text for labels */
+      opacity: 0.8;                                        /* Slightly transparent */
+      margin-bottom: 5px;                                  /* Space below label */
+      display: block;                                      /* Block display */
     }
     
+    /* Value text for statistics (e.g., "5") */
     .stat-value {
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1.2rem;                                  /* Larger text for values */
+      font-weight: bold;                                   /* Bold weight for emphasis */
     }
     
-    /* Status Legend Styles */
+    /* ===== STATUS LEGEND ===== */
+    /* Legend showing what different status colors mean */
     .status-legend {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      min-width: 200px;
+      background: rgba(255, 255, 255, 0.95);              /* Nearly opaque white background */
+      padding: 15px;                                       /* Comfortable padding */
+      border-radius: 12px;                                 /* Rounded corners */
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);            /* Subtle shadow for depth */
+      min-width: 200px;                                    /* Minimum width for content */
     }
     
+    /* Legend title */
     .status-legend h3 {
-      margin: 0 0 10px 0;
+      margin: 0 0 10px 0;                                  /* Space below title */
       color: #333;
       font-size: 1.1rem;
       font-weight: 600;
     }
     
+    /* Container for legend items */
     .legend-items {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      display: flex;                                       /* Flexbox layout */
+      flex-direction: column;                              /* Stack items vertically */
+      gap: 8px;                                            /* Space between legend items */
     }
     
+    /* Individual legend item (status + color circle) */
     .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      color: #555;
+      display: flex;                                       /* Flexbox layout */
+      align-items: center;                                 /* Center items vertically */
+      gap: 8px;                                            /* Space between circle and text */
+      font-size: 0.9rem;                                   /* Appropriate text size */
+      color: #555;                                          /* Dark gray text */
     }
     
+    /* Colored circles representing different user statuses */
     .status-circle {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      display: inline-block;
+      width: 12px;                                         /* Circle width */
+      height: 12px;                                        /* Circle height */
+      border-radius: 50%;                                  /* Make it perfectly round */
+      display: inline-block;                               /* Inline block for layout */
     }
     
+    /* Status-specific colors for visual identification */
     .status-circle.clocked-in {
-      background-color: #28a745; /* Green */
+      background-color: #28a745;                           /* Green - indicates active work */
     }
     
     .status-circle.break {
-      background-color: #ffc107; /* Yellow */
+      background-color: #ffc107;                           /* Yellow - indicates break time */
     }
     
     .status-circle.work-from-home {
-      background-color: #17a2b8; /* Blue */
+      background-color: #17a2b8;                           /* Blue - indicates remote work */
     }
     
     .status-circle.job-site {
-      background-color: #8B4513; /* Brown */
+      background-color: #8B4513;                           /* Brown - indicates off-site work */
     }
     
     .status-circle.clocked-out {
-      background-color: #dc3545; /* Red */
+      background-color: #dc3545;                           /* Red - indicates not working */
     }
     
-    /* Canvas Container */
+    /* ===== CANVAS CONTAINER ===== */
+    /* Container for the interactive office layout canvas */
     .canvas-container {
-      position: relative;
-      overflow: hidden;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      z-index: 200;
+      position: relative;                                  /* Positioning context for overlays */
+      overflow: hidden;                                    /* Hide content outside boundaries */
+      border-radius: 16px;                                 /* Rounded corners for modern look */
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);           /* Subtle shadow for depth */
+      z-index: 200;                                        /* Above other content */
     }
     
-    /* Fullscreen styles */
+    /* ===== FULLSCREEN SUPPORT ===== */
+    /* CSS rules for when canvas is in fullscreen mode */
+    /* Standard fullscreen API */
     #boardCanvas:fullscreen {
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
+      width: 100vw;                                        /* Full viewport width */
+      height: 100vh;                                       /* Full viewport height */
+      margin: 0;                                           /* No margins */
+      border: none;                                        /* No border */
+      border-radius: 0;                                    /* No rounded corners */
+      box-shadow: none;                                    /* No shadow */
     }
     
+    /* Webkit browser fullscreen support (Chrome, Safari) */
     #boardCanvas:-webkit-full-screen {
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
+      width: 100vw;                                        /* Full viewport width */
+      height: 100vh;                                       /* Full viewport height */
+      margin: 0;                                           /* No margins */
+      border: none;                                        /* No border */
+      border-radius: 0;                                    /* No rounded corners */
+      box-shadow: none;                                    /* No shadow */
     }
     
+    /* Firefox fullscreen support */
     #boardCanvas:-moz-full-screen {
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
+      width: 100vw;                                        /* Full viewport width */
+      height: 100vh;                                       /* Full viewport height */
+      margin: 0;                                           /* No margins */
+      border: none;                                        /* No border */
+      border-radius: 0;                                    /* No rounded corners */
+      box-shadow: none;                                    /* No shadow */
     }
     
+    /* Internet Explorer/Edge fullscreen support */
     #boardCanvas:-ms-fullscreen {
-      width: 100vw;
-      height: 100vh;
+      width: 100vw;                                        /* Full viewport width */
+      height: 100vh;                                       /* Full viewport height */
       margin: 0;
       border: none;
       border-radius: 0;
       box-shadow: none;
     }
     
-    /* Center Stats */
+    /* ===== CENTER STATISTICS ===== */
+    /* Prominent statistics displayed in the center of the board */
     .center-stats {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
+      display: flex;                                       /* Flexbox layout */
+      justify-content: center;                             /* Center horizontally */
+      margin: 20px 0;                                     /* Vertical spacing */
     }
     
+    /* Special styling for center statistics to make them stand out */
     .center-stat {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      color: white;
-      box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
-      transform: scale(1.1);
+      background: linear-gradient(135deg, #28a745, #20c997); /* Green gradient background */
+      color: white;                                        /* White text for contrast */
+      box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);     /* Green-tinted shadow */
+      transform: scale(1.1);                               /* Slightly larger than other stats */
     }
     
+    /* Ensure text is white in center stats */
     .center-stat .stat-label,
     .center-stat .stat-value {
-      color: white;
+      color: white;                                        /* White text for gradient background */
     }
     
-    /* Board Controls */
+    /* ===== BOARD CONTROLS ===== */
+    /* Control buttons for canvas operations (zoom, refresh, etc.) */
     .board-controls {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 20px;
-      flex-wrap: wrap;
+      display: flex;                                       /* Flexbox layout */
+      justify-content: center;                             /* Center horizontally */
+      gap: 12px;                                           /* Space between buttons */
+      margin-top: 20px;                                    /* Space above controls */
+      flex-wrap: wrap;                                     /* Allow wrapping on small screens */
     }
     
+    /* Individual control button styling */
     .control-btn {
-      background: #2d2e4b;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: background-color 0.3s;
+      background: #2d2e4b;                                 /* Dark blue background */
+      color: white;                                        /* White text */
+      border: none;                                        /* No border */
+      padding: 10px 16px;                                  /* Comfortable padding */
+      border-radius: 6px;                                  /* Rounded corners */
+      cursor: pointer;                                     /* Pointer cursor */
+      font-size: 14px;                                     /* Appropriate text size */
+      font-weight: 500;                                    /* Medium weight */
+      transition: background-color 0.3s;                   /* Smooth color transition */
     }
     
+    /* Hover effect for control buttons */
     .control-btn:hover {
-      background: #1a1b2e;
+      background: #1a1b2e;                                 /* Darker blue on hover */
     }
 
-    /* User Info Modal Styles */
+    /* ===== USER INFO MODAL ===== */
+    /* Modal popup that displays detailed user information */
     .user-info-modal {
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
+      position: fixed;                                     /* Fixed position over everything */
+      z-index: 2000;                                       /* Very high z-index */
+      left: 0;                                             /* Full width */
+      top: 0;                                              /* Full height */
+      width: 100%;                                         /* Cover entire viewport */
+      height: 100%;                                        /* Cover entire viewport */
+      background-color: rgba(0, 0, 0, 0.5);               /* Semi-transparent black overlay */
+      display: none;                                       /* Hidden by default */
+      align-items: center;                                 /* Center vertically */
+      justify-content: center;                             /* Center horizontally */
     }
     
+    /* Content container within the modal */
     .user-info-content {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      position: relative;
+      background: white;                                   /* White background */
+      padding: 30px;                                       /* Generous padding */
+      border-radius: 16px;                                 /* Rounded corners */
+      max-width: 500px;                                    /* Maximum width */
+      width: 90%;                                          /* Responsive width */
+      max-height: 80vh;                                    /* Maximum height (80% of viewport) */
+      overflow-y: auto;                                    /* Scrollable if content is too long */
+      position: relative;                                  /* Positioning context */
     }
     
+    /* Modal title styling */
     .user-info-content h3 {
-      margin-top: 0;
-      color: #333;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
+      margin-top: 0;                                       /* No top margin */
+      color: #333;                                         /* Dark text */
+      font-size: 1.5rem;                                   /* Large title */
+      margin-bottom: 20px;                                 /* Space below title */
     }
     
+    /* Individual information item within the modal */
     .user-info-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 8px;
+      display: flex;                                       /* Flexbox layout */
+      justify-content: space-between;                      /* Space between label and value */
+      margin-bottom: 15px;                                 /* Space between items */
+      padding: 10px;                                       /* Internal padding */
+      background: #f8f9fa;                                 /* Light gray background */
+      border-radius: 8px;                                  /* Rounded corners */
     }
     
+    /* Label text within user info items */
     .user-info-label {
-      font-weight: bold;
-      color: #2d2e4b;
+      font-weight: bold;                                   /* Bold text for labels */
+      color: #2d2e4b;                                      /* Dark blue color matching theme */
     }
     
+    /* Value text within user info items */
     .user-info-value {
-      color: #6c757d;
+      color: #6c757d;                                      /* Medium gray for values */
     }
 
+    /* ===== BUTTON STYLES ===== */
+    /* Primary action button styling */
     .confirm-btn {
-      background-color: #2d2e4b;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s;
+      background-color: #2d2e4b;                           /* Dark blue background */
+      color: white;                                        /* White text */
+      border: none;                                        /* No border */
+      padding: 10px 20px;                                  /* Comfortable padding */
+      border-radius: 8px;                                  /* Rounded corners */
+      font-size: 16px;                                     /* Readable text size */
+      font-weight: 600;                                    /* Semi-bold weight */
+      cursor: pointer;                                     /* Pointer cursor */
+      transition: background-color 0.3s;                   /* Smooth color transition */
     }
     
+    /* Hover effect for confirm button */
     .confirm-btn:hover {
-      background-color: #1a1b2e;
+      background-color: #1a1b2e;                           /* Darker blue on hover */
     }
     
+    /* Close button with smooth opacity transition */
     .close-x-btn {
-      transition: opacity 0.2s ease;
+      transition: opacity 0.2s ease;                       /* Quick opacity transition */
     }
     
+    /* Hover effect for close button */
     .close-x-btn:hover {
-      opacity: 0.7;
+      opacity: 0.7;                                        /* Slightly transparent on hover */
     }
     
+    /* ===== RESPONSIVE DESIGN - MOBILE DEVICES ===== */
     /* iPhone and small phones (up to 428px) */
     @media screen and (max-width: 428px) {
       :root {
@@ -622,181 +700,221 @@
   </style>
 </head>
 <body>
+  <!-- ===== LEFT SIDEBAR NAVIGATION ===== -->
+  <!-- Collapsible sidebar providing navigation to different app sections -->
   <div class="left-sidebar" id="leftSidebar">
+    <!-- Sidebar header with toggle functionality -->
     <div class="sidebar-header" onclick="toggleSidebar()">
-      <h3>Menu</h3>
-      <div class="sidebar-toggle" id="sidebarToggle">&#9776;</div>
+      <h3>Menu</h3>                                          <!-- Menu text (visible when expanded) -->
+      <div class="sidebar-toggle" id="sidebarToggle">&#9776;</div>  <!-- Hamburger menu icon -->
     </div>
+    
+    <!-- Close button (visible when sidebar is expanded) -->
     <button class="sidebar-close" id="sidebarClose" onclick="toggleSidebar()">✕</button>
     
-    <!-- Icon Mode -->
+    <!-- ===== ICON-BASED NAVIGATION ===== -->
+    <!-- Navigation using emoji icons (visible when sidebar is collapsed) -->
     <div class="sidebar-icons" id="sidebarIcons">
       <a href="#" class="sidebar-icon-item" id="dashboardIcon" title="Dashboard">
-        <span class="icon">📊</span>
+        <span class="icon">📊</span>                          <!-- Dashboard icon -->
       </a>
       <a href="#" class="sidebar-icon-item" id="boardIcon" title="Board">
-        <span class="icon">📋</span>
+        <span class="icon">📋</span>                          <!-- Board icon -->
       </a>
       <a href="#" class="sidebar-icon-item" id="settingsIcon" title="Settings">
-        <span class="icon">⚙️</span>
+        <span class="icon">⚙️</span>                          <!-- Settings icon -->
       </a>
       <a href="#" class="sidebar-icon-item" id="submitIcon" title="Submit Email">
-        <span class="icon">📧</span>
+        <span class="icon">📧</span>                          <!-- Submit email icon -->
       </a>
       <a href="#" class="sidebar-icon-item" id="viewEmailIcon" title="View Email">
-        <span class="icon">📬</span>
+        <span class="icon">📬</span>                          <!-- View email icon -->
       </a>
       <a href="#" class="sidebar-icon-item" id="hoursIcon" title="Hours">
-        <span class="icon">⏱️</span>
+        <span class="icon">⏱️</span>                          <!-- Hours tracking icon -->
       </a>
       <a href="#" class="sidebar-icon-item" id="editUsersIcon" title="Edit Users">
-        <span class="icon">👥</span>
+        <span class="icon">👥</span>                          <!-- User management icon -->
       </a>
       <a href="#" class="sidebar-icon-item" id="signOutIcon" title="Sign Out">
-        <span class="icon">🚪</span>
+        <span class="icon">🚪</span>                          <!-- Sign out icon -->
       </a>
     </div>
     
-          <!-- Text Mode -->
-      <div class="sidebar-text" id="sidebarText" style="display: none;">
-        <a href="#" id="dashboardLink">Dashboard</a>
-        <a href="#" id="boardLink">Board</a>
-        <a href="#" id="settingsLink">Settings</a>
-        <a href="#" id="submitLink">Submit Email</a>
-        <a href="#" id="viewEmailLink">View Email</a>
-        <a href="#" id="hourLink">Hours</a>
-        <a href="#" id="editUsersLink">Edit Users</a>
-        <a href="#" id="signOutLink">Sign Out</a>
-      </div>
+    <!-- ===== TEXT-BASED NAVIGATION ===== -->
+    <!-- Navigation using text links (visible when sidebar is expanded) -->
+    <div class="sidebar-text" id="sidebarText" style="display: none;">
+      <a href="#" id="dashboardLink">Dashboard</a>            <!-- Dashboard link -->
+      <a href="#" id="boardLink">Board</a>                   <!-- Board link -->
+      <a href="#" id="settingsLink">Settings</a>             <!-- Settings link -->
+      <a href="#" id="submitLink">Submit Email</a>           <!-- Submit email link -->
+      <a href="#" id="viewEmailLink">View Email</a>          <!-- View email link -->
+      <a href="#" id="hourLink">Hours</a>                    <!-- Hours link -->
+      <a href="#" id="editUsersLink">Edit Users</a>          <!-- User management link -->
+      <a href="#" id="signOutLink">Sign Out</a>              <!-- Sign out link -->
+    </div>
   </div>
   
+  <!-- ===== MAIN BOARD CONTENT ===== -->
+  <!-- Container for the office board visualization and controls -->
   <div class="board-container">
+    <!-- Main page title -->
     <h1 class="board-title">Office Presence Board</h1>
+    
+    <!-- ===== BOARD HEADER SECTION ===== -->
+    <!-- Contains status legend and real-time statistics -->
     <div class="board-header">
+      <!-- ===== STATUS LEGEND ===== -->
+      <!-- Visual guide explaining what different status colors mean -->
       <div class="status-legend">
-        <h3>Status Legend</h3>
+        <h3>Status Legend</h3>                               <!-- Legend title -->
         <div class="legend-items">
           <div class="legend-item">
-            <div class="status-circle clocked-in"></div>
-            <span>Clocked In</span>
+            <div class="status-circle clocked-in"></div>      <!-- Green circle for active work -->
+            <span>Clocked In</span>                          <!-- Status description -->
           </div>
           <div class="legend-item">
-            <div class="status-circle break"></div>
-            <span>On Break</span>
+            <div class="status-circle break"></div>           <!-- Yellow circle for break time -->
+            <span>On Break</span>                            <!-- Status description -->
           </div>
           <div class="legend-item">
-            <div class="status-circle work-from-home"></div>
-            <span>Work from Home</span>
+            <div class="status-circle work-from-home"></div>  <!-- Blue circle for remote work -->
+            <span>Work from Home</span>                       <!-- Status description -->
           </div>
           <div class="legend-item">
-            <div class="status-circle job-site"></div>
-            <span>Job Site</span>
+            <div class="status-circle job-site"></div>        <!-- Brown circle for off-site work -->
+            <span>Job Site</span>                            <!-- Status description -->
           </div>
           <div class="legend-item">
-            <div class="status-circle clocked-out"></div>
-            <span>Clocked Out</span>
+            <div class="status-circle clocked-out"></div>     <!-- Red circle for not working -->
+            <span>Clocked Out</span>                         <!-- Status description -->
           </div>
         </div>
       </div>
+      
+      <!-- ===== REAL-TIME STATISTICS ===== -->
+      <!-- Live counters showing current office status -->
       <div class="board-stats">
         <div class="stat-item">
-          <span class="stat-label">Total Active:</span>
-          <span class="stat-value" id="totalActive">0</span>
+          <span class="stat-label">Total Active:</span>       <!-- Label for total active users -->
+          <span class="stat-value" id="totalActive">0</span>  <!-- Dynamic value updated by JavaScript -->
         </div>
         <div class="stat-item">
-          <span class="stat-label">Clocked In:</span>
-          <span class="stat-value" id="clockedInCount">0</span>
+          <span class="stat-label">Clocked In:</span>         <!-- Label for clocked-in users -->
+          <span class="stat-value" id="clockedInCount">0</span> <!-- Dynamic value updated by JavaScript -->
         </div>
         <div class="stat-item">
-          <span class="stat-label">On Break:</span>
-          <span class="stat-value" id="breakCount">0</span>
+          <span class="stat-label">On Break:</span>           <!-- Label for users on break -->
+          <span class="stat-value" id="breakCount">0</span>   <!-- Dynamic value updated by JavaScript -->
         </div>
         <div class="stat-item">
-          <span class="stat-label">Last Updated:</span>
-          <span class="stat-value" id="lastUpdated">--</span>
+          <span class="stat-label">Last Updated:</span>       <!-- Label for last update time -->
+          <span class="stat-value" id="lastUpdated">--</span> <!-- Dynamic timestamp updated by JavaScript -->
         </div>
       </div>
     </div>
     
+    <!-- ===== INTERACTIVE CANVAS CONTAINER ===== -->
+    <!-- Container for the office layout visualization -->
     <div class="canvas-container">
+      <!-- HTML5 Canvas element for drawing the office layout -->
+      <!-- Width: 1100px, Height: 700px for optimal viewing -->
+      <!-- Styled with border, shadow, and grab cursor for interaction -->
       <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: transparent; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); cursor: grab;"></canvas>
     </div>
     
+    <!-- ===== BOARD CONTROL BUTTONS ===== -->
+    <!-- Interactive controls for the office board -->
     <div class="board-controls">
-      <button id="refreshBtn" class="control-btn">🔄 Refresh</button>
-      <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
+      <button id="refreshBtn" class="control-btn">🔄 Refresh</button>      <!-- Refresh button to reload data -->
+      <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button> <!-- Fullscreen button for immersive view -->
     </div>
   </div>
 
-  <!-- User Info Modal -->
+  <!-- ===== USER INFORMATION MODAL ===== -->
+  <!-- Popup modal that displays detailed user information when clicking on a user -->
   <div id="userInfoModal" class="user-info-modal">
     <div class="user-info-content">
-      <h3 id="userInfoTitle">User Information</h3>
+      <h3 id="userInfoTitle">User Information</h3>              <!-- Modal title -->
       <div id="userInfoDetails">
-        <!-- User info will be populated here -->
+        <!-- User information will be dynamically populated here by JavaScript -->
       </div>
+      <!-- Close button for the modal -->
       <button id="closeUserInfo" class="close-x-btn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 5px;">✕</button>
     </div>
   </div>
 
+  <!-- ===== JAVASCRIPT FUNCTIONALITY ===== -->
   <script defer>
-// --- Sidebar functions ---
-function toggleSidebar() {
-  console.log('Sidebar toggle clicked!');
-  const sidebar = document.getElementById('leftSidebar');
-  const icons = document.getElementById('sidebarIcons');
-  const text = document.getElementById('sidebarText');
-  
-  if (sidebar.classList.contains('expanded')) {
-    // Close the sidebar
-    sidebar.classList.remove('expanded');
-    icons.style.display = 'block';
-    text.style.display = 'none';
-    document.body.style.paddingLeft = '100px';
-    console.log('Sidebar closed');
-  } else {
-    // Open the sidebar
-    sidebar.classList.add('expanded');
-    icons.style.display = 'none';
-    text.style.display = 'block';
-    document.body.style.paddingLeft = '200px';
-    console.log('Sidebar opened');
-  }
-}
+    // ===== SIDEBAR FUNCTIONALITY =====
+    // Function to toggle the sidebar between collapsed and expanded states
+    function toggleSidebar() {
+      console.log('Sidebar toggle clicked!');                    // Debug logging
+      const sidebar = document.getElementById('leftSidebar');      // Get sidebar element
+      const icons = document.getElementById('sidebarIcons');      // Get icon navigation container
+      const text = document.getElementById('sidebarText');        // Get text navigation container
+      
+      if (sidebar.classList.contains('expanded')) {
+        // Close the sidebar - return to collapsed state
+        sidebar.classList.remove('expanded');                     // Remove expanded class
+        icons.style.display = 'block';                           // Show icon navigation
+        text.style.display = 'none';                             // Hide text navigation
+        document.body.style.paddingLeft = '100px';               // Adjust body padding for collapsed sidebar
+        console.log('Sidebar closed');                           // Debug logging
+      } else {
+        // Open the sidebar - expand to show text labels
+        sidebar.classList.add('expanded');                       // Add expanded class
+        icons.style.display = 'none';                            // Hide icon navigation
+        text.style.display = 'block';                            // Show text navigation
+        document.body.style.paddingLeft = '200px';               // Adjust body padding for expanded sidebar
+        console.log('Sidebar opened');                           // Debug logging
+      }
+    }
 
-document.addEventListener("DOMContentLoaded", () => {
-  function getQueryParam(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  }
-  const username = getQueryParam('username');
-  
-  // Set up sidebar icon links first
-  if (username) {
-    setupSidebarIconLinks(username);
-    
-    // Fetch user info to determine admin status
-    fetch(`${window.ApiUrlLink}/user/${username}`)
-      .then(res => res.json())
-      .then(user => {
-        if (user && user.role === 'admin') {
-          document.getElementById('hourLink').style.display = 'block';
-          document.getElementById('hoursIcon').style.display = 'flex';
-        } else {
-          document.getElementById('hourLink').style.display = 'none';
-          document.getElementById('hoursIcon').style.display = 'none';
-        }
-        // Edit Users link is now visible to everyone
-      });
-  }
-  
-  // Set up sidebar toggle functionality after links are configured
-  const sidebarToggle = document.getElementById('sidebarToggle');
-  const sidebarHeader = document.querySelector('.sidebar-header');
-  
-  if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', function(e) {
-      e.stopPropagation();
+    // ===== APPLICATION INITIALIZATION =====
+    // Main initialization function that runs when the DOM is fully loaded
+    document.addEventListener("DOMContentLoaded", () => {
+      // ===== URL PARAMETER HANDLING =====
+      // Function to extract query parameters from the URL
+      function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);  // Parse URL query string
+        return urlParams.get(name);                                     // Return specific parameter value
+      }
+      
+      // Get username from URL parameters for user authentication
+      const username = getQueryParam('username');
+      
+      // ===== SIDEBAR NAVIGATION SETUP =====
+      // Configure sidebar navigation links if user is authenticated
+      if (username) {
+        setupSidebarIconLinks(username);                                // Set up navigation links
+        
+        // ===== ADMIN ROLE DETECTION =====
+        // Fetch user info to determine if they have admin privileges
+        fetch(`${window.ApiUrlLink}/user/${username}`)
+          .then(res => res.json())                                      // Parse response as JSON
+          .then(user => {
+            if (user && user.role === 'admin') {
+              // Show admin-only features for admin users
+              document.getElementById('hourLink').style.display = 'block';      // Show hours link
+              document.getElementById('hoursIcon').style.display = 'flex';      // Show hours icon
+            } else {
+              // Hide admin features for regular users
+              document.getElementById('hourLink').style.display = 'none';       // Hide hours link
+              document.getElementById('hoursIcon').style.display = 'none';      // Hide hours icon
+            }
+            // Note: Edit Users link is now visible to everyone for better accessibility
+          });
+      }
+      
+      // ===== SIDEBAR INTERACTION SETUP =====
+      // Set up click event listeners for sidebar toggle functionality
+      const sidebarToggle = document.getElementById('sidebarToggle');     // Get toggle button
+      const sidebarHeader = document.querySelector('.sidebar-header');   // Get header container
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function(e) {
+          e.stopPropagation();                                          // Prevent event bubbling
       toggleSidebar();
     });
   }
@@ -1011,11 +1129,10 @@ setInterval(refreshData, 30000);
 // Avatar animation configs
 const avatarConfigs = {
   "City_men_idle.png": {
-    frameWidth: 128,
-    frameHeight: 128,
-    totalFrames: 6,
-    frameDuration: 250, // slower
-    frameSequence: [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5] // loop
+    frameWidth: 48,
+    frameHeight: 48,
+    totalFrames: 4,
+    frameDuration: 200
   },
   "Boy_idle.png": {
     frameWidth: 48,

@@ -930,9 +930,9 @@
 
     const avatarConfigs = {
       "City_men_idle.png": {
-        frameWidth: 128,
-        frameHeight: 128,
-        totalFrames: 6,
+        frameWidth: 48,
+        frameHeight: 48,
+        totalFrames: 4,
         frameDuration: 200
       },
       "Boy_idle.png": {
@@ -966,39 +966,39 @@
         canvas.dataset.avatarFile = avatar.file;
         canvas.style.margin = '4px';
 
-        // Animation state for each avatar
-        let frameIndex = 0;
-        let lastFrameTime = 0;
-        const spriteSheet = new window.Image();
-        spriteSheet.src = `${base.href}Static/Images/Characters/${avatar.file}`;
+          // Animation state for each avatar
+          let frameIndex = 0;
+          let lastFrameTime = 0;
+          const spriteSheet = new window.Image();
+          spriteSheet.src = `${base.href}Static/Images/Characters/${avatar.file}`;
 
-        // Calculate scale to fit the frame in the box
-        const scale = Math.min(
-          AVATAR_BOX_SIZE / config.frameWidth,
-          AVATAR_BOX_SIZE / config.frameHeight
-        );
-        const drawWidth = config.frameWidth * scale;
-        const drawHeight = config.frameHeight * scale;
-        const offsetX = (AVATAR_BOX_SIZE - drawWidth) / 2;
-        const offsetY = (AVATAR_BOX_SIZE - drawHeight) / 2;
-
-        function animateAvatar(ts) {
-          if (!lastFrameTime) lastFrameTime = ts;
-          const elapsed = ts - lastFrameTime;
-          if (elapsed > config.frameDuration) {
-            frameIndex = (frameIndex + 1) % config.totalFrames;
-            lastFrameTime = ts;
-          }
-          const ctx = canvas.getContext('2d');
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(
-            spriteSheet,
-            frameIndex * config.frameWidth, 0, config.frameWidth, config.frameHeight,
-            offsetX, offsetY, drawWidth, drawHeight
+          // Calculate scale to fit the frame in the box
+          const scale = Math.min(
+            AVATAR_BOX_SIZE / config.frameWidth,
+            AVATAR_BOX_SIZE / config.frameHeight
           );
-          requestAnimationFrame(animateAvatar);
-        }
-        spriteSheet.onload = () => requestAnimationFrame(animateAvatar);
+          const drawWidth = config.frameWidth * scale;
+          const drawHeight = config.frameHeight * scale;
+          const offsetX = (AVATAR_BOX_SIZE - drawWidth) / 2;
+          const offsetY = (AVATAR_BOX_SIZE - drawHeight) / 2;
+
+          function animateAvatar(ts) {
+            if (!lastFrameTime) lastFrameTime = ts;
+            const elapsed = ts - lastFrameTime;
+            if (elapsed > config.frameDuration) {
+              frameIndex = (frameIndex + 1) % config.totalFrames;
+              lastFrameTime = ts;
+            }
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(
+              spriteSheet,
+              frameIndex * config.frameWidth, 0, config.frameWidth, config.frameHeight,
+              offsetX, offsetY, drawWidth, drawHeight
+            );
+            requestAnimationFrame(animateAvatar);
+          }
+          spriteSheet.onload = () => requestAnimationFrame(animateAvatar);
 
         canvas.onclick = () => {
           document.getElementById('avatarSelection').value = avatar.file;
