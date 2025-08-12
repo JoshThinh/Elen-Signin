@@ -1064,8 +1064,21 @@
         return;
       }
 
-      fetch(`${window.ApiUrlLink}/user/${username}`)
+      console.log('Attempting to validate user:', username);
+      console.log('API URL:', window.ApiUrlLink);
+      
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      fetch(`${window.ApiUrlLink}/user/${username}`, {
+        signal: controller.signal
+      })
         .then(res => {
+          clearTimeout(timeoutId); // Clear timeout on successful response
+          console.log('API response status:', res.status);
+          console.log('API response ok:', res.ok);
+          
           if (!res.ok) {
             if (res.status === 404) {
               // User not found (deleted)
@@ -1088,7 +1101,8 @@
             return;
           }
           
-          document.getElementById('userDisplay').textContent = user.username;
+          // Note: userDisplay element doesn't exist in hours.html, so we skip setting it
+          console.log('User validated successfully:', user.username);
           
           // Set up sidebar icon links
           if (username) {
@@ -1125,8 +1139,20 @@
           });
         })
         .catch((error) => {
+          clearTimeout(timeoutId); // Clear timeout on error
           console.error('Error validating user:', error);
-          alert('Error validating your account. Please log in again.');
+          console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+          });
+          
+          if (error.name === 'AbortError') {
+            alert('Request timed out. Please check your internet connection and try again.');
+          } else {
+            alert('Error validating your account. Please log in again. Error: ' + error.message);
+          }
+          
           localStorage.removeItem('user');
           window.location.href = "index.html";
                 });
@@ -1142,8 +1168,23 @@
         document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
         
-        // Set up sign out functionality for the icon
+        // Set href attributes for sidebar text links
+        document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+        
+        // Set up sign out functionality for both icon and text
         document.getElementById('signOutIcon').onclick = function(e) {
+          e.preventDefault();
+          localStorage.removeItem('user');
+          window.location.href = 'index.html';
+        };
+        
+        document.getElementById('signOutLink').onclick = function(e) {
           e.preventDefault();
           localStorage.removeItem('user');
           window.location.href = 'index.html';

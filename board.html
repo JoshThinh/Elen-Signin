@@ -30,20 +30,21 @@
       --scale-phone: 0.8;
       --scale-tablet: 0.9;
       --scale-desktop: 1;
-      --scale-tv: 1.1;
+      --scale-tv: 1.2;
     }
     
     body {
-      display: flex;
-      flex-direction: column;
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+      width: 100vw !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      padding-left: 100px !important; /* To prevent content from being hidden under sidebar */
+      background: #2d2e4bf2;
       min-height: 100vh;
-      margin: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       font-size: 16px;
       color: white;
-      background: #2d2e4bf2;
-      padding-left: 100px; /* Prevent content from being hidden under sidebar */
-      position: relative;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
     /* Left Sidebar Styles */
@@ -712,9 +713,6 @@
     
     <div class="board-controls">
       <button id="refreshBtn" class="control-btn">🔄 Refresh</button>
-      <button id="zoomInBtn" class="control-btn">🔍+</button>
-      <button id="zoomOutBtn" class="control-btn">🔍-</button>
-      <button id="resetZoomBtn" class="control-btn">🔍 Reset</button>
       <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
     </div>
   </div>
@@ -839,15 +837,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('boardCanvas');
   const ctx = canvas.getContext('2d');
 
-  // Load images
-  const deskImg = new Image();
-  deskImg.src = `${document.baseURI}Static/Images/Desks/desk.png`;
+  // Load images globally so they can be accessed by drawOfficeWithUsers
+  window.deskImg = new Image();
+  window.deskImg.src = `${document.baseURI}Static/Images/Desks/desk.png`;
   
-  const deskOpImg = new Image();
-  deskOpImg.src = `${document.baseURI}Static/Images/Desks/deskop.png`;
+  window.deskOpImg = new Image();
+  window.deskOpImg.src = `${document.baseURI}Static/Images/Desks/deskop.png`;
 
   // Wait for images to load
-  Promise.all([deskImg.decode(), deskOpImg.decode()]).then(() => {
+  Promise.all([window.deskImg.decode(), window.deskOpImg.decode()]).then(() => {
     // Clear canvas with transparent background
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -896,6 +894,10 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.restore();
     }
     
+    // Start the application after images are loaded
+    // Fetch users and update boardUsers, then start animation
+    refreshData();
+    
 
   }).catch(error => {
     console.error('Error loading images:', error);
@@ -935,27 +937,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Desk positions from new_desklayout.html with rotation support
   const deskPositions = [
     // Buddies Row 0: xoxox
-    {x:2.7, y:1, rotation: 90, deskType: 'deskop'}, {x:5, y:1.3, rotation: 0},
+    {x:2.7, y:1, rotation: 0, deskType: 'desk'}, {x:5, y:1.3, rotation: 0, deskType: 'desk'},
     // Row 1: oxxx
-    {x:0.9, y:2.5, rotation: 0, deskType: 'deskop'},
+    {x:0.9, y:2.5, rotation: 0, deskType: 'desk'},
     // Row 2: oxxoxxxo
-    {x:0.9, y:3.7, rotation: 0}, {x:4.2, y:3.4, rotation: 0, deskType: 'deskop'}, {x:8, y:4, rotation: 0},
+    {x:0.9, y:3.7, rotation: 0, deskType: 'desk'}, {x:4.2, y:3.4, rotation: 0, deskType: 'deskop'}, {x:8, y:4, rotation: 0, deskType: 'deskop'},
     // Row 3: xxxxxxxxxxoxxoxxo
-    {x:2.1, y:7.7, rotation: -45}, {x:2.6, y:8.2, rotation: -45}, 
+    {x:2.1, y:7.7, rotation: -45, deskType: 'desk'}, {x:2.6, y:8.2, rotation: -45, deskType: 'desk'}, 
 
-    {x:5.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:5.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:4.3, y:9.1, rotation: 0}, {x:4.3, y:8.4, rotation: 0},  
+    {x:5.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:5.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:4.3, y:9.1, rotation: 0, deskType: 'desk'}, {x:4.3, y:8.4, rotation: 0, deskType: 'desk'},  
     
-    {x:7.5, y:8.2, rotation: 0, deskType: 'deskop'}, {x:7.5, y:8.9, rotation: 0, deskType: 'deskop'}, {x:6.7, y:8.2, rotation: 0}, {x:6.7, y:8.9, rotation: 0},
+    {x:7.5, y:8.2, rotation: 0, deskType: 'deskop'}, {x:7.5, y:8.9, rotation: 0, deskType: 'deskop'}, {x:6.7, y:8.2, rotation: 0, deskType: 'desk'}, {x:6.7, y:8.9, rotation: 0, deskType: 'desk'},
 
-    {x:10.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:10.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:9.3, y:9.1, rotation: 0}, {x:9.3, y:8.4, rotation: 0},
+    {x:10.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:10.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:9.3, y:9.1, rotation: 0, deskType: 'desk'}, {x:9.3, y:8.4, rotation: 0, deskType: 'desk'},
 
-    {x:12.2, y:8.5, rotation: 0, deskType: 'deskop'}, {x:12.2, y:9.2, rotation: 0, deskType: 'deskop'}, {x:11.4, y:8.5, rotation: 0}, {x:11.4, y:9.2, rotation: 0},
+    {x:12.2, y:8.5, rotation: 0, deskType: 'deskop'}, {x:12.2, y:9.2, rotation: 0, deskType: 'deskop'}, {x:11.4, y:8.5, rotation: 0, deskType: 'desk'}, {x:11.4, y:9.2, rotation: 0, deskType: 'desk'},
     
-    {x:14.35, y:8.2, rotation: 0, deskType: 'deskop'}, {x:14.35, y:8.9, rotation: 0, deskType: 'deskop'}, {x:13.6, y:8.2, rotation: 0}, {x:13.6, y:8.9, rotation: 0},
+    {x:14.35, y:8.2, rotation: 0, deskType: 'deskop'}, {x:14.35, y:8.9, rotation: 0, deskType: 'deskop'}, {x:13.6, y:8.2, rotation: 0, deskType: 'desk'}, {x:13.6, y:8.9, rotation: 0, deskType: 'desk'},
 
-    {x:15.5, y:7.6, rotation: 0}, {x:15.5, y:9.3, rotation: 0},
+    {x:15.5, y:7.6, rotation: 0, deskType: 'desk'}, {x:15.5, y:9.3, rotation: 0, deskType: 'desk'},
     // Row 4: oxxxx
-    {x:11, y:6.1, rotation: 0}, {x:12.2, y:6.1, rotation: 0},{x:13.5, y:6.1, rotation: 0},
+    {x:11, y:6.1, rotation: 0, deskType: 'desk'}, {x:12.2, y:6.1, rotation: 0, deskType: 'desk'},{x:13.5, y:6.1, rotation: 0, deskType: 'desk'},
   ];
 
 // Function to update statistics
@@ -990,8 +992,7 @@ function refreshData() {
     });
 }
 
-// Fetch users and update boardUsers, then start animation
-refreshData();
+// refreshData() is now called after images load
 
 // Auto-refresh every 30 seconds
 setInterval(refreshData, 30000);
@@ -1090,24 +1091,38 @@ function drawOfficeWithUsers(users) {
     
     ctx.save();
     
+    // Choose desk image based on deskType (if specified) or fall back to old logic
+    let deskImage;
+    if (desk.deskType === 'deskop') {
+      deskImage = window.deskOpImg;
+      console.log(`Desk at (${desk.x}, ${desk.y}): Using deskOpImg for deskType 'deskop'`);
+    } else if (desk.deskType === 'desk') {
+      deskImage = window.deskImg;
+      console.log(`Desk at (${desk.x}, ${desk.y}): Using deskImg for deskType 'desk'`);
+    } else {
+      // Fall back to old logic for backward compatibility
+      const useRegularDesk = [2, 6, 10, 14, 18, 21].includes(desk.x);
+      deskImage = useRegularDesk ? window.deskImg : window.deskOpImg;
+      console.log(`Desk at (${desk.x}, ${desk.y}): Fallback logic - useRegularDesk: ${useRegularDesk}, using ${useRegularDesk ? 'deskImg' : 'deskOpImg'}`);
+    }
+    
+    // Debug: Check if images are loaded
+    if (!window.deskImg || !window.deskOpImg) {
+      console.error('Desk images not loaded yet!', {
+        deskImg: window.deskImg,
+        deskOpImg: window.deskOpImg
+      });
+    }
+    
     // Move to desk center for rotation (if rotation is specified)
     if (desk.rotation !== undefined && desk.rotation !== 0) {
       ctx.translate(px + cellSize/2, py + cellSize/2);
       ctx.rotate(desk.rotation * Math.PI / 180);
       
-      // Choose desk image based on deskType (if specified) or fall back to old logic
-      const deskImage = desk.deskType === 'deskop' ? deskOpImg : 
-                       (desk.deskType === 'desk' ? deskImg : 
-                       (desk.x === 2 || desk.x === 6 || desk.x === 10 || desk.x === 14 || desk.x === 18 || desk.x === 21 ? deskImg : deskOpImg));
-      
       // Draw desk image centered at origin
       ctx.drawImage(deskImage, -deskSize/2, -deskSize/2, deskSize, deskSize);
     } else {
-      // No rotation - use old logic for desk type
-      const useRegularDesk = [2, 6, 10, 14, 18, 21].includes(desk.x);
-      const deskImage = useRegularDesk ? deskImg : deskOpImg;
-      
-      // Draw desk image with offset to center it
+      // No rotation - draw desk image with offset to center it
       ctx.drawImage(
         deskImage,
         px + offsetX, py + offsetY,
@@ -1117,13 +1132,7 @@ function drawOfficeWithUsers(users) {
     
     ctx.restore();
     
-    // Add desk number for easy identification (same as new_desklayout.html)
-    ctx.save();
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 16px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText((index + 1).toString(), px + cellSize/2, py + cellSize/2 + 5);
-    ctx.restore();
+
   });
 
   // Draw users at their desks
@@ -1164,8 +1173,15 @@ function drawOfficeWithUsers(users) {
       const drawHeight = config.frameHeight * scale;
       const offsetX = px + (cellSize - AVATAR_BOX_SIZE) / 2 + (AVATAR_BOX_SIZE - drawWidth) / 2;
       const offsetY = py + (cellSize - AVATAR_BOX_SIZE) / 2 + (AVATAR_BOX_SIZE - drawHeight) / 2;
-      // Check if user is at a desk that uses desk.png (regular desk)
-      const useRegularDesk = [2, 6, 10, 14, 18, 21].includes(deskCoord.x);
+      // Find the desk position to get deskType and rotation
+      const deskPosition = deskPositions.find(desk => 
+        Math.abs(desk.x - deskCoord.x) < 0.1 && Math.abs(desk.y - deskCoord.y) < 0.1
+      );
+      
+      // Check if user is at a desk that uses desk.png (regular desk) or use deskType if available
+      const useRegularDesk = deskPosition && deskPosition.deskType ? 
+        deskPosition.deskType === 'desk' : 
+        [2, 6, 10, 14, 18, 21].includes(deskCoord.x);
       
       // Adjust avatar positioning and direction based on desk type
       let avatarOffsetX = 6; // default pixels left (moved back to the right)
