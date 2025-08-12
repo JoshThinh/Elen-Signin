@@ -519,6 +519,53 @@
     .user-info-value {
       color: #6c757d;                                      /* Medium gray for values */
     }
+    
+    /* ===== STATUS CHANGE STYLING ===== */
+    /* Status change dropdown styling */
+    #statusChangeSelect {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    #statusChangeSelect:focus {
+      outline: none;
+      border-color: #2d2e4b;
+      box-shadow: 0 0 0 2px rgba(45, 46, 75, 0.2);
+    }
+    
+    /* Status update button styling */
+    #updateStatusBtn {
+      background: #2d2e4b;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    #updateStatusBtn:hover:not(:disabled) {
+      background: #1a1b2e;
+    }
+    
+    #updateStatusBtn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    /* Status update message styling */
+    #statusUpdateMessage {
+      font-size: 12px;
+      margin-top: 2px;
+      min-height: 12px;
+    }
 
     /* ===== BUTTON STYLES ===== */
     /* Primary action button styling */
@@ -1837,6 +1884,23 @@ document.addEventListener('DOMContentLoaded', function() {
           <span class="user-info-label">Status:</span>
           <span class="user-info-value">${userData.status || 'N/A'}</span>
         </div>
+        
+        <!-- ===== STATUS CHANGE SECTION ===== -->
+        <div class="user-info-item" style="flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 10px;">
+          <span class="user-info-label">Change Status:</span>
+          <div style="display: flex; gap: 10px; width: 100%;">
+            <select id="statusChangeSelect" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+              <option value="clocked-in">Clocked In</option>
+              <option value="break">On Break</option>
+              <option value="work-from-home">Work from Home</option>
+              <option value="job-site">Job Site</option>
+              <option value="clocked-out">Clocked Out</option>
+            </select>
+            <button id="updateStatusBtn" style="padding: 8px 16px; background: #2d2e4b; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Update</button>
+          </div>
+          <div id="statusUpdateMessage" style="font-size: 12px; color: #666; margin-top: 2px;"></div>
+        </div>
+        
         <div class="user-info-item">
           <span class="user-info-label">Time in Status:</span>
           <span class="user-info-value">${timeInStatus}</span>
@@ -1862,13 +1926,91 @@ document.addEventListener('DOMContentLoaded', function() {
       details.innerHTML = `<p>Error loading user information: ${error.message}</p>`;
     }
     
-    modal.style.display = 'flex';
-  }
+      modal.style.display = 'flex';
+      
+      // ===== STATUS CHANGE FUNCTIONALITY =====
+      // Set the current status as the selected option
+      const statusSelect = document.getElementById('statusChangeSelect');
+      if (statusSelect) {
+        statusSelect.value = userData.status || 'clocked-out';
+      }
+      
+      // Add event listener for status update button
+      const updateBtn = document.getElementById('updateStatusBtn');
+      if (updateBtn) {
+        updateBtn.onclick = function() {
+          updateUserStatus(user.username, statusSelect.value);
+        };
+      }
+    }
+    
+    // ===== STATUS UPDATE FUNCTION =====
+    // Function to update a user's status via API
+    async function updateUserStatus(username, newStatus) {
+      const updateBtn = document.getElementById('updateStatusBtn');
+      const messageDiv = document.getElementById('statusUpdateMessage');
+      
+      if (updateBtn) {
+        updateBtn.disabled = true;
+        updateBtn.textContent = 'Updating...';
+      }
+      
+      if (messageDiv) {
+        messageDiv.textContent = 'Updating status...';
+        messageDiv.style.color = '#666';
+      }
+      
+      try {
+        // Call the API to update the user's status
+        const response = await fetch(`${window.ApiUrlLink}/status/${username}/${newStatus}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (response.ok) {
+          // Success - update the message and refresh the board
+          if (messageDiv) {
+            messageDiv.textContent = 'Status updated successfully!';
+            messageDiv.style.color = '#28a745';
+          }
+          
+          // Refresh the board data to show the updated status
+          setTimeout(() => {
+            refreshData();
+            // Close the modal after a short delay
+            setTimeout(() => {
+              document.getElementById('userInfoModal').style.display = 'none';
+            }, 1000);
+          }, 500);
+        } else {
+          // Error - show error message
+          if (messageDiv) {
+            messageDiv.textContent = 'Failed to update status. Please try again.';
+            messageDiv.style.color = '#dc3545';
+          }
+        }
+      } catch (error) {
+        console.error('Error updating user status:', error);
+        if (messageDiv) {
+          messageDiv.textContent = 'Error updating status. Please try again.';
+          messageDiv.style.color = '#dc3545';
+        }
+      } finally {
+        // Re-enable the button
+        if (updateBtn) {
+          updateBtn.disabled = false;
+          updateBtn.textContent = 'Update';
+        }
+      }
+    }
 
+    // ===== MODAL CLOSE FUNCTIONALITY =====
     // Close user info modal
-  document.getElementById('closeUserInfo').onclick = function() {
-    document.getElementById('userInfoModal').style.display = 'none';
-  };
+    document.getElementById('closeUserInfo').onclick = function() {
+      document.getElementById('userInfoModal').style.display = 'none';
+    };
   
   // Close modal when clicking outside
   document.getElementById('userInfoModal').onclick = function(e) {
