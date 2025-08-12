@@ -1558,9 +1558,7 @@
       <a href="#" class="sidebar-icon-item" id="hoursIcon" title="Hours">
         <span class="icon">⏱️</span>
       </a>
-      <a href="#" class="sidebar-icon-item" id="editUsersIcon" title="Edit Users">
-        <span class="icon">👥</span>
-      </a>
+
       <a href="#" class="sidebar-icon-item" id="signOutIcon" title="Sign Out">
         <span class="icon">🚪</span>
       </a>
@@ -1574,7 +1572,7 @@
       <a href="#" id="submitLink">Submit Email</a>
       <a href="#" id="viewEmailLink">View Email</a>
       <a href="#" id="hourLink">Hours</a>
-      <a href="#" id="editUsersLink">Edit Users</a>
+
       <a href="#" id="signOutLink">Sign Out</a>
     </div>
   </div>
@@ -1648,8 +1646,7 @@
         document.getElementById('submitIcon').href = `submit_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
+
         document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
         document.getElementById('viewEmailIcon').href = `view_email.html?username=${encodeURIComponent(username)}`;
       }
