@@ -44,7 +44,7 @@
       width: 100vw !important;
       margin: 0 !important;
       padding: 0 !important;
-      padding-top: 56px !important; /* To prevent content from being hidden under navbar */
+      padding-left: 100px !important; /* To prevent content from being hidden under sidebar */
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
       font-size: 16px;
@@ -456,23 +456,155 @@
     .sidebar-overlay.open {
       display: block;
     }
+    
+    /* Left Sidebar Styles */
+    .left-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 100vh;
+      background: #4a4c6b;
+      color: #fff;
+      z-index: 1001;
+      transition: width 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .left-sidebar.expanded {
+      width: 200px;
+    }
+    
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 15px;
+      cursor: pointer;
+      height: 50px;
+    }
+    
+    .sidebar-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      position: absolute;
+      left: 20px;
+    }
+    
+    .left-sidebar.expanded .sidebar-header h3 {
+      opacity: 1;
+    }
+    
+    .sidebar-toggle {
+      font-size: 2.5rem;
+      cursor: pointer !important;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      transition: transform 0.3s ease;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      background: transparent;
+      border: none;
+      outline: none;
+      margin: 0 auto;
+      position: relative;
+      top: 5px;
+    }
+    
+    .left-sidebar.expanded .sidebar-toggle {
+      height: 60px;
+    }
+    
+    .left-sidebar.expanded .sidebar-toggle {
+      transform: rotate(90deg);
+    }
+    
+    .sidebar-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+      background: none;
+      border: none;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    
+    .left-sidebar.expanded .sidebar-close {
+      opacity: 1;
+    }
+    
+    .sidebar-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Hide only the toggle button when sidebar is expanded, keep the header and menu text */
+    .left-sidebar.expanded .sidebar-toggle {
+      display: none;
+    }
+    
+    .sidebar-icons {
+      padding: 10px 0;
+    }
+    
+    .sidebar-icon-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 50px;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-icon-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-left-color: #fff;
+    }
+    
+    .sidebar-icon-item .icon {
+      font-size: 1.3rem;
+      filter: grayscale(60%);
+    }
+    
+    .sidebar-text {
+      padding: 20px 0;
+    }
+    
+    .sidebar-text a {
+      display: block;
+      padding: 15px 20px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-text a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-left-color: #fff;
+    }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <span class="navbar-title">View Email</span>
-    <span class="navbar-hamburger" onclick="toggleSidebar()">&#9776;</span>
-  </nav>
-  <div class="sidebar" id="sidebar">
-    <a href="#" id="dashboardLink">Dashboard</a>
-    <a href="#" id="boardLink">Board</a>
-    <a href="#" id="settingsLink">Settings</a>
-    <a href="#" id="submitLink">Submit Email</a>
-    <a href="#" id="hourLink">Hours</a>
-    <a href="#" id="editUsersLink">Edit Users</a>
-    <a href="#" onclick="signOut()">Sign Out</a>
-  </div>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <div class="settings-container">
     <div class="inbox-outer">
@@ -674,6 +806,151 @@
             }
           });
     }
+  </script>
+  
+  <div class="left-sidebar" id="leftSidebar">
+    <div class="sidebar-header" onclick="toggleSidebar()">
+      <h3>Menu</h3>
+      <div class="sidebar-toggle" id="sidebarToggle">&#9776;</div>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" onclick="toggleSidebar()">✕</button>
+    
+    <!-- Icon Mode -->
+    <div class="sidebar-icons" id="sidebarIcons">
+      <a href="#" class="sidebar-icon-item" id="dashboardIcon" title="Dashboard">
+        <span class="icon">📊</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="boardIcon" title="Board">
+        <span class="icon">📋</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="settingsIcon" title="Settings">
+        <span class="icon">⚙️</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="submitIcon" title="Submit Email">
+        <span class="icon">📧</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="viewEmailIcon" title="View Email">
+        <span class="icon">📬</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="hoursIcon" title="Hours">
+        <span class="icon">⏱️</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="editUsersIcon" title="Edit Users">
+        <span class="icon">👥</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="signOutIcon" title="Sign Out">
+        <span class="icon">🚪</span>
+      </a>
+    </div>
+    
+    <!-- Text Mode -->
+    <div class="sidebar-text" id="sidebarText" style="display: none;">
+      <a href="#" id="dashboardLink">Dashboard</a>
+      <a href="#" id="boardLink">Board</a>
+      <a href="#" id="settingsLink">Settings</a>
+      <a href="#" id="submitLink">Submit Email</a>
+      <a href="#" id="viewEmailLink">View Email</a>
+      <a href="#" id="hourLink">Hours</a>
+      <a href="#" id="editUsersLink">Edit Users</a>
+      <a href="#" id="signOutLink">Sign Out</a>
+    </div>
+  </div>
+  
+  <script defer>
+    function toggleSidebar() {
+      console.log('Sidebar toggle clicked!');
+      const sidebar = document.getElementById('leftSidebar');
+      const icons = document.getElementById('sidebarIcons');
+      const text = document.getElementById('sidebarText');
+      
+      if (sidebar.classList.contains('expanded')) {
+        // Close the sidebar
+        sidebar.classList.remove('expanded');
+        icons.style.display = 'block';
+        text.style.display = 'none';
+        document.body.style.paddingLeft = '100px';
+        console.log('Sidebar closed');
+      } else {
+        // Open the sidebar
+        sidebar.classList.add('expanded');
+        icons.style.display = 'none';
+        text.style.display = 'block';
+        document.body.style.paddingLeft = '200px';
+        console.log('Sidebar opened');
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarHeader = document.querySelector('.sidebar-header');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleSidebar();
+        });
+      }
+      
+      if (sidebarHeader) {
+        sidebarHeader.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleSidebar();
+        });
+      }
+    });
+    
+    document.getElementById('signOutLink').onclick = function(e) {
+      e.preventDefault();
+      localStorage.removeItem("user");
+      window.location.href = "index.html";
+    };
+    
+    // Add your own handlers for submit and email settings:
+    document.addEventListener("DOMContentLoaded", () => {
+      function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+      const username = getQueryParam('username');
+
+      // Update all sidebar links to include username
+      if (username) {
+        document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('dashboardIcon').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('boardIcon').href = `board.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('settingsIcon').href = `settings.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('submitIcon').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
+        document.getElementById('viewEmailIcon').href = `view_email.html?username=${encodeURIComponent(username)}`;
+        
+        // Check if user is admin and show/hide admin-only links
+        fetch(`${window.ApiUrlLink}/user/${encodeURIComponent(username)}`)
+          .then(res => res.json())
+          .then(user => {
+            if (user.role === "admin") {
+              document.getElementById('hourLink').style.display = 'block';
+              document.getElementById('hoursIcon').style.display = 'flex';
+            } else {
+              document.getElementById('hourLink').style.display = 'none';
+              document.getElementById('hoursIcon').style.display = 'none';
+            }
+          })
+          .catch(error => {
+            console.error('Error checking user role:', error);
+            // Hide hours link by default if there's an error
+            document.getElementById('hourLink').style.display = 'none';
+            document.getElementById('hoursIcon').style.display = 'none';
+          });
+      }
+      // Add other sidebar links here as needed
+    });
   </script>
 </body>
 </html>
