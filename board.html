@@ -1714,10 +1714,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <span class="user-info-label">Total Break Hours:</span>
           <span class="user-info-value">${formatHours(breakHours)}</span>
         </div>
-        <div class="user-info-item">
-          <span class="user-info-label">Current Session:</span>
-          <span class="user-info-value">${workingTime}</span>
-        </div>
+
         <div class="user-info-item">
           <span class="user-info-label">Clock Out Time:</span>
           <span class="user-info-value">${clockOutTime}</span>
@@ -1730,10 +1727,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <span class="user-info-label">Break End Time:</span>
           <span class="user-info-value">${breakEndTime}</span>
         </div>
-        <div class="user-info-item">
-          <span class="user-info-label">Current Break:</span>
-          <span class="user-info-value">${breakDuration}</span>
-        </div>
+
       `;
     } catch (error) {
       console.error('Error in showUserInfo:', error);
