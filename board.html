@@ -645,17 +645,17 @@
       </a>
     </div>
     
-    <!-- Text Mode -->
-    <div class="sidebar-text" id="sidebarText" style="display: none;">
-      <a href="dashboard.html" id="dashboardLink">Dashboard</a>
-      <a href="board.html" id="boardLink">Board</a>
-      <a href="settings.html" id="settingsLink">Settings</a>
-      <a href="submit_email.html" id="submitLink">Submit Email</a>
-      <a href="view_email.html" id="viewEmailLink">View Email</a>
-      <a href="hours.html" id="hourLink">Hours</a>
-      <a href="users.html" id="editUsersLink">Edit Users</a>
-      <a href="index.html" id="signOutLink">Sign Out</a>
-    </div>
+          <!-- Text Mode -->
+      <div class="sidebar-text" id="sidebarText" style="display: none;">
+        <a href="#" id="dashboardLink">Dashboard</a>
+        <a href="#" id="boardLink">Board</a>
+        <a href="#" id="settingsLink">Settings</a>
+        <a href="#" id="submitLink">Submit Email</a>
+        <a href="#" id="viewEmailLink">View Email</a>
+        <a href="#" id="hourLink">Hours</a>
+        <a href="#" id="editUsersLink">Edit Users</a>
+        <a href="#" id="signOutLink">Sign Out</a>
+      </div>
   </div>
   
   <div class="board-container">
@@ -817,8 +817,23 @@ function setupSidebarIconLinks(username) {
   document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
   document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
   
-  // Set up sign out functionality for the icon
+  // Set href attributes for sidebar text links
+  document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+  
+  // Set up sign out functionality for both icon and text
   document.getElementById('signOutIcon').onclick = function(e) {
+    e.preventDefault();
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  };
+  
+  document.getElementById('signOutLink').onclick = function(e) {
     e.preventDefault();
     localStorage.removeItem('user');
     window.location.href = 'index.html';
@@ -917,6 +932,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Character sprite config
   const spriteSheet = new Image();
   spriteSheet.src = `${document.baseURI}Static/Images/Characters/Boy_idle.png`;
+  
   const frameWidth = 48;
   const frameHeight = 48;
   const totalFrames = 4;
@@ -950,7 +966,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     {x:15.5, y:7.6, rotation: 0}, {x:15.5, y:9.3, rotation: 0},
     // Row 4: oxxxx
-    {x:0, y:5, rotation: 0},
+    {x:11, y:6.1, rotation: 0}, {x:12.2, y:6.1, rotation: 0},{x:13.5, y:6.1, rotation: 0},
   ];
 
 // Function to update statistics
