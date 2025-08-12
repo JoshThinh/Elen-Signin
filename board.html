@@ -832,35 +832,99 @@ function setupSidebarIconLinks(username) {
 // --- End Sidebar logic ---
 
 document.addEventListener('DOMContentLoaded', () => {
-const canvas = document.getElementById('boardCanvas');
-const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById('boardCanvas');
+  const ctx = canvas.getContext('2d');
 
-let frameIndex = 0;
-let lastFrameTime = 0;
+  // Load images
+  const deskImg = new Image();
+  deskImg.src = `${document.baseURI}Static/Images/Desks/desk.png`;
+  
+  const deskOpImg = new Image();
+  deskOpImg.src = `${document.baseURI}Static/Images/Desks/deskop.png`;
 
-// Desk and character sprite config
+  // Wait for images to load
+  Promise.all([deskImg.decode(), deskOpImg.decode()]).then(() => {
+    // Clear canvas with transparent background
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Load newbackground.png as layout guide and store it globally
+    const layoutImg = new Image();
+    layoutImg.onload = function() {
+      // Store the image globally so it can be used in drawOfficeWithUsers
+      window.layoutBackgroundImage = layoutImg;
+      
+      // Draw grid on canvas
+      drawGrid();
+      
+      // Note: Background image will be drawn by the existing drawOfficeWithUsers function
+      // so we don't need to draw it here to avoid duplication
+      
+      console.log('New desk layout canvas ready for development - newbackground.png loaded and ready for use');
+    };
+    layoutImg.src = `${document.baseURI}Static/Images/Background/newbackground.png`;
+    
+    // Function to draw grid on canvas
+    function drawGrid() {
+      const gridSize = 64; // Grid cell size in pixels (matches desk positions)
+      const gridColor = 'rgba(255, 255, 255, 0.3)'; // Light white with transparency
+      const gridLineWidth = 1;
+      
+      ctx.save();
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = gridLineWidth;
+      
+      // Draw vertical lines
+      for (let x = 0; x <= canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      
+      // Draw horizontal lines
+      for (let y = 0; y <= canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+      
+      ctx.restore();
+    }
+    
 
-const deskImg = new Image();
-deskImg.src = `${document.baseURI}Static/Images/Desks/desk.png`;
-const deskOpImg = new Image();
-deskOpImg.src = `${document.baseURI}Static/Images/Desks/deskop.png`;
+  }).catch(error => {
+    console.error('Error loading images:', error);
+  });
 
+  // --- Drawing Logic ---
+  // Global users array for animation
+  let boardUsers = [];
 
+  // Global variables for zoom and pan
+  let zoomLevel = 1;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let lastMouseX = 0;
+  let lastMouseY = 0;
 
-const spriteSheet = new Image();
-spriteSheet.src = `${document.baseURI}Static/Images/Characters/Boy_idle.png`;
+  // Animation variables
+  let frameIndex = 0;
+  let lastFrameTime = 0;
+  const frameDuration = 200; // ms per frame
 
-const frameWidth = 48;
-const frameHeight = 48;
-const totalFrames = 4;
-const frameDuration = 200; // ms per frame
+  // Character sprite config
+  const spriteSheet = new Image();
+  spriteSheet.src = `${document.baseURI}Static/Images/Characters/Boy_idle.png`;
+  const frameWidth = 48;
+  const frameHeight = 48;
+  const totalFrames = 4;
 
-// --- Office Layout Config ---
-const gridCols = 22; // number of columns in your grid (positions 0-21)
-const gridRows = 8; // number of rows in your grid (reduced to match your layout)
-const cellSize = 64; // pixels per grid cell
-canvas.width = gridCols * cellSize;
-canvas.height = gridRows * cellSize;
+  // Constants
+  const gridCols = 22; // number of columns in your grid (positions 0-21)
+  const gridRows = 8; // number of rows in your grid (reduced to match your layout)
+  const cellSize = 64; // pixels per grid cell
 
   // Desk positions from the provided text grid (x = column, y = row, 0-indexed)
   const deskPositions = [
@@ -879,17 +943,6 @@ canvas.height = gridRows * cellSize;
     // Row 6: xxxooxooxooxooxooxo
     {x:2, y:7}, {x:3, y:7}, {x:6, y:7}, {x:7, y:7}, {x:10, y:7}, {x:11, y:7}, {x:14, y:7}, {x:15, y:7}, {x:18, y:7}, {x:19, y:7}, {x:21, y:7},
   ];
-// --- Drawing Logic ---
-// Global users array for animation
-let boardUsers = [];
-
-// Global variables for zoom and pan
-let zoomLevel = 1;
-let panX = 0;
-let panY = 0;
-let isDragging = false;
-let lastMouseX = 0;
-let lastMouseY = 0;
 
 // Function to update statistics
 function updateStats(users) {
@@ -970,6 +1023,29 @@ function drawOfficeWithUsers(users) {
   
   // Clear canvas with transparent background
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw newbackground.png as layout guide (same as new_desklayout.html)
+  if (window.layoutBackgroundImage && window.layoutBackgroundImage.complete) {
+    ctx.save();
+    
+    // Move to the center of the canvas for rotation
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    
+    // Rotate 90 degrees to the left (counterclockwise)
+    ctx.rotate(-Math.PI / 2);
+    
+    // Calculate scale to fit the rotated image and make it smaller
+    const baseScale = Math.min(canvas.width / window.layoutBackgroundImage.height, canvas.height / window.layoutBackgroundImage.width);
+    const scale = baseScale * 1.2; // Make it 20% bigger (smaller than before)
+    const scaledWidth = window.layoutBackgroundImage.width * scale;
+    const scaledHeight = window.layoutBackgroundImage.height * scale;
+    
+    // Draw the rotated image centered
+    ctx.drawImage(window.layoutBackgroundImage, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
+    
+    // Restore the canvas context
+    ctx.restore();
+  }
   
   // Draw grid (optional, for visual reference)
   ctx.save();
@@ -1613,6 +1689,39 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('userInfoModal').onclick = function(e) {
     if (e.target === this) {
       this.style.display = 'none';
+    }
+  };
+
+  // Basic canvas controls
+  document.getElementById('refreshBtn').onclick = function() {
+    location.reload();
+  };
+
+  document.getElementById('zoomInBtn').onclick = function() {
+    // TODO: Implement zoom in functionality
+    console.log('Zoom in clicked');
+  };
+
+  document.getElementById('zoomOutBtn').onclick = function() {
+    // TODO: Implement zoom out functionality
+    console.log('Zoom out clicked');
+  };
+
+  document.getElementById('resetZoomBtn').onclick = function() {
+    // TODO: Implement reset zoom functionality
+    console.log('Reset zoom clicked');
+  };
+
+  document.getElementById('fullscreenBtn').onclick = function() {
+    const canvas = document.getElementById('boardCanvas');
+    if (canvas.requestFullscreen) {
+      canvas.requestFullscreen();
+    } else if (canvas.webkitRequestFullscreen) {
+      canvas.webkitRequestFullscreen();
+    } else if (canvas.mozRequestFullScreen) {
+      canvas.mozRequestFullScreen();
+    } else if (canvas.msRequestFullscreen) {
+      canvas.msRequestFullscreen();
     }
   };
 }); // Close the first DOMContentLoaded event listener
