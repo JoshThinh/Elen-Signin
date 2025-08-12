@@ -829,9 +829,7 @@
       <a href="#" class="sidebar-icon-item" id="submitIcon" title="Submit Email">
         <span class="icon">📧</span>
       </a>
-      <a href="#" class="sidebar-icon-item" id="viewEmailIcon" title="View Email">
-        <span class="icon">📬</span>
-      </a>
+
       <a href="#" class="sidebar-icon-item" id="hoursIcon" title="Hours">
         <span class="icon">⏱️</span>
       </a>
@@ -849,7 +847,7 @@
       <a href="#" id="boardLink">Board</a>
       <a href="#" id="settingsLink">Settings</a>
       <a href="#" id="submitLink">Submit Email</a>
-      <a href="#" id="viewEmailLink">View Email</a>
+
       <a href="#" id="hourLink">Hours</a>
       <a href="#" id="editUsersLink">Edit Users</a>
       <a href="#" id="signOutLink">Sign Out</a>
@@ -927,8 +925,7 @@
         document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
         document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
-        document.getElementById('viewEmailIcon').href = `view_email.html?username=${encodeURIComponent(username)}`;
+
         
         // Check if user is admin and show/hide admin-only links
         fetch(`${window.ApiUrlLink}/user/${encodeURIComponent(username)}`)
