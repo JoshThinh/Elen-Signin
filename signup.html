@@ -509,28 +509,28 @@
     const gridCols = 17;
     const gridRows = 11;
     const deskPositions = [
-      // Row 0: xoxox
-      {x:2.7, y:1, rotation: 90, deskType: 'deskop'}, {x:5, y:1.3, rotation: 0},
+      // Buddies Row 0: xoxox
+      {x:2.7, y:1, rotation: 0, deskType: 'desk'}, {x:5, y:1.3, rotation: 0, deskType: 'desk'},
       // Row 1: oxxx
-      {x:0.9, y:2.5, rotation: 0, deskType: 'deskop'},
+      {x:0.9, y:2.5, rotation: 0, deskType: 'desk'},
       // Row 2: oxxoxxxo
-      {x:0.9, y:3.7, rotation: 0}, {x:4.2, y:3.4, rotation: 0, deskType: 'deskop'}, {x:8, y:4, rotation: 0},
+      {x:0.9, y:3.7, rotation: 0, deskType: 'desk'}, {x:4.2, y:3.4, rotation: 0, deskType: 'deskop'}, {x:8, y:4, rotation: 0, deskType: 'deskop'},
       // Row 3: xxxxxxxxxxoxxoxxo
-      {x:2.1, y:7.7, rotation: -45}, {x:2.6, y:8.2, rotation: -45}, 
+      {x:2.1, y:7.7, rotation: -45, deskType: 'desk'}, {x:2.6, y:8.2, rotation: -45, deskType: 'desk'}, 
 
-      {x:5.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:5.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:4.3, y:9.1, rotation: 0}, {x:4.3, y:8.4, rotation: 0},  
+      {x:5.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:5.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:4.3, y:9.1, rotation: 0, deskType: 'desk'}, {x:4.3, y:8.4, rotation: 0, deskType: 'desk'},  
       
-      {x:7.5, y:8.2, rotation: 0, deskType: 'deskop'}, {x:7.5, y:8.9, rotation: 0, deskType: 'deskop'}, {x:6.7, y:8.2, rotation: 0}, {x:6.7, y:8.9, rotation: 0},
+      {x:7.5, y:8.2, rotation: 0, deskType: 'deskop'}, {x:7.5, y:8.9, rotation: 0, deskType: 'deskop'}, {x:6.7, y:8.2, rotation: 0, deskType: 'desk'}, {x:6.7, y:8.9, rotation: 0, deskType: 'desk'},
 
-      {x:10.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:10.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:9.3, y:9.1, rotation: 0}, {x:9.3, y:8.4, rotation: 0},
+      {x:10.1, y:8.4, rotation: 0, deskType: 'deskop'}, {x:10.1, y:9.1, rotation: 0, deskType: 'deskop'}, {x:9.3, y:9.1, rotation: 0, deskType: 'desk'}, {x:9.3, y:8.4, rotation: 0, deskType: 'desk'},
 
-      {x:12.2, y:8.5, rotation: 0, deskType: 'deskop'}, {x:12.2, y:9.2, rotation: 0, deskType: 'deskop'}, {x:11.4, y:8.5, rotation: 0}, {x:11.4, y:9.2, rotation: 0},
+      {x:12.2, y:8.5, rotation: 0, deskType: 'deskop'}, {x:12.2, y:9.2, rotation: 0, deskType: 'deskop'}, {x:11.4, y:8.5, rotation: 0, deskType: 'desk'}, {x:11.4, y:9.2, rotation: 0, deskType: 'desk'},
       
-      {x:14.35, y:8.2, rotation: 0, deskType: 'deskop'}, {x:14.35, y:8.9, rotation: 0, deskType: 'deskop'}, {x:13.6, y:8.2, rotation: 0}, {x:13.6, y:8.9, rotation: 0},
+      {x:14.35, y:8.2, rotation: 0, deskType: 'deskop'}, {x:14.35, y:8.9, rotation: 0, deskType: 'deskop'}, {x:13.6, y:8.2, rotation: 0, deskType: 'desk'}, {x:13.6, y:8.9, rotation: 0, deskType: 'desk'},
 
-      {x:15.5, y:7.6, rotation: 0}, {x:15.5, y:9.3, rotation: 0},
+      {x:15.5, y:7.6, rotation: 0, deskType: 'desk'}, {x:15.5, y:9.3, rotation: 0, deskType: 'desk'},
       // Row 4: oxxxx
-      {x:0, y:5, rotation: 0},
+      {x:11, y:6.1, rotation: 0, deskType: 'desk'}, {x:12.2, y:6.1, rotation: 0, deskType: 'desk'},{x:13.5, y:6.1, rotation: 0, deskType: 'desk'},
     ];
 
     // Wait for DOM to be ready and ApiUrlLink to be available
@@ -781,11 +781,7 @@
           ctx.lineWidth = 1;
           ctx.strokeRect(-deskSize/2, -deskSize/2, deskSize, deskSize);
           
-          // Also draw desk coordinates for debugging
-          ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
-          ctx.font = '10px Arial';
-          ctx.textAlign = 'left';
-          ctx.fillText(`(${desk.x}, ${desk.y})`, -deskSize/2, -deskSize/2 - 5);
+
         }
         
 
