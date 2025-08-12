@@ -464,6 +464,14 @@
       background-color: #1a1b2e;
     }
     
+    .close-x-btn {
+      transition: opacity 0.2s ease;
+    }
+    
+    .close-x-btn:hover {
+      opacity: 0.7;
+    }
+    
     /* iPhone and small phones (up to 428px) */
     @media screen and (max-width: 428px) {
       :root {
@@ -727,7 +735,7 @@
       <div id="userInfoDetails">
         <!-- User info will be populated here -->
       </div>
-      <button id="closeUserInfo" class="confirm-btn" style="margin-top: 20px;">Close</button>
+      <button id="closeUserInfo" class="close-x-btn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 5px;">✕</button>
     </div>
   </div>
 
@@ -1678,14 +1686,43 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const mapLink = createMapLink(jobSiteLocation);
       
+      // Calculate time in current status
+      let timeInStatus = 'N/A';
+      if (userData.status && userData.status !== 'clocked-out') {
+        let statusStartTime = null;
+        
+        if (userData.status === 'clocked-in' && clockInTimeField) {
+          statusStartTime = new Date(clockInTimeField);
+        } else if (userData.status === 'break' && breakStartTimeField) {
+          statusStartTime = new Date(breakStartTimeField);
+        } else if (userData.status === 'work-from-home' && clockInTimeField) {
+          statusStartTime = new Date(clockInTimeField);
+        } else if (userData.status === 'job-site' && clockInTimeField) {
+          statusStartTime = new Date(clockInTimeField);
+        }
+        
+        if (statusStartTime && !isNaN(statusStartTime.getTime())) {
+          const now = new Date();
+          const duration = now - statusStartTime;
+          const hours = Math.floor(duration / (1000 * 60 * 60));
+          const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+          
+          if (hours > 0) {
+            timeInStatus = `${hours}h ${minutes}m`;
+          } else {
+            timeInStatus = `${minutes}m`;
+          }
+        }
+      }
+
       details.innerHTML = `
-        <div class="user-info-item">
-          <span class="user-info-label">Email:</span>
-          <span class="user-info-value">${userData.email || 'N/A'}</span>
-        </div>
         <div class="user-info-item">
           <span class="user-info-label">Status:</span>
           <span class="user-info-value">${userData.status || 'N/A'}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">Time in Status:</span>
+          <span class="user-info-value">${timeInStatus}</span>
         </div>
         <div class="user-info-item">
           <span class="user-info-label">Desk:</span>
@@ -1702,32 +1739,6 @@ document.addEventListener('DOMContentLoaded', function() {
           </span>
         </div>
         ` : ''}
-        <div class="user-info-item">
-          <span class="user-info-label">Clock In Time:</span>
-          <span class="user-info-value">${clockInTime}</span>
-        </div>
-        <div class="user-info-item">
-          <span class="user-info-label">Total Work Hours:</span>
-          <span class="user-info-value">${formatHours(workHours)}</span>
-        </div>
-        <div class="user-info-item">
-          <span class="user-info-label">Total Break Hours:</span>
-          <span class="user-info-value">${formatHours(breakHours)}</span>
-        </div>
-
-        <div class="user-info-item">
-          <span class="user-info-label">Clock Out Time:</span>
-          <span class="user-info-value">${clockOutTime}</span>
-        </div>
-        <div class="user-info-item">
-          <span class="user-info-label">Break Start Time:</span>
-          <span class="user-info-value">${breakStartTime}</span>
-        </div>
-        <div class="user-info-item">
-          <span class="user-info-label">Break End Time:</span>
-          <span class="user-info-value">${breakEndTime}</span>
-        </div>
-
       `;
     } catch (error) {
       console.error('Error in showUserInfo:', error);
