@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Office Board</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="config.js" defer></script>
   <script defer>
     document.addEventListener("DOMContentLoaded", () => {
@@ -38,217 +38,157 @@
       flex-direction: column;
       min-height: 100vh;
       margin: 0;
-      font-family: 'Crimson Text', serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       font-size: 16px;
-      color: #777777;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      padding-top: 56px; /* Prevent content from being hidden under navbar */
-    }
-    
-    /* iPhone and small phones (up to 428px) */
-    @media screen and (max-width: 428px) {
-      :root {
-        --scale-phone: 0.75;
-        --scale-tablet: 0.8;
-        --scale-desktop: 0.85;
-        --scale-tv: 0.9;
-      }
-      
-      body {
-        font-size: calc(14px * var(--scale-phone));
-        padding-top: calc(50px * var(--scale-phone));
-      }
-      
-      .board-container {
-        padding: calc(10px * var(--scale-phone)) !important;
-        margin: calc(10px * var(--scale-phone)) !important;
-        max-width: calc(100vw - 20px) !important;
-        width: calc(100vw - 20px) !important;
-        overflow-x: hidden !important;
-        box-sizing: border-box !important;
-      }
-      
-      .board-title {
-        font-size: calc(1.5rem * var(--scale-phone));
-        margin-bottom: calc(15px * var(--scale-phone));
-      }
-      
-      .board-header {
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: calc(15px * var(--scale-phone));
-        gap: calc(10px * var(--scale-phone));
-      }
-      
-      .status-legend {
-        order: 1;
-        align-self: flex-start;
-        margin-bottom: calc(10px * var(--scale-phone));
-      }
-      
-      .board-title {
-        order: 2;
-      }
-      
-      .board-stats {
-        order: 3;
-      }
-      
-      .board-stats {
-        gap: calc(8px * var(--scale-phone));
-        justify-content: center;
-        width: 100%;
-        flex-wrap: wrap;
-      }
-      
-      .stat-item {
-        min-width: calc(70px * var(--scale-phone));
-        padding: calc(6px * var(--scale-phone)) calc(8px * var(--scale-phone));
-      }
-      
-      .stat-label {
-        font-size: calc(0.7rem * var(--scale-phone));
-        margin-bottom: calc(2px * var(--scale-phone));
-      }
-      
-      .stat-value {
-        font-size: calc(1rem * var(--scale-phone));
-      }
-      
-      .canvas-container {
-        border-radius: calc(12px * var(--scale-phone));
-        box-shadow: 0 calc(2px * var(--scale-phone)) calc(12px * var(--scale-phone)) rgba(0,0,0,0.08);
-        overflow: hidden;
-        max-width: calc(100vw - 20px);
-        width: calc(100vw - 20px);
-      }
-      
-      #boardCanvas {
-        width: calc(100vw - 20px) !important;
-        height: auto !important;
-        max-height: calc(60vh * var(--scale-phone));
-        margin: calc(10px * var(--scale-phone)) auto !important;
-        border-width: calc(2px * var(--scale-phone)) !important;
-        border-radius: calc(12px * var(--scale-phone)) !important;
-      }
-      
-      .board-controls {
-        gap: calc(6px * var(--scale-phone));
-        margin-top: calc(15px * var(--scale-phone));
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      
-      .control-btn {
-        padding: calc(8px * var(--scale-phone)) calc(12px * var(--scale-phone));
-        font-size: calc(12px * var(--scale-phone));
-        border-radius: calc(4px * var(--scale-phone));
-      }
-      
-      /* Status Legend Mobile Scaling */
-      .status-legend {
-        padding: calc(10px * var(--scale-phone));
-        min-width: calc(150px * var(--scale-phone));
-        position: absolute;
-        left: calc(10px * var(--scale-phone));
-        top: calc(-80px * var(--scale-phone));
-        transform: scale(var(--scale-phone));
-        transform-origin: top left;
-      }
-      
-      .status-legend h3 {
-        font-size: calc(0.9rem * var(--scale-phone));
-        margin-bottom: calc(8px * var(--scale-phone));
-      }
-      
-      .legend-items {
-        gap: calc(6px * var(--scale-phone));
-      }
-      
-      .legend-item {
-        gap: calc(6px * var(--scale-phone));
-        font-size: calc(0.75rem * var(--scale-phone));
-      }
-      
-      .status-circle {
-        width: calc(10px * var(--scale-phone));
-        height: calc(10px * var(--scale-phone));
-      }
-    }
-    
-    .navbar {
-      width: 100%;
-      height: 60px;
+      color: white;
       background: #2d2e4bf2;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding-left: 100px; /* Prevent content from being hidden under sidebar */
+      position: relative;
+    }
+    
+    /* Left Sidebar Styles */
+    .left-sidebar {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 1001;
-      box-sizing: border-box;
-      padding-right: 8px;
-      transition: background 0.4s;
-    }
-    
-    .navbar-hamburger {
-      font-size: 2rem;
-      cursor: pointer;
-      padding: 0 24px;
-      user-select: none;
-    }
-    
-    .navbar-title {
-      font-size: 1.3rem;
-      font-weight: bold;
-      margin-left: 12px;
-    }
-    
-    .sidebar {
-      position: fixed;
-      top: 0;
-      right: -220px;
-      width: 220px;
-      height: 100%;
-      background: #2d2e4bf2;
-      color: rgba(45, 46, 75, 0.95);
-      display: flex;
-      flex-direction: column;
-      padding-top: 56px;
-      transition: right 0.3s;
-      z-index: 1002;
-    }
-    
-    .sidebar.open {
-      right: 0;
-    }
-    
-    .sidebar a {
-      color: #DDDDDD;
-      padding: 18px 24px;
-      text-decoration: none;
-      font-size: 1.1rem;
-      border-bottom: 1px solid #444;
-      transition: background 0.2s;
-    }
-    
-    .sidebar a:hover {
-      background: rgba(45, 46, 75, 0.8);
+      width: 100px;
+      height: 100vh;
+      background: #4a4c6b;
       color: #fff;
-    }
-    
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.3);
       z-index: 1001;
+      transition: width 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
     
-    .sidebar-overlay.open {
+    .left-sidebar.expanded {
+      width: 200px;
+    }
+    
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 15px;
+      cursor: pointer;
+      height: 50px;
+    }
+    
+    .sidebar-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      position: absolute;
+      left: 20px;
+    }
+    
+    .left-sidebar.expanded .sidebar-header h3 {
+      opacity: 1;
+    }
+    
+    .sidebar-toggle {
+      font-size: 2.5rem;
+      cursor: pointer !important;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      transition: transform 0.3s ease;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      background: transparent;
+      border: none;
+      outline: none;
+      margin: 0 auto;
+      position: relative;
+      top: 5px;
+    }
+    
+    .left-sidebar.expanded .sidebar-toggle {
+      height: 60px;
+    }
+    
+    .left-sidebar.expanded .sidebar-toggle {
+      transform: rotate(90deg);
+    }
+    
+    .sidebar-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+      background: none;
+      border: none;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    
+    .left-sidebar.expanded .sidebar-close {
+      opacity: 1;
+    }
+    
+    .sidebar-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Hide only the toggle button when sidebar is expanded, keep the header and menu text */
+    .left-sidebar.expanded .sidebar-toggle {
+      display: none;
+    }
+    
+    .sidebar-icons {
+      padding: 10px 0;
+    }
+    
+    .sidebar-icon-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 50px;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-icon-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-left-color: #fff;
+    }
+    
+    .sidebar-icon-item .icon {
+      font-size: 1.3rem;
+      filter: grayscale(60%);
+    }
+    
+    .sidebar-text {
+      padding: 20px 0;
+    }
+    
+    .sidebar-text a {
       display: block;
+      padding: 15px 20px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-text a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-left-color: #fff;
     }
     
     .board-container {
@@ -261,7 +201,7 @@
     
     .board-title {
       margin-bottom: 20px;
-      color: #333;
+      color: white;
       font-size: 2rem;
       font-weight: bold;
       text-align: center;
@@ -284,48 +224,43 @@
       display: flex;
       gap: 20px;
       flex-wrap: wrap;
+      justify-content: center;
     }
     
     .stat-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: white;
-      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      min-width: 100px;
+      text-align: center;
+      min-width: 80px;
     }
     
     .stat-label {
       font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 4px;
+      opacity: 0.8;
+      margin-bottom: 5px;
+      display: block;
     }
     
     .stat-value {
       font-size: 1.2rem;
       font-weight: bold;
-      color: #2d2e4b;
     }
     
     /* Status Legend Styles */
     .status-legend {
-      background: white;
+      background: rgba(255, 255, 255, 0.95);
       padding: 15px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
       min-width: 200px;
-      position: absolute;
-      left: 0;
-      top: -80px;
     }
     
     .status-legend h3 {
       margin: 0 0 10px 0;
-      color: #2d2e4b;
-      font-size: 1rem;
-      font-weight: bold;
+      color: #333;
+      font-size: 1.1rem;
+      font-weight: 600;
     }
     
     .legend-items {
@@ -338,16 +273,15 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.85rem;
-      color: #333;
+      font-size: 0.9rem;
+      color: #555;
     }
     
     .status-circle {
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      border: 2px solid #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      display: inline-block;
     }
     
     .status-circle.clocked-in {
@@ -371,12 +305,13 @@
     }
     
     /* Canvas Container */
-    /* .canvas-container {
+    .canvas-container {
       position: relative;
       overflow: hidden;
       border-radius: 16px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-    } */
+      z-index: 200;
+    }
     
     /* Fullscreen styles */
     #boardCanvas:fullscreen {
@@ -474,20 +409,21 @@
     }
     
     .user-info-content {
-      background-color: white;
+      background: white;
       padding: 30px;
       border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-      max-width: 400px;
+      max-width: 500px;
       width: 90%;
-      text-align: center;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
     }
     
     .user-info-content h3 {
-      margin-bottom: 20px;
-      color: #2d2e4b;
+      margin-top: 0;
+      color: #333;
       font-size: 1.5rem;
-      font-weight: bold;
+      margin-bottom: 20px;
     }
     
     .user-info-item {
@@ -523,27 +459,204 @@
     .confirm-btn:hover {
       background-color: #1a1b2e;
     }
+    
+    /* iPhone and small phones (up to 428px) */
+    @media screen and (max-width: 428px) {
+      :root {
+        --scale-phone: 0.75;
+        --scale-tablet: 0.8;
+        --scale-desktop: 0.85;
+        --scale-tv: 0.9;
+      }
+      
+      body {
+        font-size: calc(14px * var(--scale-phone));
+        padding-left: calc(100px * var(--scale-phone)) !important;
+        padding-top: 0 !important;
+      }
+      
+      .board-container {
+        padding: calc(10px * var(--scale-phone)) !important;
+        margin: calc(10px * var(--scale-phone)) !important;
+        max-width: calc(100vw - 20px) !important;
+        width: calc(100vw - 20px) !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+      }
+      
+      .board-title {
+        font-size: calc(1.5rem * var(--scale-phone));
+        margin-bottom: calc(15px * var(--scale-phone));
+      }
+      
+      .board-header {
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: calc(15px * var(--scale-phone));
+        gap: calc(10px * var(--scale-phone));
+      }
+      
+      .status-legend {
+        order: 1;
+        align-self: flex-start;
+        margin-bottom: calc(10px * var(--scale-phone));
+      }
+      
+      .board-title {
+        order: 2;
+      }
+      
+      .board-stats {
+        order: 3;
+      }
+      
+      .board-stats {
+        gap: calc(8px * var(--scale-phone));
+        justify-content: center;
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      
+      .stat-item {
+        min-width: calc(70px * var(--scale-phone));
+        padding: calc(6px * var(--scale-phone)) calc(8px * var(--scale-phone));
+      }
+      
+      .stat-label {
+        font-size: calc(0.7rem * var(--scale-phone));
+        margin-bottom: calc(2px * var(--scale-phone));
+      }
+      
+      .stat-value {
+        font-size: calc(1rem * var(--scale-phone));
+      }
+      
+      .canvas-container {
+        border-radius: calc(12px * var(--scale-phone));
+        box-shadow: 0 calc(2px * var(--scale-phone)) calc(12px * var(--scale-phone)) rgba(0,0,0,0.08);
+        overflow: hidden;
+        max-width: calc(100vw - 20px);
+        width: calc(100vw - 20px);
+        position: relative;
+        z-index: 200;
+      }
+      
+      #boardCanvas {
+        width: calc(100vw - 20px) !important;
+        height: auto !important;
+        max-height: calc(60vh * var(--scale-phone));
+        margin: calc(10px * var(--scale-phone)) auto !important;
+        border-width: calc(2px * var(--scale-phone)) !important;
+        border-radius: calc(12px * var(--scale-phone)) !important;
+      }
+      
+      .board-controls {
+        gap: calc(6px * var(--scale-phone));
+        margin-top: calc(15px * var(--scale-phone));
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .control-btn {
+        padding: calc(8px * var(--scale-phone)) calc(12px * var(--scale-phone));
+        font-size: calc(12px * var(--scale-phone));
+        border-radius: calc(4px * var(--scale-phone));
+      }
+      
+      /* Status Legend Mobile Scaling */
+      .status-legend {
+        padding: calc(10px * var(--scale-phone));
+        min-width: calc(150px * var(--scale-phone));
+        position: absolute;
+        left: calc(10px * var(--scale-phone));
+        top: calc(-80px * var(--scale-phone));
+        transform: scale(var(--scale-phone));
+        transform-origin: top left;
+      }
+      
+      .status-legend h3 {
+        font-size: calc(0.9rem * var(--scale-phone));
+        margin-bottom: calc(8px * var(--scale-phone));
+      }
+      
+      .legend-items {
+        gap: calc(6px * var(--scale-phone));
+      }
+      
+      .legend-item {
+        gap: calc(6px * var(--scale-phone));
+        font-size: calc(0.75rem * var(--scale-phone));
+      }
+      
+      .status-circle {
+        width: calc(10px * var(--scale-phone));
+        height: calc(10px * var(--scale-phone));
+      }
+      
+      .left-sidebar {
+        width: calc(100px * var(--scale-phone));
+        height: 100vh;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      
+      .sidebar-toggle {
+        font-size: calc(2rem * var(--scale-phone));
+        width: calc(60px * var(--scale-phone));
+        height: calc(60px * var(--scale-phone));
+      }
+    }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <div class="header">
-      <h1 class ="navbar-title">Office Board</h1>
+  <div class="left-sidebar" id="leftSidebar">
+    <div class="sidebar-header" onclick="toggleSidebar()">
+      <h3>Menu</h3>
+      <div class="sidebar-toggle" id="sidebarToggle">&#9776;</div>
     </div>
-    <div class="navbar-title"></div>
-    <div class="navbar-hamburger" id="navbarHamburger">&#9776;</div>
-  </nav>
-  <div class="sidebar" id="sidebar">
-    <a href="#" id="dashboardLink">Dashboard</a>
-    <!--<a href="#" id="boardLink">Board</a>-->
-    <a href="#" id="settingsLink">Settings</a>
-    <a href="#" id="submitLink">Submit Email</a>
-    <a href="#" id="viewEmailLink">View Email</a>
-    <a href="#" id="hourLink">Hours</a>
-    <a href="#" id="editUsersLink">Edit Users</a>
-    <a href="#" id="signOutLink">Sign Out</a>
+    <button class="sidebar-close" id="sidebarClose" onclick="toggleSidebar()">✕</button>
+    
+    <!-- Icon Mode -->
+    <div class="sidebar-icons" id="sidebarIcons">
+      <a href="#" class="sidebar-icon-item" id="dashboardIcon" title="Dashboard">
+        <span class="icon">📊</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="boardIcon" title="Board">
+        <span class="icon">📋</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="settingsIcon" title="Settings">
+        <span class="icon">⚙️</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="submitIcon" title="Submit Email">
+        <span class="icon">📧</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="viewEmailIcon" title="View Email">
+        <span class="icon">📬</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="hoursIcon" title="Hours">
+        <span class="icon">⏱️</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="editUsersIcon" title="Edit Users">
+        <span class="icon">👥</span>
+      </a>
+      <a href="#" class="sidebar-icon-item" id="signOutIcon" title="Sign Out">
+        <span class="icon">🚪</span>
+      </a>
+    </div>
+    
+    <!-- Text Mode -->
+    <div class="sidebar-text" id="sidebarText" style="display: none;">
+      <a href="#" id="dashboardLink">Dashboard</a>
+      <a href="#" id="boardLink">Board</a>
+      <a href="#" id="settingsLink">Settings</a>
+      <a href="#" id="submitLink">Submit Email</a>
+      <a href="#" id="viewEmailLink">View Email</a>
+      <a href="#" id="hourLink">Hours</a>
+      <a href="#" id="editUsersLink">Edit Users</a>
+      <a href="#" id="signOutLink">Sign Out</a>
+    </div>
   </div>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
   
   <div class="board-container">
     <h1 class="board-title">Office Presence Board</h1>
@@ -594,7 +707,7 @@
     </div>
     
     <div class="canvas-container">
-      <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: #f8f9fa; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); cursor: grab;"></canvas>
+      <canvas id="boardCanvas" width="1100" height="700" style="display:block; margin: 40px auto; background: transparent; border: 3px solid #333333; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); cursor: grab;"></canvas>
     </div>
     
     <div class="board-controls">
@@ -618,49 +731,106 @@
   </div>
 
   <script defer>
-// --- Navbar/Sidebar logic (dashboard style) ---
-document.getElementById('navbarHamburger').onclick = function() {
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sidebarOverlay').classList.add('open');
-};
-document.getElementById('sidebarOverlay').onclick = function() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-};
+// --- Sidebar functions ---
+function toggleSidebar() {
+  console.log('Sidebar toggle clicked!');
+  const sidebar = document.getElementById('leftSidebar');
+  const icons = document.getElementById('sidebarIcons');
+  const text = document.getElementById('sidebarText');
+  
+  if (sidebar.classList.contains('expanded')) {
+    // Close the sidebar
+    sidebar.classList.remove('expanded');
+    icons.style.display = 'block';
+    text.style.display = 'none';
+    document.body.style.paddingLeft = '100px';
+    console.log('Sidebar closed');
+  } else {
+    // Open the sidebar
+    sidebar.classList.add('expanded');
+    icons.style.display = 'none';
+    text.style.display = 'block';
+    document.body.style.paddingLeft = '200px';
+    console.log('Sidebar opened');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarHeader = document.querySelector('.sidebar-header');
+  
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleSidebar();
+    });
+  }
+  
+  if (sidebarHeader) {
+    sidebarHeader.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleSidebar();
+    });
+  }
+});
+
 document.getElementById('signOutLink').onclick = function(e) {
   e.preventDefault();
   localStorage.removeItem("user");
-          window.location.href = "index.html";
+  window.location.href = "index.html";
 };
+
 document.addEventListener("DOMContentLoaded", () => {
   function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
   }
   const username = getQueryParam('username');
-  // Update all sidebar links to include username
+  
+  // Set up sidebar icon links
   if (username) {
-    document.getElementById('dashboardLink').href = `dashboard.html?username=${encodeURIComponent(username)}`;
-    // document.getElementById('boardLink').href = `board.html?username=${encodeURIComponent(username)}`;
-    document.getElementById('settingsLink').href = `settings.html?username=${encodeURIComponent(username)}`;
-    document.getElementById('viewEmailLink').href = `view_email.html?username=${encodeURIComponent(username)}`;
-    document.getElementById('submitLink').href = `submit_email.html?username=${encodeURIComponent(username)}`;
-    document.getElementById('hourLink').href = `hours.html?username=${encodeURIComponent(username)}`;
-    document.getElementById('editUsersLink').href = `users.html?username=${encodeURIComponent(username)}`;
+    setupSidebarIconLinks(username);
+    
     // Fetch user info to determine admin status
     fetch(`${ApiUrlLink}/user/${username}`)
       .then(res => res.json())
       .then(user => {
         if (user && user.role === 'admin') {
           document.getElementById('hourLink').style.display = 'block';
+          document.getElementById('hoursIcon').style.display = 'flex';
         } else {
           document.getElementById('hourLink').style.display = 'none';
+          document.getElementById('hoursIcon').style.display = 'none';
         }
         // Edit Users link is now visible to everyone
       });
   }
 });
-// --- End Navbar/Sidebar logic ---
+
+function setupSidebarIconLinks(username) {
+  // Set href attributes for sidebar icons
+  document.getElementById('dashboardIcon').href = `dashboard.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('boardIcon').href = `board.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('settingsIcon').href = `settings.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('submitIcon').href = `submit_email.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('viewEmailIcon').href = `view_email.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('hoursIcon').href = `hours.html?username=${encodeURIComponent(username)}`;
+  document.getElementById('editUsersIcon').href = `users.html?username=${encodeURIComponent(username)}`;
+  
+  // Set up sign out functionality for the icon
+  document.getElementById('signOutIcon').onclick = function(e) {
+    e.preventDefault();
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  };
+  
+  // Hide board navigation since we're already on the board page
+  document.getElementById('boardIcon').style.display = 'none';
+  document.getElementById('boardLink').style.display = 'none';
+}
+
+// --- End Sidebar logic ---
+
 document.addEventListener('DOMContentLoaded', () => {
 const canvas = document.getElementById('boardCanvas');
 const ctx = canvas.getContext('2d');
@@ -792,28 +962,18 @@ function getAvatarSpriteSheet(file) {
 // Per-user animation state
 const userAnimStates = {};
 
-// Load background carpet image
-const carpetImg = new window.Image();
-carpetImg.src = `${document.baseURI}Static/Images/Background/carpet.png`;
+
 
 function drawOfficeWithUsers(users) {
   // Apply zoom and pan transformations
   applyZoomAndPan();
   
-  // Draw carpet background
-  if (carpetImg.complete) {
-    const pattern = ctx.createPattern(carpetImg, 'repeat');
-    ctx.save();
-    ctx.setTransform(0.5, 0, 0, 0.5, 0, 0); // Scale down to 50%
-    ctx.fillStyle = pattern;
-    ctx.fillRect(0, 0, canvas.width * 2, canvas.height * 2);
-    ctx.restore();
-  } else {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+  // Clear canvas with transparent background
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
   // Draw grid (optional, for visual reference)
   ctx.save();
-  ctx.strokeStyle = '#999999';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'; // Light white with transparency
   for (let r = 0; r <= gridRows; r++) {
     ctx.beginPath();
     ctx.moveTo(0, r * cellSize);
@@ -826,12 +986,6 @@ function drawOfficeWithUsers(users) {
     ctx.lineTo(c * cellSize, canvas.height);
     ctx.stroke();
   }
-  ctx.restore();
-
-  // Add overlay to fade background (before desks)
-  ctx.save();
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; // White overlay with 40% opacity
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.restore();
 
   // Draw desks
@@ -941,7 +1095,7 @@ function drawOfficeWithUsers(users) {
       ctx.font = 'bold 12px Arial';
       ctx.textAlign = 'center';
       
-      // Draw username with blue text, light grey fill, and blue border
+      // Draw username with white text, dark blue fill, and white border
       const username = user.username;
       const textX = px + cellSize/2 - 10;
       const textY = py + cellSize - 50;
@@ -953,8 +1107,8 @@ function drawOfficeWithUsers(users) {
       const padding = 2; // Smaller padding for more centered look
       const borderWidth = 1; // Border width
       
-      // Draw light grey fill
-      ctx.fillStyle = '#e0e0e0'; // Light grey fill
+      // Draw dark blue fill
+      ctx.fillStyle = '#2d2e4b'; // Dark blue fill
       ctx.fillRect(
         textX - textWidth/2 - padding, 
         textY - textHeight - padding, 
@@ -962,8 +1116,8 @@ function drawOfficeWithUsers(users) {
         textHeight + padding * 2
       );
       
-      // Draw blue border
-      ctx.strokeStyle = '#2d2e4b'; // Theme blue color for border
+      // Draw white border
+      ctx.strokeStyle = '#ffffff'; // White border
       ctx.lineWidth = borderWidth;
       ctx.strokeRect(
         textX - textWidth/2 - padding, 
@@ -972,8 +1126,8 @@ function drawOfficeWithUsers(users) {
         textHeight + padding * 2
       );
       
-      // Draw blue text matching theme
-      ctx.fillStyle = '#2d2e4b'; // Theme blue color
+      // Draw white text
+      ctx.fillStyle = '#ffffff'; // White text
       ctx.fillText(username, textX, textY);
       
       // Draw status circle in top right corner of name tag
@@ -1008,7 +1162,7 @@ function drawOfficeWithUsers(users) {
       ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
       ctx.fillStyle = statusColor;
       ctx.fill();
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = '#2d2e4b';
       ctx.lineWidth = 1;
       ctx.stroke();
       
@@ -1245,25 +1399,22 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       console.log('User data from /user endpoint:', userData);
+      console.log('Full hoursData object:', hoursData);
+      console.log('Available fields in userData:', Object.keys(userData));
+      console.log('Available fields in hoursData:', hoursData ? Object.keys(hoursData) : 'No hours data');
+      console.log('Clock in time field found:', userData.clock_in_time || userData.clockInTime || userData.clock_in);
+      console.log('Clock out time field found:', userData.clock_out_time || userData.clockOutTime || userData.clock_out);
+      console.log('User status:', userData.status);
       
       // Calculate working time if clocked in
       let workingTime = 'N/A';
       let clockInTime = 'N/A';
       let clockOutTime = 'N/A';
       
-      // Try to get clock times from multiple sources
       const clockInTimeField = userData.clock_in_time || userData.clockInTime || userData.clock_in || 
                               (hoursData && hoursData.clock_in_time) || (hoursData && hoursData.clockInTime);
       const clockOutTimeField = userData.clock_out_time || userData.clockOutTime || userData.clock_out || 
                                (hoursData && hoursData.clock_out_time) || (hoursData && hoursData.clockOutTime);
-      
-      console.log('Full userData object:', userData);
-      console.log('Full hoursData object:', hoursData);
-      console.log('Available fields in userData:', Object.keys(userData));
-      console.log('Available fields in hoursData:', hoursData ? Object.keys(hoursData) : 'No hours data');
-      console.log('Clock in time field found:', clockInTimeField);
-      console.log('Clock out time field found:', clockOutTimeField);
-      console.log('User status:', userData.status);
       
       if (clockInTimeField) {
         try {
