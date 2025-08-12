@@ -241,10 +241,10 @@
       border-left-color: #fff;
     }
     .settings-container {
-      background: white;
+      background: #4a4c6b;
       padding: 40px;
       border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
       text-align: center;
       max-width: 1200px;
       width: 100%;
@@ -654,14 +654,14 @@
     }
     h1 {
       margin-bottom: 30px;
-      color: #333;
+      color: white;
       font-size: 2rem;
       font-weight: bold;
       text-align: center;
     }
     h2 {
       margin-bottom: 20px;
-      color: #333;
+      color: white;
       font-size: 1.5rem;
       font-weight: bold;
     }
@@ -673,17 +673,19 @@
       display: block;
       margin-bottom: 8px;
       font-weight: bold;
-      color: #333;
+      color: white;
       font-size: 1rem;
     }
     input[type="email"], input[type="password"] {
       width: 100%;
       padding: 12px;
-      border: 2px solid #e0e0e0;
+      border: 2px solid #6c757d;
       border-radius: 8px;
       box-sizing: border-box;
       font-size: 16px;
       transition: border-color 0.3s;
+      background: #2d2e4b;
+      color: white;
     }
     input[type="email"]:focus, input[type="password"]:focus {
       outline: none;
@@ -711,16 +713,16 @@
       transition: border 0.2s; 
     }
     .desk-selectable.selected { 
-      border: 2px solid #2d2e4b; 
-      background: #e8e9f0; 
+      border: 2px solid #007bff; 
+      background: #28a745; 
     }
     .desk-selectable.disabled {
       opacity: 0.3;
       pointer-events: none;
     }
     .desk-selectable.current {
-      border: 2px solid #28a745;
-      background: #d4edda;
+      border: 2px solid #20c997;
+      background: #28a745;
     }
     
     /* Grid styling improvements */
@@ -810,33 +812,33 @@
       </form>
       <div id="message" style="margin-top:20px;"></div>
       
-      <!-- Personal Hours Section -->
-      <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee;">
-        <h2 style="margin-bottom: 20px; color: #333;">My Hours</h2>
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <!-- Personal Hours Section -->
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #6c757d;">
+        <h2 style="margin-bottom: 20px; color: white;">My Hours</h2>
+                  <div style="background: #2d2e4b; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0; color: #333; font-size: 1.1rem;">Today's Hours</h3>
+            <h3 style="margin: 0; color: white; font-size: 1.1rem;">Today's Hours</h3>
             <button onclick="refreshPersonalHours()" style="background: #2d2e4b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.3s;">Refresh</button>
           </div>
           <div id="personalHours" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #2d2e4b;">
-              <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Work Hours</div>
-              <div id="workHours" style="font-size: 1.5rem; font-weight: bold; color: #2d2e4b;">--:--</div>
+            <div style="text-align: center; padding: 15px; background: #4a4c6b; border-radius: 6px; border-left: 4px solid #007bff;">
+                              <div style="font-size: 0.9rem; color: white; margin-bottom: 5px;">Work Hours</div>
+                <div id="workHours" style="font-size: 1.5rem; font-weight: bold; color: white;">--:--</div>
             </div>
-            <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #ffc107;">
-              <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Break Hours</div>
-              <div id="breakHours" style="font-size: 1.5rem; font-weight: bold; color: #2d2e4b;">--:--</div>
+            <div style="text-align: center; padding: 15px; background: #4a4c6b; border-radius: 6px; border-left: 4px solid #ffc107;">
+                              <div style="font-size: 0.9rem; color: white; margin-bottom: 5px;">Break Hours</div>
+                <div id="breakHours" style="font-size: 1.5rem; font-weight: bold; color: white;">--:--</div>
             </div>
           </div>
-          <div id="personalHoursMessage" style="margin-top: 15px; text-align: center; font-size: 0.9rem; color: #666;"></div>
+                      <div id="personalHoursMessage" style="margin-top: 15px; text-align: center; font-size: 0.9rem; color: white;"></div>
         </div>
       </div>
       
-      <!-- Desk Selection Section -->
-      <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee;">
-        <h2 style="margin-bottom: 20px; color: #333;">Desk Assignment</h2>
+              <!-- Desk Selection Section -->
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #6c757d;">
+        <h2 style="margin-bottom: 20px; color: white;">Desk Assignment</h2>
         <div class="form-group">
-          <label>Current Desk: <span id="currentDesk" style="font-weight: normal; color: #666;">Loading...</span></label>
+                      <label>Current Desk: <span id="currentDesk" style="font-weight: normal; color: white;">Loading...</span></label>
         </div>
         <div class="form-group">
           <label>Select a new desk:</label>
