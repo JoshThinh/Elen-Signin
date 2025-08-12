@@ -755,7 +755,33 @@ function toggleSidebar() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", () => {
+  function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  }
+  const username = getQueryParam('username');
+  
+  // Set up sidebar icon links first
+  if (username) {
+    setupSidebarIconLinks(username);
+    
+    // Fetch user info to determine admin status
+    fetch(`${window.ApiUrlLink}/user/${username}`)
+      .then(res => res.json())
+      .then(user => {
+        if (user && user.role === 'admin') {
+          document.getElementById('hourLink').style.display = 'block';
+          document.getElementById('hoursIcon').style.display = 'flex';
+        } else {
+          document.getElementById('hourLink').style.display = 'none';
+          document.getElementById('hoursIcon').style.display = 'none';
+        }
+        // Edit Users link is now visible to everyone
+      });
+  }
+  
+  // Set up sidebar toggle functionality after links are configured
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebarHeader = document.querySelector('.sidebar-header');
   
@@ -771,39 +797,6 @@ document.addEventListener('DOMContentLoaded', function() {
       e.stopPropagation();
       toggleSidebar();
     });
-  }
-});
-
-document.getElementById('signOutLink').onclick = function(e) {
-  e.preventDefault();
-  localStorage.removeItem("user");
-  window.location.href = "index.html";
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  function getQueryParam(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  }
-  const username = getQueryParam('username');
-  
-  // Set up sidebar icon links
-  if (username) {
-    setupSidebarIconLinks(username);
-    
-    // Fetch user info to determine admin status
-    fetch(`${ApiUrlLink}/user/${username}`)
-      .then(res => res.json())
-      .then(user => {
-        if (user && user.role === 'admin') {
-          document.getElementById('hourLink').style.display = 'block';
-          document.getElementById('hoursIcon').style.display = 'flex';
-        } else {
-          document.getElementById('hourLink').style.display = 'none';
-          document.getElementById('hoursIcon').style.display = 'none';
-        }
-        // Edit Users link is now visible to everyone
-      });
   }
 });
 
@@ -833,11 +826,7 @@ function setupSidebarIconLinks(username) {
     window.location.href = 'index.html';
   };
   
-  document.getElementById('signOutLink').onclick = function(e) {
-    e.preventDefault();
-    localStorage.removeItem('user');
-    window.location.href = 'index.html';
-  };
+
   
   // Hide board navigation since we're already on the board page
   document.getElementById('boardIcon').style.display = 'none';
@@ -989,7 +978,7 @@ function updateStats(users) {
 
 // Function to refresh data
 function refreshData() {
-  fetch(`${ApiUrlLink}/users`)
+  fetch(`${window.ApiUrlLink}/users`)
     .then(res => res.json())
     .then(data => {
       boardUsers = data.users;
@@ -1498,8 +1487,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     try {
       // Fetch user's detailed information including clock times
-      console.log('Fetching user data from:', `${ApiUrlLink}/user/${user.username}`);
-      const response = await fetch(`${ApiUrlLink}/user/${user.username}`);
+      console.log('Fetching user data from:', `${window.ApiUrlLink}/user/${user.username}`);
+      const response = await fetch(`${window.ApiUrlLink}/user/${user.username}`);
       console.log('User response status:', response.status);
       console.log('User response ok:', response.ok);
       
@@ -1513,8 +1502,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // Also fetch current hours data which might contain clock times
       let hoursData = null;
       try {
-        console.log('Fetching hours data from:', `${ApiUrlLink}/current_hours`);
-        const hoursResponse = await fetch(`${ApiUrlLink}/current_hours`);
+        console.log('Fetching hours data from:', `${window.ApiUrlLink}/current_hours`);
+        const hoursResponse = await fetch(`${window.ApiUrlLink}/current_hours`);
         console.log('Hours response status:', hoursResponse.status);
         
         if (hoursResponse.ok) {
@@ -1735,7 +1724,7 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.style.display = 'flex';
   }
 
-  // Close user info modal
+    // Close user info modal
   document.getElementById('closeUserInfo').onclick = function() {
     document.getElementById('userInfoModal').style.display = 'none';
   };
